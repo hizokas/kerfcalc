@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Tile Layout Planner — Tile Count, Edge Cut Sizes &amp; Balanced Start Point</title>
+<meta name="description" content="Free tile layout calculator: full tile count, the exact size of every edge cut, and how far to move your start point so both walls get an equal cut instead of a sliver. Grout joint, brick bond and 1/3 offset, mm or inches, printable scaled setting-out plan.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+/* ---- Additions specific to the tile layout planner ---- */
+.grout{fill:var(--line)}
+.room{fill:none;stroke:var(--ink);stroke-width:2;vector-effect:non-scaling-stroke}
+.tile{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1;vector-effect:non-scaling-stroke}
+.tilecut{fill:url(#tlp-hatch);stroke:var(--accent);stroke-width:1.4;vector-effect:non-scaling-stroke}
+.hatchbg{fill:var(--surface)}
+.hatchline{stroke:var(--accent);fill:none}
+.dim{fill:var(--muted);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.cutlabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.good{background:var(--accent-soft);border:1px solid var(--line);color:var(--ink);
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+.good b{color:var(--good)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin:8px 0 2px}
+.legend i{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;
+  margin-right:5px;border:1px solid var(--accent)}
+.legend .sw-full{background:var(--accent-soft)}
+.legend .sw-cut{background:repeating-linear-gradient(45deg,var(--surface) 0,var(--surface) 3px,var(--accent) 3px,var(--accent) 4px)}
+.hint{font-size:.78rem;color:var(--muted);max-width:22ch}
+.kv{font-size:.92rem;margin:0 0 6px}
+.kv b{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-weight:600}
+@media print{
+  /* A dark-mode browser must not print a black page. Re-assert the light
+     tokens here; this block is later in the sheet, so it wins on paper only. */
+  :root{--bg:#fff;--surface:#fff;--ink:#141414;--muted:#555;--line:#b9b9b4;
+        --accent:#8a5a2b;--accent-soft:#f5ede4;--good:#2f6b4f;--warn:#9a4a1e}
+  .warn{background:#fdf3ec;border-color:#e8c9ae;color:#7a3a12}
+  .good{background:#f5ede4;border-color:#d9c6ae;color:#141414}
+  svg{border:1px solid #999;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .warn,.good,.stat{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Tile Layout Planner</h1>
+<p class="sub">Set out a tiled floor or wall before you spread any adhesive. It works out how many
+full tiles you need, the exact size of every perimeter cut, and — when a cut comes out too thin to
+survive being cut — how far to move your starting point so both walls get an equal, workable cut
+instead of one sliver. Scaled plan and grouped cut list, ready to print. Runs entirely in your
+browser, nothing is uploaded.</p>
+
+<div class="card noprint">
+  <h2>Room and tile</h2>
+  <div class="row">
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+    <div class="f"><label>Room length (X)</label><input type="number" id="roomL" value="4230" min="0" step="any"></div>
+    <div class="f"><label>Room width (Y)</label><input type="number" id="roomW" value="3480" min="0" step="any"></div>
+    <div class="f"><label>Tile preset</label>
+      <select id="preset">
+        <option value="">Custom…</option>
+        <option value="600,600">600 × 600 mm</option>
+        <option value="600,300">600 × 300 mm</option>
+        <option value="300,300">300 × 300 mm</option>
+        <option value="1200,600">1200 × 600 mm</option>
+        <option value="900,150">900 × 150 mm (plank)</option>
+        <option value="200,200">200 × 200 mm</option>
+      </select></div>
+    <div class="f"><label>Tile length (X)</label><input type="number" id="tileL" value="600" min="0" step="any"></div>
+    <div class="f"><label>Tile width (Y)</label><input type="number" id="tileW" value="600" min="0" step="any"></div>
+    <div class="f"><label>Grout joint</label><input type="number" id="joint" value="3" min="0" step="any"></div>
+  </div>
+</div>
+
+<div class="card noprint">
+  <h2>Layout</h2>
+  <div class="row">
+    <div class="f"><label>Pattern</label>
+      <select id="pattern">
+        <option value="straight">Straight / stack bond</option>
+        <option value="offset50">Offset 50% (brick bond)</option>
+        <option value="offset33">Offset 33% (third bond)</option>
+      </select></div>
+    <div class="f"><label>Start point</label>
+      <select id="start">
+        <option value="corner" selected>Full tile in the corner</option>
+        <option value="centered">Centred in the room</option>
+      </select></div>
+    <div class="f"><label>Minimum acceptable cut</label><input type="number" id="minCut" value="50" min="0" step="any">
+      <span class="hint">Narrower than this and the cut tends to break</span></div>
+    <div class="f"><label>Breakage / waste %</label><input type="number" id="waste" value="10" min="0" max="200" step="any"></div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="go">Calculate layout</button>
+    <button id="reset">Reset defaults</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+
+  <h3>Why does it matter if a border cut is 12 mm wide?</h3>
+  <p>Because you usually cannot cut it. A sliver that narrow snaps on the wet saw, crumbles at the
+  glaze, and the ones that survive look like a mistake for the life of the floor. Most tilers refuse
+  anything under about a third of the tile, and never go below roughly 30–50 mm on a floor tile. That
+  is what the "minimum acceptable cut" box is for: set it to what you are actually willing to fit, and
+  the tool tells you whether your layout produces it.</p>
+
+  <h3>What exactly is the "balanced start point" suggestion?</h3>
+  <p>If you start with a full tile hard against one wall, all the leftover ends up at the far wall —
+  sometimes as a 20 mm strip. Move the whole field along by a set amount and that leftover gets split
+  between the two walls, so instead of one full tile and one sliver you get two half-decent cuts. The
+  tool searches every possible start position along one tile pitch, finds the one that makes the
+  narrowest cut in the room as wide as possible, and gives you two numbers: how far to shift, and where
+  to snap your first full tile line measured from the wall. If even the best position cannot reach your
+  minimum, it says so rather than pretending otherwise — at that point you change the tile size, the
+  joint width, or you accept the cut. The same rule drives the "centred" start option: a room has two
+  symmetric layouts, one with a tile straddling the centre line and one with a joint on it, and the
+  tool picks whichever gives the wider perimeter cut.</p>
+
+  <h3>Does "tiles to order" mean I can get two cuts out of one tile?</h3>
+  <p>Sometimes. The cut list shows a conservative "pieces per tile" figure — how many identical border
+  pieces can be sawn from one full tile, capped at four, and it ignores the blade kerf and the tiles you
+  will break learning the saw. Two totals are given: one assuming a whole tile per cut piece (safe, what
+  most merchants will quote you) and one assuming you nest the cuts. Order the first unless you are
+  confident and the tile is expensive. Directional or heavily patterned tiles cannot be nested at all,
+  because the offcut ends up facing the wrong way.</p>
+
+  <h3>What this does not do</h3>
+  <p>It assumes the room is a true rectangle with square corners — it is not. Walls bow, corners run out,
+  and a 4 m wall that is 15 mm out of parallel will eat your border cut at one end. Measure both ends of
+  every wall and plan against the worst case. It also ignores door thresholds, thresholds strips, pipe
+  penetrations, floor waste falls, diagonal and herringbone patterns, and anything to do with substrate,
+  movement joints or adhesive coverage. It is a setting-out aid, not a specification.</p>
+</div>
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./concrete-volume-calculator.html" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="./gravel-volume-calculator.html" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li><li style="margin:4px 0"><a href="./paint-coverage-calculator.html" style="color:var(--accent)">Paint Coverage Calculator</a> <span style="color:var(--muted)">— Litres or gallons per coat with openings subtracted, rounded up to real tin sizes.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Dry-lay the first row and check against the real walls before you fix anything.
+</footer>
+</div>
+
+<script>
+/* ============================================================================
+   PURE CALCULATION CORE
+   ----------------------------------------------------------------------------
+   planTileLayout(input) -> result
+
+   No DOM, no globals mutated, no I/O. Safe to require() and unit-test.
+
+   input  = {
+     unit        : 'mm' | 'in'                     (labelling only, no conversion)
+     roomLength  : number > 0    room dimension along X (drawn horizontally)
+     roomWidth   : number > 0    room dimension along Y (drawn vertically)
+     tileLength  : number > 0    tile dimension along X
+     tileWidth   : number > 0    tile dimension along Y
+     joint       : number >= 0   grout joint width
+     pattern     : 'straight' | 'offset50' | 'offset33'
+     startPoint  : 'centered' | 'corner'
+     minCut      : number >= 0   narrowest border cut you are willing to fit
+     wastePct    : number >= 0   breakage allowance, percent
+   }
+
+   result = {
+     ok, errors[], warnings[], unit, pattern, startPoint,
+     room{length,width,area}, tile{length,width,area}, joint, minCut, wastePct,
+     grid{pitchX,pitchY,originX,originY,rowOffsets[]},
+     tiles[{x,y,w,h,cut,cutX,cutY,row,rowClass}],
+     tileCount{full,cut,total},
+     cutGroups[{w,h,qty,type,piecesPerTile,tilesNeeded}],
+     borders{length:{...},width:{...}},
+     setout{firstFullTileFromX,firstFullTileFromY},
+     order{tilesOnePerCut,tilesNested,roomArea,areaWithWaste,areaUnit},
+     alerts[{axis,side,width,minCut,message}],
+     balance{length:{...}|null, width:{...}|null}
+   }
+
+   Geometry model
+   --------------
+   Tiles repeat on a pitch of (tile dimension + joint) on each axis. An infinite
+   grid is generated from an origin and then clipped to the room rectangle; any
+   tile the room boundary passes through becomes a cut, and its clipped size IS
+   the cut size. This handles every case — tile larger than the room, exact fits,
+   offset courses — with one code path instead of a pile of special cases.
+
+   Offset patterns shift course k horizontally by (k mod R) * pitchX / R, so the
+   joint of one course lands on the mid-point (or third point) of the course
+   below, which is what brick bond and third bond mean on site.
+   ========================================================================== */
+
+var TLP_EPS = 1e-7;
+var TLP_MAX_PIECES_PER_TILE = 4;   // conservative cap for the nesting estimate
+var TLP_MAX_TILES = 60000;         // refuse absurd room/tile ratios
+
+/** Clip the infinite 1-D tile grid to [0, roomDim]. Returns visible segments. */
+function tlpAxisSegments(roomDim, tileDim, joint, origin) {
+  var pitch = tileDim + joint;
+  var eps = TLP_EPS * Math.max(1, roomDim);
+  var segs = [];
+  if (!(pitch > 0) || !(roomDim > 0)) return segs;
+  var k = Math.floor(-origin / pitch) - 2;
+  var guard = 0;
+  while (guard++ < 500000) {
+    var a = origin + k * pitch;
+    if (a >= roomDim - eps) break;
+    var b = a + tileDim;
+    if (b > eps) {
+      var s = a < 0 ? 0 : a;
+      var e = b > roomDim ? roomDim : b;
+      var size = e - s;
+      if (size > eps) {
+        segs.push({ start: s, size: size, index: k, full: size >= tileDim - eps });
+      }
+    }
+    k++;
+  }
+  return segs;
+}
+
+/** Width of the narrowest cut on this axis. No cut at all scores a full tile. */
+function tlpWorstCut(segs, tileDim) {
+  var worst = Infinity, found = false;
+  for (var i = 0; i < segs.length; i++) {
+    if (!segs[i].full) { found = true; if (segs[i].size < worst) worst = segs[i].size; }
+  }
+  return found ? worst : tileDim;
+}
+
+/** Horizontal shift of each course class, in length units. */
+function tlpRowOffsets(pattern, pitchX) {
+  if (pattern === 'offset50') return [0, pitchX / 2];
+  if (pattern === 'offset33') return [0, pitchX / 3, 2 * pitchX / 3];
+  return [0];
+}
+
+/** Narrowest cut across every course class for a given origin. */
+function tlpQuality(roomDim, tileDim, joint, origin, offsets) {
+  var q = Infinity;
+  for (var i = 0; i < offsets.length; i++) {
+    var w = tlpWorstCut(tlpAxisSegments(roomDim, tileDim, joint, origin + offsets[i]), tileDim);
+    if (w < q) q = w;
+  }
+  return q;
+}
+
+function tlpMod(v, m) { return ((v % m) + m) % m; }
+
+/**
+ * Origin that centres the layout: either a tile straddling the centre line or a
+ * joint on the centre line. Both are "centred"; the one giving the wider border
+ * cut is the one a tiler would pick, so that is the one returned.
+ */
+function tlpCenteredOrigin(roomDim, tileDim, joint, offsets) {
+  var pitch = tileDim + joint;
+  var oTile = tlpMod(roomDim / 2 - tileDim / 2, pitch);       // tile on centre line
+  var oJoint = tlpMod(oTile - pitch / 2, pitch);              // joint on centre line
+  var qT = tlpQuality(roomDim, tileDim, joint, oTile, offsets);
+  var qJ = tlpQuality(roomDim, tileDim, joint, oJoint, offsets);
+  return qJ > qT + TLP_EPS ? oJoint : oTile;
+}
+
+/**
+ * Best start position on one axis: maximises the narrowest border cut in the
+ * room. Analytic candidates (symmetric layouts, flush layouts) are tested first,
+ * then a scan of the whole pitch with local refinement, because with offset
+ * courses the objective is a piecewise-linear function of several courses at
+ * once and the optimum is not always a symmetric layout.
+ */
+function tlpBestOrigin(roomDim, tileDim, joint, offsets, currentOrigin) {
+  var pitch = tileDim + joint;
+  var cands = [];
+  var i, c;
+  for (i = 0; i < offsets.length; i++) {
+    c = offsets[i];
+    cands.push(tlpMod(roomDim / 2 - tileDim / 2 - c, pitch));       // tile centred
+    cands.push(tlpMod(roomDim / 2 - tileDim / 2 - c - pitch / 2, pitch)); // joint centred
+    cands.push(tlpMod(-c, pitch));                                   // flush at start
+    cands.push(tlpMod(joint - c, pitch));                            // joint at start wall
+    cands.push(tlpMod(roomDim - tileDim - c, pitch));                // flush at far wall
+    cands.push(tlpMod(roomDim - c, pitch));                          // joint at far wall
+  }
+  var N = 720;
+  for (i = 0; i < N; i++) cands.push(i * pitch / N);
+
+  var best = null;
+  function consider(o) {
+    var q = tlpQuality(roomDim, tileDim, joint, o, offsets);
+    var d = Math.abs(tlpSignedShift(o - currentOrigin, pitch));
+    if (!best || q > best.q + 1e-9 || (Math.abs(q - best.q) <= 1e-9 && d < best.d - 1e-9)) {
+      best = { origin: o, q: q, d: d };
+    }
+  }
+  for (i = 0; i < cands.length; i++) consider(cands[i]);
+
+  // local refinement around the coarse winner
+  var step = pitch / N;
+  var base = best.origin;
+  for (i = -240; i <= 240; i++) consider(tlpMod(base + i * step / 240, pitch));
+
+  return best;
+}
+
+/** Smallest-magnitude equivalent shift; layouts repeat every pitch. */
+function tlpSignedShift(delta, pitch) {
+  var d = tlpMod(delta, pitch);
+  return d > pitch / 2 ? d - pitch : d;
+}
+
+function tlpRound(v, dp) { var f = Math.pow(10, dp); return Math.round(v * f) / f; }
+
+function planTileLayout(input) {
+  input = input || {};
+  var errors = [], warnings = [];
+
+  function num(v, dflt) {
+    if (v === undefined || v === null || v === '') return dflt;
+    var n = typeof v === 'number' ? v : Number(String(v).trim());
+    return (typeof n === 'number' && isFinite(n)) ? n : NaN;
+  }
+
+  var unit = input.unit === 'in' ? 'in' : 'mm';
+  var dp = unit === 'in' ? 4 : 3;                 // internal rounding precision
+  var roomL = num(input.roomLength, NaN);
+  var roomW = num(input.roomWidth, NaN);
+  var tileL = num(input.tileLength, NaN);
+  var tileW = num(input.tileWidth, NaN);
+  var joint = num(input.joint, 0);
+  var minCut = num(input.minCut, 0);
+  var wastePct = num(input.wastePct, 0);
+  var pattern = (input.pattern === 'offset50' || input.pattern === 'offset33') ? input.pattern : 'straight';
+  var startPoint = input.startPoint === 'corner' ? 'corner' : 'centered';
+
+  function req(v, label) {
+    if (!isFinite(v)) { errors.push(label + ' must be a number.'); return false; }
+    if (!(v > 0)) { errors.push(label + ' must be greater than zero.'); return false; }
+    return true;
+  }
+  req(roomL, 'Room length');
+  req(roomW, 'Room width');
+  req(tileL, 'Tile length');
+  req(tileW, 'Tile width');
+  if (!isFinite(joint) || joint < 0) errors.push('Grout joint must be zero or more.');
+  if (!isFinite(minCut) || minCut < 0) errors.push('Minimum acceptable cut must be zero or more.');
+  if (!isFinite(wastePct) || wastePct < 0) errors.push('Waste percentage must be zero or more.');
+  if (isFinite(wastePct) && wastePct > 200) errors.push('Waste percentage above 200% is not a real order.');
+  if (isFinite(joint) && isFinite(tileL) && isFinite(tileW) && joint > 0 &&
+      joint >= Math.min(tileL, tileW)) {
+    errors.push('Grout joint is as wide as the tile — check the units.');
+  }
+
+  if (errors.length) {
+    return { ok: false, errors: errors, warnings: warnings, unit: unit, tiles: [], cutGroups: [],
+             alerts: [], balance: { length: null, width: null } };
+  }
+
+  var pitchX = tileL + joint, pitchY = tileW + joint;
+
+  var estimate = Math.ceil(roomL / pitchX + 2) * Math.ceil(roomW / pitchY + 2);
+  if (estimate > TLP_MAX_TILES) {
+    errors.push('That is ' + estimate.toLocaleString() + ' tiles — too many to draw. ' +
+                'Check the units: a tile in mm with a room in metres gives numbers like this.');
+    return { ok: false, errors: errors, warnings: warnings, unit: unit, tiles: [], cutGroups: [],
+             alerts: [], balance: { length: null, width: null } };
+  }
+
+  if (minCut > Math.min(tileL, tileW)) {
+    warnings.push('Your minimum acceptable cut (' + minCut + ') is wider than the tile itself, ' +
+                  'so no cut can ever satisfy it.');
+  }
+  if (tileL > roomL || tileW > roomW) {
+    warnings.push('The tile is larger than the room on at least one axis — every tile is a cut.');
+  }
+
+  var rowOffsets = tlpRowOffsets(pattern, pitchX);
+
+  /* ---- start positions ---- */
+  var originY = startPoint === 'corner' ? 0 : tlpCenteredOrigin(roomW, tileW, joint, [0]);
+  var originX = startPoint === 'corner' ? 0 : tlpCenteredOrigin(roomL, tileL, joint, rowOffsets);
+
+  /* ---- build the tiles ---- */
+  var rowSegs = tlpAxisSegments(roomW, tileW, joint, originY);
+  var tiles = [];
+  var full = 0, cut = 0;
+  var R = rowOffsets.length;
+  for (var r = 0; r < rowSegs.length; r++) {
+    var rs = rowSegs[r];
+    var cls = tlpMod(rs.index, R);
+    var colSegs = tlpAxisSegments(roomL, tileL, joint, originX + rowOffsets[cls]);
+    for (var c2 = 0; c2 < colSegs.length; c2++) {
+      var cs = colSegs[c2];
+      var isCut = !cs.full || !rs.full;
+      tiles.push({
+        x: tlpRound(cs.start, dp), y: tlpRound(rs.start, dp),
+        w: tlpRound(cs.size, dp), h: tlpRound(rs.size, dp),
+        cut: isCut, cutX: !cs.full, cutY: !rs.full, row: r, rowClass: cls
+      });
+      if (isCut) cut++; else full++;
+    }
+  }
+
+  /* ---- border cut widths, per axis ---- */
+  function axisBorders(getSegs, tileDim) {
+    var startW = {}, endW = {}, all = [];
+    var list = getSegs();
+    for (var i = 0; i < list.length; i++) {
+      var segs = list[i];
+      if (!segs.length) continue;
+      var first = segs[0], last = segs[segs.length - 1];
+      if (!first.full) { startW[tlpRound(first.size, dp)] = true; all.push(first.size); }
+      if (segs.length > 1 && !last.full) { endW[tlpRound(last.size, dp)] = true; all.push(last.size); }
+    }
+    var anyFull = false;
+    for (var q = 0; q < list.length; q++) {
+      for (var z = 0; z < list[q].length; z++) if (list[q][z].full) anyFull = true;
+    }
+    var sk = Object.keys(startW).map(Number).sort(function (a, b) { return a - b; });
+    var ek = Object.keys(endW).map(Number).sort(function (a, b) { return a - b; });
+    var min = all.length ? Math.min.apply(null, all) : null;
+    var max = all.length ? Math.max.apply(null, all) : null;
+    return {
+      startCuts: sk, endCuts: ek,
+      min: min === null ? null : tlpRound(min, dp),
+      max: max === null ? null : tlpRound(max, dp),
+      hasFullTile: anyFull,
+      hasCuts: all.length > 0
+    };
+  }
+
+  var bordersX = axisBorders(function () {
+    var out = [];
+    for (var i = 0; i < R; i++) out.push(tlpAxisSegments(roomL, tileL, joint, originX + rowOffsets[i]));
+    return out;
+  }, tileL);
+  var bordersY = axisBorders(function () {
+    return [tlpAxisSegments(roomW, tileW, joint, originY)];
+  }, tileW);
+
+  /* ---- setting-out: where the first full tile starts, measured off the wall ---- */
+  function firstFullFrom(segs) {
+    for (var i = 0; i < segs.length; i++) if (segs[i].full) return tlpRound(segs[i].start, dp);
+    return null;
+  }
+  var setout = {
+    firstFullTileFromX: firstFullFrom(tlpAxisSegments(roomL, tileL, joint, originX)),
+    firstFullTileFromY: firstFullFrom(rowSegs)
+  };
+
+  /* ---- cut list, grouped by identical size ---- */
+  var groups = {};
+  for (var t = 0; t < tiles.length; t++) {
+    var ti = tiles[t];
+    if (!ti.cut) continue;
+    var key = ti.w + '|' + ti.h;
+    if (!groups[key]) {
+      var type = (ti.cutX && ti.cutY) ? 'Corner' : (ti.cutX ? 'Left / right border' : 'Top / bottom border');
+      var ppt = Math.max(1, Math.min(
+        TLP_MAX_PIECES_PER_TILE,
+        Math.floor(tileL / ti.w + 1e-9) * Math.floor(tileW / ti.h + 1e-9)
+      ));
+      groups[key] = { w: ti.w, h: ti.h, qty: 0, type: type, piecesPerTile: ppt, tilesNeeded: 0 };
+    }
+    groups[key].qty++;
+  }
+  var cutGroups = Object.keys(groups).map(function (k) { return groups[k]; });
+  cutGroups.forEach(function (g) { g.tilesNeeded = Math.ceil(g.qty / g.piecesPerTile); });
+  cutGroups.sort(function (a, b) { return (b.w * b.h) - (a.w * a.h) || b.qty - a.qty; });
+
+  /* ---- quantities ---- */
+  var wasteFactor = 1 + wastePct / 100;
+  var nestedTiles = cutGroups.reduce(function (s, g) { return s + g.tilesNeeded; }, 0);
+  var roomArea = roomL * roomW;
+  var areaUnit = unit === 'in' ? 'sq ft' : 'm²';
+  var areaDiv = unit === 'in' ? 144 : 1e6;
+
+  var order = {
+    tilesOnePerCut: Math.ceil((full + cut) * wasteFactor),
+    tilesNested: Math.ceil((full + nestedTiles) * wasteFactor),
+    fullTiles: full,
+    cutPieces: cut,
+    roomArea: tlpRound(roomArea / areaDiv, 3),
+    areaWithWaste: tlpRound(roomArea * wasteFactor / areaDiv, 3),
+    areaUnit: areaUnit,
+    tileFaceArea: tlpRound(tileL * tileW / areaDiv, 5)
+  };
+
+  /* ---- alerts + balanced start point suggestion ---- */
+  var alerts = [];
+  var balance = { length: null, width: null };
+
+  function axisLabel(axis) { return axis === 'length' ? 'room length (X)' : 'room width (Y)'; }
+
+  function buildBalance(axis, roomDim, tileDim, curOrigin, offsets, borders) {
+    var pitch = tileDim + joint;
+    var best = tlpBestOrigin(roomDim, tileDim, joint, offsets, curOrigin);
+
+    // Round the shift to something a tape measure can hold, then re-evaluate so
+    // the numbers shown are the numbers the rounded shift actually produces.
+    var rawShift = tlpSignedShift(best.origin - curOrigin, pitch);
+    var shiftDp = unit === 'in' ? 3 : 1;
+    var newOrigin = tlpMod(curOrigin + tlpRound(rawShift, shiftDp), pitch);
+
+    var widths = [], nFull = 0;
+    for (var i = 0; i < offsets.length; i++) {
+      var segs = tlpAxisSegments(roomDim, tileDim, joint, newOrigin + offsets[i]);
+      for (var j = 0; j < segs.length; j++) {
+        if (!segs[j].full) widths.push(tlpRound(segs[j].size, dp));
+        else if (i === 0) nFull++;
+      }
+    }
+    var uniq = widths.filter(function (v, k, a) { return a.indexOf(v) === k; })
+                     .sort(function (a, b) { return a - b; });
+    var newMin = widths.length ? Math.min.apply(null, widths) : tileDim;
+
+    // Setting out is quoted as an absolute distance off the wall, because
+    // "move it 295 backwards" is meaningless when the tile is already on the
+    // wall — the same layout is always reachable by moving forwards instead.
+    var curSetout = firstFullFrom(tlpAxisSegments(roomDim, tileDim, joint, curOrigin));
+    var newSetout = firstFullFrom(tlpAxisSegments(roomDim, tileDim, joint, newOrigin));
+    var shift = (curSetout !== null && newSetout !== null)
+      ? tlpRound(newSetout - curSetout, shiftDp)
+      : tlpRound(rawShift, shiftDp);
+
+    return {
+      axis: axis,
+      axisLabel: axisLabel(axis),
+      pitch: tlpRound(pitch, dp),
+      minCut: minCut,
+      currentMin: borders.min,
+      currentFirstFullTileFrom: curSetout,
+      shift: shift,
+      newOrigin: tlpRound(newOrigin, dp),
+      firstFullTileFrom: newSetout,
+      resultCuts: uniq,
+      resultMin: tlpRound(newMin, dp),
+      fullTilesPerLine: nFull,
+      meetsMin: newMin >= minCut - TLP_EPS * Math.max(1, roomDim),
+      improves: borders.min !== null && newMin > borders.min + TLP_EPS * Math.max(1, roomDim)
+    };
+  }
+
+  function checkAxis(axis, roomDim, tileDim, curOrigin, offsets, borders) {
+    if (!borders.hasCuts) return;
+    if (borders.min !== null && borders.min < minCut - TLP_EPS * Math.max(1, roomDim)) {
+      alerts.push({
+        axis: axis,
+        axisLabel: axisLabel(axis),
+        width: borders.min,
+        minCut: minCut,
+        message: 'A border cut of ' + borders.min + ' ' + unit + ' on the ' + axisLabel(axis) +
+                 ' is below your minimum of ' + minCut + ' ' + unit + '.'
+      });
+      balance[axis] = buildBalance(axis, roomDim, tileDim, curOrigin, offsets, borders);
+    }
+  }
+
+  checkAxis('length', roomL, tileL, originX, rowOffsets, bordersX);
+  checkAxis('width', roomW, tileW, originY, [0], bordersY);
+
+  return {
+    ok: true,
+    errors: errors,
+    warnings: warnings,
+    unit: unit,
+    pattern: pattern,
+    startPoint: startPoint,
+    room: { length: roomL, width: roomW, area: tlpRound(roomArea, 2) },
+    tile: { length: tileL, width: tileW, area: tlpRound(tileL * tileW, 2) },
+    joint: joint,
+    minCut: minCut,
+    wastePct: wastePct,
+    grid: {
+      pitchX: tlpRound(pitchX, dp), pitchY: tlpRound(pitchY, dp),
+      originX: tlpRound(originX, dp), originY: tlpRound(originY, dp),
+      rowOffsets: rowOffsets.map(function (v) { return tlpRound(v, dp); }),
+      rowCount: rowSegs.length
+    },
+    tiles: tiles,
+    tileCount: { full: full, cut: cut, total: full + cut },
+    cutGroups: cutGroups,
+    borders: { length: bordersX, width: bordersY },
+    setout: setout,
+    order: order,
+    alerts: alerts,
+    balance: balance
+  };
+}
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { planTileLayout: planTileLayout };
+}
+
+/* ============================================================================
+   UI LAYER — everything below this line only reads inputs and paints results.
+   ========================================================================== */
+(function () {
+  if (typeof document === 'undefined') return;
+
+  var $ = function (s) { return document.querySelector(s); };
+  var DEFAULTS_MM = { roomL: 4230, roomW: 3480, tileL: 600, tileW: 600, joint: 3, minCut: 50, waste: 10 };
+  var lastUnit = 'mm';
+
+  function esc(t) {
+    return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  /* ---- number formatting ---- */
+  function fracIn(v) {
+    var sign = v < 0 ? '-' : '';
+    v = Math.abs(v);
+    var whole = Math.floor(v + 1e-9);
+    var sixteenths = Math.round((v - whole) * 16);
+    if (sixteenths === 16) { whole++; sixteenths = 0; }
+    if (sixteenths === 0) return sign + whole;
+    var n = sixteenths, d = 16;
+    while (n % 2 === 0) { n /= 2; d /= 2; }
+    return sign + (whole ? whole + ' ' : '') + n + '/' + d;
+  }
+  function fmt(v, unit) {
+    if (v === null || v === undefined || !isFinite(v)) return '—';
+    if (unit === 'in') {
+      if (Math.abs(v) > 0 && Math.abs(v) < 0.0625) return (Math.round(v * 1000) / 1000) + '"';
+      return fracIn(v) + '"';
+    }
+    return (Math.round(v * 10) / 10).toString();
+  }
+  function fmtU(v, unit) { return unit === 'in' ? fmt(v, unit) : fmt(v, unit) + ' mm'; }
+  function area2(v) { return (Math.round(v * 100) / 100).toString(); }
+
+  /* ---- reading the form ---- */
+  function readInput() {
+    return {
+      unit: $('#unit').value,
+      roomLength: $('#roomL').value,
+      roomWidth: $('#roomW').value,
+      tileLength: $('#tileL').value,
+      tileWidth: $('#tileW').value,
+      joint: $('#joint').value,
+      pattern: $('#pattern').value,
+      startPoint: $('#start').value,
+      minCut: $('#minCut').value,
+      wastePct: $('#waste').value
+    };
+  }
+
+  /* ---- SVG plan ---- */
+  function buildSvg(res) {
+    var unit = res.unit;
+    var L = res.room.length, W = res.room.width;
+    var maxDim = Math.max(L, W);
+    var m = maxDim * 0.075;                       // margin for dimension text
+    var fs = maxDim / 52;
+    var hatch = Math.max(maxDim / 110, 0.5);
+
+    var s = '<svg viewBox="' + (-m) + ' ' + (-m) + ' ' + (L + 2 * m) + ' ' + (W + 2 * m) + '" ' +
+            'preserveAspectRatio="xMidYMid meet" role="img" ' +
+            'aria-label="Scaled tile setting-out plan, room ' + L + ' by ' + W + ' ' + unit + '">';
+
+    s += '<defs><pattern id="tlp-hatch" width="' + hatch + '" height="' + hatch + '" ' +
+         'patternUnits="userSpaceOnUse" patternTransform="rotate(45)">' +
+         '<rect class="hatchbg" width="' + hatch + '" height="' + hatch + '"/>' +
+         '<line class="hatchline" x1="0" y1="0" x2="0" y2="' + hatch + '" ' +
+         'stroke-width="' + (hatch * 0.28) + '"/></pattern></defs>';
+
+    // grout bed
+    s += '<rect class="grout" x="0" y="0" width="' + L + '" height="' + W + '"/>';
+
+    var labelAll = res.tiles.length <= 1400;
+    for (var i = 0; i < res.tiles.length; i++) {
+      var t = res.tiles[i];
+      s += '<rect class="' + (t.cut ? 'tilecut' : 'tile') + '" x="' + t.x + '" y="' + t.y +
+           '" width="' + t.w + '" height="' + t.h + '"/>';
+      if (!t.cut || !labelAll) continue;
+      var txt = t.cutX && t.cutY ? (fmt(t.w, unit) + '×' + fmt(t.h, unit))
+              : t.cutX ? fmt(t.w, unit) : fmt(t.h, unit);
+      var lfs = Math.min(fs, Math.min(t.w, t.h) * 0.55);
+      var need = txt.length * lfs * 0.58;
+      if (t.w > need * 1.05 && t.h > lfs * 1.25) {
+        s += '<text class="cutlabel" x="' + (t.x + t.w / 2) + '" y="' + (t.y + t.h / 2 + lfs * 0.36) +
+             '" text-anchor="middle" style="font-size:' + lfs + 'px">' + esc(txt) + '</text>';
+      } else if (t.h > need * 1.05 && t.w > lfs * 1.25) {
+        s += '<text class="cutlabel" x="' + (t.x + t.w / 2) + '" y="' + (t.y + t.h / 2) +
+             '" text-anchor="middle" transform="rotate(-90 ' + (t.x + t.w / 2) + ' ' + (t.y + t.h / 2) +
+             ')" style="font-size:' + lfs + 'px" dy="' + (lfs * 0.36) + '">' + esc(txt) + '</text>';
+      }
+    }
+
+    // room outline + overall dimensions
+    s += '<rect class="room" x="0" y="0" width="' + L + '" height="' + W + '"/>';
+    s += '<text class="dim" x="' + (L / 2) + '" y="' + (W + m * 0.72) + '" text-anchor="middle" ' +
+         'style="font-size:' + (fs * 1.05) + 'px">' + esc(fmtU(L, unit)) + '</text>';
+    s += '<text class="dim" x="' + (-m * 0.55) + '" y="' + (W / 2) + '" text-anchor="middle" ' +
+         'transform="rotate(-90 ' + (-m * 0.55) + ' ' + (W / 2) + ')" ' +
+         'style="font-size:' + (fs * 1.05) + 'px">' + esc(fmtU(W, unit)) + '</text>';
+
+    return s + '</svg>';
+  }
+
+  /* ---- balance suggestion block ---- */
+  function balanceHtml(b, unit) {
+    if (!b) return '';
+    var dirWall = b.axis === 'length' ? 'left-hand wall' : 'top wall';
+    var h = '<div class="' + (b.meetsMin ? 'good' : 'warn') + '">' +
+      '<p class="kv" style="margin-bottom:8px"><strong>Balanced start point — ' +
+      esc(b.axisLabel) + '</strong></p>';
+
+    if (b.firstFullTileFrom === null) {
+      h += '<p class="kv">No full tile fits on this axis, so there is no start line to move.</p>';
+    } else if (Math.abs(b.shift) < 1e-9) {
+      h += '<p class="kv">Your start point is already the best position available on this axis.</p>';
+    } else {
+      h += '<p class="kv">Set your first full tile line <b>' +
+           esc(fmtU(b.firstFullTileFrom, unit)) + '</b> from the ' + dirWall +
+           ' instead of ' + esc(fmtU(b.currentFirstFullTileFrom, unit)) +
+           ' — a shift of <b>' + esc(fmt(Math.abs(b.shift), unit)) + (unit === 'in' ? '' : ' mm') +
+           '</b> ' + (b.shift > 0 ? 'away from' : 'toward') + ' that wall.</p>';
+    }
+
+    h += '<p class="kv">Border cuts on this axis then measure <b>' +
+         b.resultCuts.map(function (v) { return esc(fmt(v, unit)); }).join('</b> and <b>') +
+         '</b>' + (unit === 'in' ? '' : ' mm') +
+         ', against ' + esc(fmtU(b.currentMin, unit)) + ' at the narrowest right now.</p>';
+
+    h += b.meetsMin
+      ? '<p class="kv"><b>That clears your ' + esc(fmtU(b.minCut, unit)) + ' minimum.</b></p>'
+      : '<p class="kv">That is the widest the narrowest cut can be made from any start point on ' +
+        'this axis, and it is still under your ' + esc(fmtU(b.minCut, unit)) + ' minimum. The fix ' +
+        'is a different tile size, a different joint width, or accepting the cut.</p>';
+    return h + '</div>';
+  }
+
+  /* ---- main render ---- */
+  function render(res) {
+    var out = $('#out');
+    if (!res.ok) {
+      out.innerHTML = '<div class="card"><div class="warn"><strong>Check the inputs:</strong><ul style="margin:6px 0 0;padding-left:18px">' +
+        res.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') +
+        '</ul></div></div>';
+      return;
+    }
+    var unit = res.unit;
+    var u = unit === 'in' ? '' : ' mm';
+    var h = '<div class="card">';
+
+    res.warnings.forEach(function (w) { h += '<div class="warn">' + esc(w) + '</div>'; });
+
+    res.alerts.forEach(function (a) {
+      h += '<div class="warn"><strong>Thin cut:</strong> a border cut of <b>' +
+        esc(fmtU(a.width, unit)) + '</b> on the ' + esc(a.axisLabel) +
+        ' is below your minimum of ' + esc(fmtU(a.minCut, unit)) + '.</div>';
+    });
+    h += balanceHtml(res.balance.length, unit);
+    h += balanceHtml(res.balance.width, unit);
+
+    if (!res.alerts.length && res.tileCount.cut > 0) {
+      h += '<div class="good"><b>No cut falls below your ' + esc(fmtU(res.minCut, unit)) +
+           ' minimum.</b> Narrowest border cut in the room: ' +
+           esc(fmtU(Math.min(
+             res.borders.length.min === null ? Infinity : res.borders.length.min,
+             res.borders.width.min === null ? Infinity : res.borders.width.min), unit)) + '.</div>';
+    }
+
+    h += '<div class="stats">' +
+      '<div class="stat"><b>' + res.tileCount.full + '</b><span>Full tiles</span></div>' +
+      '<div class="stat"><b>' + res.tileCount.cut + '</b><span>Cut pieces</span></div>' +
+      '<div class="stat"><b>' + res.order.tilesOnePerCut + '</b><span>Tiles to order</span></div>' +
+      '<div class="stat"><b>' + area2(res.order.roomArea) + '</b><span>' + res.order.areaUnit + ' floor</span></div>' +
+      '<div class="stat"><b>' + area2(res.order.areaWithWaste) + '</b><span>' + res.order.areaUnit +
+      ' incl. ' + res.wastePct + '%</span></div>' +
+      '</div>';
+
+    h += '<p class="kv" style="color:var(--muted)">' +
+      '<b>' + res.order.tilesOnePerCut + '</b> tiles assumes one whole tile per cut piece. ' +
+      'Nesting the border cuts where the same size repeats brings it down to <b>' +
+      res.order.tilesNested + '</b>. Both figures already include the ' + res.wastePct + '% breakage allowance.</p>';
+
+    /* setting-out */
+    h += '<h3 style="font-size:.95rem;margin:18px 0 6px">Setting out</h3>';
+    h += '<table><tbody>' +
+      '<tr><td>Tile pitch (tile + joint)</td><td><b>' + esc(fmtU(res.grid.pitchX, unit)) + '</b> along X, <b>' +
+        esc(fmtU(res.grid.pitchY, unit)) + '</b> along Y</td></tr>' +
+      '<tr><td>First full tile from the left wall</td><td><b>' +
+        (res.setout.firstFullTileFromX === null ? 'no full tile fits' : esc(fmtU(res.setout.firstFullTileFromX, unit))) +
+        '</b></td></tr>' +
+      '<tr><td>First full tile from the top wall</td><td><b>' +
+        (res.setout.firstFullTileFromY === null ? 'no full tile fits' : esc(fmtU(res.setout.firstFullTileFromY, unit))) +
+        '</b></td></tr>' +
+      '<tr><td>Border cuts, left / right</td><td>' + borderText(res.borders.length, unit) + '</td></tr>' +
+      '<tr><td>Border cuts, top / bottom</td><td>' + borderText(res.borders.width, unit) + '</td></tr>' +
+      '</tbody></table>';
+
+    /* plan */
+    h += '<div class="sheet" style="margin-top:22px"><h3>Setting-out plan — ' +
+      esc(fmtU(res.room.length, unit)) + ' × ' + esc(fmtU(res.room.width, unit)) +
+      ', ' + esc(fmtU(res.tile.length, unit)) + ' × ' + esc(fmtU(res.tile.width, unit)) +
+      ' tiles, ' + esc(fmtU(res.joint, unit)) + ' joint</h3>';
+    h += '<div class="legend"><span><i class="sw-full"></i>Full tile</span>' +
+      '<span><i class="sw-cut"></i>Cut piece (size shown)</span>' +
+      '<span>Pattern: ' + esc(patternName(res.pattern)) + '</span>' +
+      '<span>Start: ' + (res.startPoint === 'corner' ? 'full tile in the corner' : 'centred') + '</span></div>';
+    h += buildSvg(res);
+    if (res.tiles.length > 1400) {
+      h += '<p class="kv" style="color:var(--muted);margin-top:8px">Too many tiles to label each cut on the ' +
+           'drawing — every cut size is in the list below.</p>';
+    }
+    h += '</div>';
+
+    /* cut list */
+    h += '<h3 style="font-size:.95rem;margin:18px 0 6px">Cut list — grouped by size</h3>';
+    if (!res.cutGroups.length) {
+      h += '<p class="kv" style="color:var(--muted)">No cuts at all: the room is an exact number of tiles and joints. Enjoy it, it will not happen again.</p>';
+    } else {
+      h += '<table><thead><tr><th>Cut size (X × Y)</th><th>Qty</th><th>Where</th>' +
+        '<th>Pieces per tile</th><th>Tiles if nested</th></tr></thead><tbody>';
+      res.cutGroups.forEach(function (g) {
+        h += '<tr><td><b>' + esc(fmt(g.w, unit)) + ' × ' + esc(fmt(g.h, unit)) + esc(u) + '</b></td>' +
+          '<td>' + g.qty + '</td><td>' + esc(g.type) + '</td>' +
+          '<td>' + g.piecesPerTile + '</td><td>' + g.tilesNeeded + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+
+    h += '<div class="actions noprint"><button class="primary" id="printbtn">Print this plan</button></div>';
+    h += '</div>';
+    out.innerHTML = h;
+    var pb = document.getElementById('printbtn');
+    if (pb) pb.onclick = function () { window.print(); };
+    out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function borderText(b, unit) {
+    if (!b.hasCuts) return '<span style="color:var(--muted)">none — exact fit</span>';
+    if (!b.hasFullTile) {
+      return '<b>' + b.startCuts.concat(b.endCuts).map(function (v) { return esc(fmtU(v, unit)); })
+             .join('</b> / <b>') + '</b> <span style="color:var(--muted)">' +
+             '(a single piece spans the room on this axis)</span>';
+    }
+    function side(list) {
+      if (!list.length) return '<span style="color:var(--muted)">flush, no cut</span>';
+      return '<b>' + list.map(function (v) { return esc(fmtU(v, unit)); }).join('</b> / <b>') + '</b>';
+    }
+    return side(b.startCuts) + ' and ' + side(b.endCuts);
+  }
+
+  function patternName(p) {
+    return p === 'offset50' ? 'offset 50% (brick bond)'
+         : p === 'offset33' ? 'offset 33% (third bond)'
+         : 'straight / stack bond';
+  }
+
+  /* ---- unit switching converts the values so nothing is nonsense ---- */
+  function convertFields(from, to) {
+    var ids = ['#roomL', '#roomW', '#tileL', '#tileW', '#joint', '#minCut'];
+    var factor = (from === 'mm' && to === 'in') ? 1 / 25.4 : (from === 'in' && to === 'mm') ? 25.4 : 1;
+    if (factor === 1) return;
+    ids.forEach(function (id) {
+      var el = $(id), v = parseFloat(el.value);
+      if (!isFinite(v)) return;
+      var nv = v * factor;
+      el.value = to === 'in' ? Math.round(nv * 1000) / 1000 : Math.round(nv * 10) / 10;
+    });
+    $('#preset').value = '';
+  }
+
+  $('#unit').onchange = function () {
+    var to = $('#unit').value;
+    convertFields(lastUnit, to);
+    lastUnit = to;
+    run();
+  };
+  $('#preset').onchange = function () {
+    var v = $('#preset').value;
+    if (!v) return;
+    var p = v.split(',');
+    var f = $('#unit').value === 'in' ? 1 / 25.4 : 1;
+    $('#tileL').value = f === 1 ? p[0] : Math.round(p[0] * f * 1000) / 1000;
+    $('#tileW').value = f === 1 ? p[1] : Math.round(p[1] * f * 1000) / 1000;
+    run();
+  };
+  $('#reset').onclick = function () {
+    $('#unit').value = 'mm'; lastUnit = 'mm';
+    $('#roomL').value = DEFAULTS_MM.roomL; $('#roomW').value = DEFAULTS_MM.roomW;
+    $('#tileL').value = DEFAULTS_MM.tileL; $('#tileW').value = DEFAULTS_MM.tileW;
+    $('#joint').value = DEFAULTS_MM.joint; $('#minCut').value = DEFAULTS_MM.minCut;
+    $('#waste').value = DEFAULTS_MM.waste;
+    $('#pattern').value = 'straight'; $('#start').value = 'corner'; $('#preset').value = '';
+    run();
+  };
+
+  function run() {
+    try {
+      render(planTileLayout(readInput()));
+    } catch (err) {
+      $('#out').innerHTML = '<div class="card"><div class="warn"><strong>Something went wrong:</strong> ' +
+        esc(err && err.message ? err.message : String(err)) +
+        '. Check the numbers — a zero or a stray character usually explains it.</div></div>';
+    }
+  }
+
+  // Recalculate as the user types, not only when the field loses focus — a
+  // number left mid-edit must never leave a stale plan on screen.
+  var pending = null;
+  function runSoon() { clearTimeout(pending); pending = setTimeout(run, 150); }
+
+  $('#go').onclick = run;
+  ['#roomL', '#roomW', '#tileL', '#tileW', '#joint', '#minCut', '#waste'].forEach(function (id) {
+    $(id).addEventListener('input', runSoon);
+    $(id).addEventListener('change', run);
+  });
+  ['#pattern', '#start'].forEach(function (id) { $(id).addEventListener('change', run); });
+
+  run();
+})();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

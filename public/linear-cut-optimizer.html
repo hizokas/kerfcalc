@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Linear Cut Optimizer — 1D Cut List Calculator for Bar, Tube, Trim &amp; Moulding</title>
+<meta name="description" content="Free linear cut optimizer for bar stock, steel tube, skirting, trim and picture frame moulding. Handles saw kerf on every cut and several stock lengths at once, and prints cutting diagrams with cut positions. Works offline, no sign-up.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+/* ---- additions specific to the linear (1D) optimizer ---- */
+:root{--drop:#efece6; --drop-line:#cfc9bd; --cut:#b8501f;}
+@media (prefers-color-scheme:dark){:root{--drop:#26262c;--drop-line:#3d3d46;--cut:#e08a55;}}
+.len{width:104px}
+.bar-stock{fill:var(--drop);stroke:var(--drop-line);stroke-width:1.5}
+.bar-trim{fill:var(--drop-line);opacity:.55}
+.bar-cut{stroke:var(--cut)}
+.dim{fill:var(--muted);font-family:ui-monospace,monospace}
+.tick{stroke:var(--muted);stroke-width:1;opacity:.6}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.78rem;color:var(--muted);margin:2px 0 16px}
+.legend i{display:inline-block;width:13px;height:13px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1px solid var(--line)}
+.sw-part{background:var(--accent-soft);border-color:var(--accent)}
+.sw-drop{background:var(--drop);border-color:var(--drop-line)}
+.sw-cut{background:var(--cut);border-color:var(--cut)}
+.hint{font-size:.78rem;color:var(--muted);max-width:64ch;margin:10px 0 0}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:.74rem;border:1px solid var(--line);border-radius:20px;
+  padding:2px 9px;color:var(--muted);margin-right:6px}
+.tight td,.tight th{padding-top:3px;padding-bottom:3px}
+@media print{
+  svg{border:1px solid #999}
+  .stat{border:1px solid #999;background:none}
+  h1{font-size:1.3rem}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Linear Cut Optimizer</h1>
+<p class="sub">Work out how to cut a list of lengths from bar, tube, skirting, moulding or any other stock sold in fixed lengths, using as few sticks as possible. The saw kerf is taken off at every cut, you can have more than one stock length available at the same time, and you get a diagram and a cut list with measured positions. Everything runs in your browser — nothing is uploaded, no sign-up.</p>
+
+<div class="card noprint">
+  <h2>Stock lengths available</h2>
+  <table>
+    <thead><tr><th style="width:34%">Description</th><th>Length</th><th>Qty on hand</th><th></th></tr></thead>
+    <tbody id="stock"></tbody>
+  </table>
+  <div class="actions">
+    <button id="addStock">+ Add stock length</button>
+    <select id="preset" aria-label="Common stock lengths"><option value="">Add a common length…</option></select>
+  </div>
+  <p class="hint">Leave <em>Qty on hand</em> blank if you can buy as many as you need. Put a number in it to cap how many of that length get used — that is also how you feed in offcuts you already have on the rack (add a line for each, with a quantity).</p>
+</div>
+
+<div class="card noprint">
+  <h2>Cutting settings</h2>
+  <div class="row">
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+    <div class="f"><label>Saw kerf</label><input type="text" class="len" id="kerf" value="3"></div>
+    <div class="f"><label>Trim off start</label><input type="text" class="len" id="trimA" value="0"></div>
+    <div class="f"><label>Trim off end</label><input type="text" class="len" id="trimB" value="0"></div>
+    <div class="f"><label>Keep offcuts down to</label><input type="text" class="len" id="minoff" value="300"></div>
+    <div class="f"><label>Optimise for</label>
+      <select id="obj">
+        <option value="waste">Least material used</option>
+        <option value="bars">Fewest sticks</option>
+      </select></div>
+  </div>
+  <p class="hint">In inches you can type fractions and feet: <code>96</code>, <code>48 1/2</code>, <code>8'</code>, <code>3' 6 1/4"</code>. Trim is material cut off each end of a stick before you start — factory damage, a bent end, a saw-cut square-up.</p>
+</div>
+
+<div class="card noprint">
+  <h2>Pieces to cut</h2>
+  <table>
+    <thead><tr><th style="width:40%">Piece name</th><th>Length</th><th>Qty</th><th></th></tr></thead>
+    <tbody id="parts"></tbody>
+  </table>
+  <div class="actions">
+    <button id="add">+ Add piece</button>
+    <button id="demo">Load example</button>
+    <button id="clear">Clear all</button>
+    <button class="primary" id="go">Optimize</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+  <h3>Is the blade width really taken off every cut?</h3>
+  <p>Yes. Each piece after the first on a stick needs one cut to separate it from the one before, and that cut turns a strip of material as wide as your blade into dust. Ten 300&nbsp;mm pieces on a 3&nbsp;m stick with a 3&nbsp;mm kerf need 3000&nbsp;mm of material plus 27&nbsp;mm of kerf — so they do not fit, and this tool will tell you so instead of letting you find out on the ninth cut. The last cut, the one that frees the final piece from the drop, comes out of the drop and is shown in the offcut column. A chop saw is usually 2–3&nbsp;mm, a mitre saw with a thin blade 1.6–2.4&nbsp;mm, a bandsaw around 1&nbsp;mm, a cold saw on steel 2–3&nbsp;mm, an abrasive chop saw 3&nbsp;mm or more. Measure yours once and keep the number.</p>
+  <h3>I stock both 2400 and 3000 — which one does it pick?</h3>
+  <p>Both, if that is what wastes least. Every stock line you leave open is a candidate; the optimiser tries filling each length with what is left and keeps the combination with the least material consumed overall. Switch <em>Optimise for</em> to “Fewest sticks” if handling and delivery matter more to you than the drop — you will normally get more long sticks and slightly more waste. If a length has a quantity, it is treated as a hard limit and anything that cannot be cut is listed separately rather than silently dropped.</p>
+  <h3>Why is one stick left half empty?</h3>
+  <p>Because the remaining pieces were too long to go anywhere else. Cutting stock is one of those problems with no fast exact answer, so this runs first-fit-decreasing, best-fit-decreasing, a stick-at-a-time fill, and dozens of shuffled restarts, then a clean-up pass that empties the least-loaded stick into the others and drops each stick to the shortest stock that still holds its contents. On lists of the size a joiner or a metalworker actually cuts, that lands on the true optimum most of the time and within one stick nearly always. If a result looks wrong, change the kerf by a tenth or reorder the list and re-run — a different starting order sometimes finds a better packing.</p>
+  <h3>What it does not do</h3>
+  <p>It does not know about mitres. A 45° mitre on both ends adds material at the long point, so enter the <em>long-point</em> length of each piece yourself; the same goes for coped ends and scribes. It does not sequence your cuts for grain, colour or profile matching, does not pair left- and right-hand parts, and assumes every stick is straight, square-ended and defect-free. It has no idea what your material costs, so “least material” means least length, not least money — if your 6&nbsp;m bars cost less per metre, compare the totals by hand. And it will not stop you cutting a bent extrusion into six useless pieces: check the diagram against the actual stick before the blade goes down.</p>
+</div>
+
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./board-foot-calculator.html" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Measure twice, cut once — verify the cut list against your material before cutting.
+</footer>
+</div>
+
+<script>
+/* ===== BEGIN PURE CALCULATION CORE =====
+ * optimizeLinearCuts(input) -> result
+ *
+ * One-dimensional cutting stock (bar / tube / trim / moulding).
+ * No DOM, no globals, no side effects: give it an object, get an object back.
+ *
+ * Real-world constraints handled:
+ *  - saw kerf consumed at every cut between two pieces
+ *  - several stock lengths available at once, each optionally limited in quantity
+ *  - end trims removed from every stick before anything is laid out
+ *  - garbage input (blank, zero, negative, text) reported, never thrown
+ *
+ * Algorithms: first-fit-decreasing, best-fit-decreasing, a stick-at-a-time
+ * best-fill construction, seeded randomised restarts, then an improvement pass
+ * (bar elimination + single-piece moves + 1-1 swaps + stock downgrade).
+ * Best result across all of them wins.
+ */
+function optimizeLinearCuts(input) {
+  var EPS = 1e-6;
+  input = input || {};
+  var unit = input.unit === 'in' ? 'in' : 'mm';
+  var errors = [], warnings = [];
+
+  function num(v, dflt) {
+    if (v === '' || v === null || v === undefined) return dflt;
+    var n = (typeof v === 'number') ? v : parseFloat(String(v).replace(',', '.'));
+    return (typeof n === 'number' && isFinite(n)) ? n : dflt;
+  }
+  function r6(x) { return Math.round(x * 1e6) / 1e6; }
+  function pct(a, b) { return b > EPS ? Math.round((100 * a / b) * 10) / 10 : 0; }
+
+  /* ---------- settings ---------- */
+  var kerf = num(input.kerf, 0);
+  if (kerf < 0) { warnings.push('Kerf cannot be negative — treated as 0.'); kerf = 0; }
+  var trimA = num(input.trimStart, 0);
+  var trimB = num(input.trimEnd, 0);
+  if (trimA < 0) { warnings.push('Start trim cannot be negative — treated as 0.'); trimA = 0; }
+  if (trimB < 0) { warnings.push('End trim cannot be negative — treated as 0.'); trimB = 0; }
+  var objective = (input.objective === 'bars') ? 'bars' : 'waste';
+  var minOffcut = Math.max(0, num(input.minOffcut, 0));
+
+  /* ---------- stock ---------- */
+  var rawStock = Array.isArray(input.stock) ? input.stock : [];
+  var byLen = {}, stock = [];
+  for (var si = 0; si < rawStock.length; si++) {
+    var s = rawStock[si] || {};
+    var L = num(s.length, NaN);
+    if (!(typeof L === 'number' && isFinite(L)) || L <= 0) {
+      if (s.length !== '' && s.length !== null && s.length !== undefined) {
+        warnings.push('Stock line ' + (si + 1) + ' ignored: length must be a number greater than zero.');
+      }
+      continue;
+    }
+    var q = (s.qty === '' || s.qty === null || s.qty === undefined) ? Infinity : Math.floor(num(s.qty, Infinity));
+    if (!(typeof q === 'number' && isFinite(q))) q = Infinity;
+    if (q < 0) { warnings.push('Negative quantity on the ' + L + ' stock line — treated as unlimited.'); q = Infinity; }
+    if (q === 0) { warnings.push('Stock length ' + L + ' has a quantity of 0 and was not used.'); continue; }
+    var usable = L - trimA - trimB;
+    if (usable <= EPS) {
+      warnings.push('Stock length ' + L + ' is entirely consumed by the end trims and was not used.');
+      continue;
+    }
+    var key = String(r6(L));
+    if (byLen[key]) {
+      byLen[key].qty = (byLen[key].qty === Infinity || q === Infinity) ? Infinity : byLen[key].qty + q;
+    } else {
+      byLen[key] = { id: stock.length, label: (s.label != null && String(s.label).trim()) ? String(s.label).trim() : '', length: L, qty: q, usable: usable };
+      stock.push(byLen[key]);
+    }
+  }
+  stock.sort(function (a, b) { return b.length - a.length; });
+  for (var i = 0; i < stock.length; i++) stock[i].id = i;
+
+  /* ---------- pieces ---------- */
+  var rawParts = Array.isArray(input.parts) ? input.parts : [];
+  var partDefs = [], requested = 0, byPart = {};
+  for (var pi = 0; pi < rawParts.length; pi++) {
+    var p = rawParts[pi] || {};
+    var lab = (p.label != null && String(p.label).trim()) ? String(p.label).trim() : ('Piece ' + (pi + 1));
+    var len = num(p.length, NaN);
+    var qty = Math.floor(num(p.qty, 1));
+    if (!(typeof len === 'number' && isFinite(len)) || len <= 0) {
+      if (p.length !== '' && p.length !== null && p.length !== undefined) {
+        warnings.push('"' + lab + '" ignored: length must be a number greater than zero.');
+      }
+      continue;
+    }
+    if (!(typeof qty === 'number' && isFinite(qty)) || qty <= 0) {
+      warnings.push('"' + lab + '" ignored: quantity must be a whole number of 1 or more.');
+      continue;
+    }
+    // Two rows with the same name AND the same length are one part type. Merge
+    // them, exactly as identical stock lengths are merged above: otherwise the
+    // wanted/cut check table below compares each row's own quantity against the
+    // combined placed count and reports a shortfall or a surplus that is not real.
+    var pkey = lab + '|' + r6(len);
+    if (byPart[pkey]) {
+      byPart[pkey].qty += qty;
+    } else {
+      byPart[pkey] = { label: lab, length: len, qty: qty };
+      partDefs.push(byPart[pkey]);
+    }
+    requested += qty;
+  }
+
+  var empty = {
+    ok: false, unit: unit, errors: errors, warnings: warnings, bars: [], byStock: [],
+    summary: {
+      barsUsed: 0, stockLengthTotal: 0, partsLengthTotal: 0, kerfLengthTotal: 0,
+      trimLengthTotal: 0, offcutTotal: 0, longestOffcut: 0, reusableOffcuts: 0,
+      cutsTotal: 0, piecesPlaced: 0, piecesRequested: requested, yieldPct: 0, wastePct: 0
+    },
+    unplaceable: [], unplaced: [], strategy: null, integrity: { ok: true, issues: [] },
+    settings: { kerf: kerf, trimStart: trimA, trimEnd: trimB, objective: objective, minOffcut: minOffcut }
+  };
+
+  if (!stock.length) { errors.push('Add at least one stock length greater than zero (and longer than the end trims).'); return empty; }
+  if (!partDefs.length) { errors.push('Add at least one piece with a length and a quantity.'); return empty; }
+  if (requested > 2000) {
+    errors.push('That is ' + requested + ' pieces. This tool is built for lists up to 2000 pieces — split the job into batches.');
+    return empty;
+  }
+
+  /* ---------- expand and screen ---------- */
+  var maxUsable = 0;
+  for (var k = 0; k < stock.length; k++) if (stock[k].usable > maxUsable) maxUsable = stock[k].usable;
+
+  var queue = [], unplaceable = [], uid = 0;
+  for (var d = 0; d < partDefs.length; d++) {
+    var def = partDefs[d];
+    if (def.length > maxUsable + EPS) {
+      unplaceable.push({
+        label: def.label, length: r6(def.length), qty: def.qty,
+        reason: 'Longer than the longest usable stock (' + r6(maxUsable) + ' after trims).'
+      });
+      continue;
+    }
+    for (var n2 = 0; n2 < def.qty; n2++) queue.push({ id: uid++, label: def.label, len: def.length });
+  }
+  if (!queue.length) {
+    errors.push('Every piece is longer than the stock you have. Nothing can be cut.');
+    empty.unplaceable = unplaceable;
+    return empty;
+  }
+
+  var sortedDesc = queue.slice().sort(function (a, b) {
+    return (b.len - a.len) || (a.label < b.label ? -1 : a.label > b.label ? 1 : 0) || (a.id - b.id);
+  });
+
+  /* ---------- bar helpers ---------- */
+  function makeBar(sIdx) {
+    return { stockIdx: sIdx, length: stock[sIdx].length, usable: stock[sIdx].usable, pieces: [], sum: 0, count: 0 };
+  }
+  function cloneBar(b) {
+    return { stockIdx: b.stockIdx, length: b.length, usable: b.usable, pieces: b.pieces.slice(), sum: b.sum, count: b.count };
+  }
+  function usedOf(b) { return b.sum + (b.count > 1 ? (b.count - 1) * kerf : 0); }
+  function freeOf(b) { return b.usable - usedOf(b); }
+  function fitsIn(b, piece) { return usedOf(b) + (b.count > 0 ? kerf : 0) + piece.len <= b.usable + EPS; }
+  function put(b, piece) { b.pieces.push(piece); b.sum += piece.len; b.count++; }
+  function take(b, index) { var piece = b.pieces[index]; b.pieces.splice(index, 1); b.sum -= piece.len; b.count--; return piece; }
+
+  var nPieces = queue.length;
+  var lookahead = nPieces <= 700;          // best-fill stock choice costs O(n) per bar
+  var restarts = nPieces <= 150 ? 80 : (nPieces <= 500 ? 24 : 8);
+  var improveRounds = nPieces <= 400 ? 40 : 12;
+  var LOOK_CAP = 500;
+
+  function chooseStock(avail, piece, policy, rest) {
+    var cands = [], j;
+    for (j = 0; j < stock.length; j++) if (avail[j] > 0 && stock[j].usable >= piece.len - EPS) cands.push(j);
+    if (!cands.length) return -1;
+    if (policy === 'longest') {
+      var bl = cands[0];
+      for (j = 1; j < cands.length; j++) if (stock[cands[j]].usable > stock[bl].usable) bl = cands[j];
+      return bl;
+    }
+    if (policy === 'shortest') {
+      var bs = cands[0];
+      for (j = 1; j < cands.length; j++) if (stock[cands[j]].usable < stock[bs].usable) bs = cands[j];
+      return bs;
+    }
+    // 'bestfill': greedily fill each candidate with what is left, keep the least relative waste
+    var best = -1, bestScore = Infinity;
+    var slice = rest.length > LOOK_CAP ? rest.slice(0, LOOK_CAP) : rest;
+    for (var c = 0; c < cands.length; c++) {
+      var idx = cands[c], cap = stock[idx].usable, u = 0, cnt = 0;
+      for (var q = 0; q < slice.length; q++) {
+        var it = slice[q];
+        if (u + (cnt ? kerf : 0) + it.len <= cap + EPS) { u += (cnt ? kerf : 0) + it.len; cnt++; }
+      }
+      var sc = (cap - u) / stock[idx].length;
+      if (sc < bestScore - 1e-9 || (Math.abs(sc - bestScore) < 1e-9 && best >= 0 && stock[idx].length < stock[best].length)) {
+        bestScore = sc; best = idx;
+      }
+    }
+    return best >= 0 ? best : cands[0];
+  }
+
+  /* ---------- constructive: FFD / BFD over an ordered list ---------- */
+  function construct(order, fitMode, openPolicy, name) {
+    var avail = stock.map(function (x) { return x.qty; });
+    var bars = [], unplacedRun = [], j;
+    for (var i = 0; i < order.length; i++) {
+      var piece = order[i], target = null;
+      if (fitMode === 'first') {
+        for (j = 0; j < bars.length; j++) if (fitsIn(bars[j], piece)) { target = bars[j]; break; }
+      } else {
+        var bestLeft = Infinity;
+        for (j = 0; j < bars.length; j++) {
+          if (!fitsIn(bars[j], piece)) continue;
+          var left = freeOf(bars[j]) - piece.len - (bars[j].count ? kerf : 0);
+          if (left < bestLeft - EPS) { bestLeft = left; target = bars[j]; }
+        }
+      }
+      if (!target) {
+        var sIdx = chooseStock(avail, piece, openPolicy, order.slice(i));
+        if (sIdx < 0) { unplacedRun.push(piece); continue; }
+        avail[sIdx]--;
+        target = makeBar(sIdx);
+        bars.push(target);
+      }
+      put(target, piece);
+    }
+    return { bars: bars, avail: avail, unplaced: unplacedRun, name: name };
+  }
+
+  /* ---------- constructive: one stick at a time, best stock for what is left ---------- */
+  function sequential(order, name) {
+    var avail = stock.map(function (x) { return x.qty; });
+    var bars = [], unplacedRun = [], rest = order.slice(), guard = 0;
+    while (rest.length && guard++ < 5000) {
+      var best = null, i, k;
+      for (i = 0; i < stock.length; i++) {
+        if (avail[i] <= 0) continue;
+        var cap = stock[i].usable, u = 0, cnt = 0, chosen = [];
+        for (k = 0; k < rest.length; k++) {
+          var it = rest[k];
+          if (u + (cnt ? kerf : 0) + it.len <= cap + EPS) { u += (cnt ? kerf : 0) + it.len; cnt++; chosen.push(k); }
+        }
+        if (!chosen.length) continue;
+        var rel = (cap - u) / stock[i].length;
+        if (!best || rel < best.rel - 1e-9 || (Math.abs(rel - best.rel) < 1e-9 && stock[i].length < stock[best.i].length)) {
+          best = { i: i, chosen: chosen, rel: rel };
+        }
+      }
+      if (!best) { unplacedRun = unplacedRun.concat(rest); break; }
+      var bar = makeBar(best.i);
+      avail[best.i]--;
+      for (k = 0; k < best.chosen.length; k++) put(bar, rest[best.chosen[k]]);
+      for (k = best.chosen.length - 1; k >= 0; k--) rest.splice(best.chosen[k], 1);
+      bars.push(bar);
+    }
+    return { bars: bars, avail: avail, unplaced: unplacedRun, name: name };
+  }
+
+  /* ---------- scoring ---------- */
+  function totalStock(bars) {
+    var t = 0;
+    for (var i = 0; i < bars.length; i++) t += bars[i].length;
+    return t;
+  }
+  function scoreOf(run) {
+    return { unplaced: run.unplaced.length, bars: run.bars.length, stockLen: totalStock(run.bars) };
+  }
+  function better(a, b) {
+    if (!b) return true;
+    var sa = scoreOf(a), sb = scoreOf(b);
+    if (sa.unplaced !== sb.unplaced) return sa.unplaced < sb.unplaced;
+    if (objective === 'bars') {
+      if (sa.bars !== sb.bars) return sa.bars < sb.bars;
+      return sa.stockLen < sb.stockLen - EPS;
+    }
+    if (Math.abs(sa.stockLen - sb.stockLen) > EPS) return sa.stockLen < sb.stockLen;
+    return sa.bars < sb.bars;
+  }
+  function cloneRun(run) {
+    return { bars: run.bars.map(cloneBar), avail: run.avail.slice(), unplaced: run.unplaced.slice(), name: run.name };
+  }
+
+  /* ---------- improvement pass ---------- */
+  function placeLeftovers(run) {
+    var moved = false;
+    for (var i = run.unplaced.length - 1; i >= 0; i--) {
+      var piece = run.unplaced[i], target = null, bestLeft = Infinity;
+      for (var j = 0; j < run.bars.length; j++) {
+        if (!fitsIn(run.bars[j], piece)) continue;
+        var left = freeOf(run.bars[j]) - piece.len - (run.bars[j].count ? kerf : 0);
+        if (left < bestLeft - EPS) { bestLeft = left; target = run.bars[j]; }
+      }
+      if (target) { put(target, piece); run.unplaced.splice(i, 1); moved = true; }
+    }
+    return moved;
+  }
+  function dropEmpty(run) {
+    var changed = false;
+    for (var i = run.bars.length - 1; i >= 0; i--) {
+      if (run.bars[i].count === 0) { run.avail[run.bars[i].stockIdx]++; run.bars.splice(i, 1); changed = true; }
+    }
+    return changed;
+  }
+  function tryEliminate(run) {
+    var order = run.bars.map(function (b, i) { return i; }).sort(function (x, y) { return usedOf(run.bars[x]) - usedOf(run.bars[y]); });
+    for (var oi = 0; oi < order.length; oi++) {
+      var di = order[oi], donor = run.bars[di];
+      var clones = [];
+      for (var j = 0; j < run.bars.length; j++) if (j !== di) clones.push(cloneBar(run.bars[j]));
+      var ps = donor.pieces.slice().sort(function (a, b) { return b.len - a.len; });
+      var ok = true;
+      for (var pi2 = 0; pi2 < ps.length; pi2++) {
+        var piece = ps[pi2], target = null, bestLeft = Infinity;
+        for (var c = 0; c < clones.length; c++) {
+          if (!fitsIn(clones[c], piece)) continue;
+          var left = freeOf(clones[c]) - piece.len - (clones[c].count ? kerf : 0);
+          if (left < bestLeft - EPS) { bestLeft = left; target = clones[c]; }
+        }
+        if (!target) { ok = false; break; }
+        put(target, piece);
+      }
+      if (ok) { run.bars = clones; run.avail[donor.stockIdx]++; return true; }
+    }
+    return false;
+  }
+  function tryShrink(run) {
+    var changed = false;
+    for (var i = 0; i < run.bars.length; i++) {
+      var b = run.bars[i], req = usedOf(b), bestI = -1;
+      for (var j = 0; j < stock.length; j++) {
+        if (j === b.stockIdx) continue;
+        if (stock[j].length >= b.length - EPS) continue;
+        if (run.avail[j] <= 0) continue;
+        if (stock[j].usable < req - EPS) continue;
+        if (bestI < 0 || stock[j].length < stock[bestI].length) bestI = j;
+      }
+      if (bestI >= 0) {
+        run.avail[b.stockIdx]++; run.avail[bestI]--;
+        b.stockIdx = bestI; b.length = stock[bestI].length; b.usable = stock[bestI].usable;
+        changed = true;
+      }
+    }
+    return changed;
+  }
+  function tryDowngrade(run) {
+    // The move that matters most when several stock lengths are in play:
+    // put a stick back and take a shorter one, pushing whatever no longer
+    // fits into the spare room on the other sticks. Saves the length
+    // difference outright, without changing the stick count.
+    if (run.bars.length > 150) return false;
+    var order = run.bars.map(function (b, i) { return i; }).sort(function (x, y) { return run.bars[y].length - run.bars[x].length; });
+    for (var oi = 0; oi < order.length; oi++) {
+      var bi = order[oi], bar = run.bars[bi];
+      var shorter = [];
+      for (var j = 0; j < stock.length; j++) {
+        if (stock[j].length < bar.length - EPS && run.avail[j] > 0) shorter.push(j);
+      }
+      shorter.sort(function (a, b) { return stock[a].length - stock[b].length; });
+      var desc = bar.pieces.slice().sort(function (a, b) { return b.len - a.len; });
+      for (var si2 = 0; si2 < shorter.length; si2++) {
+        var sIdx = shorter[si2];
+        // keep the longest pieces that still fit on the shorter stock
+        var keep = [], evict = [], u = 0, cnt = 0;
+        for (var d2 = 0; d2 < desc.length; d2++) {
+          if (u + (cnt ? kerf : 0) + desc[d2].len <= stock[sIdx].usable + EPS) {
+            u += (cnt ? kerf : 0) + desc[d2].len; cnt++; keep.push(desc[d2]);
+          } else evict.push(desc[d2]);
+        }
+        if (!keep.length && bar.pieces.length) continue;   // nothing left on the stick: that is elimination, not a downgrade
+        var clones = [];
+        for (var c2 = 0; c2 < run.bars.length; c2++) if (c2 !== bi) clones.push(cloneBar(run.bars[c2]));
+        var ok = true;
+        for (var e2 = 0; e2 < evict.length; e2++) {
+          var piece = evict[e2], target = null, bestLeft = Infinity;
+          for (var c3 = 0; c3 < clones.length; c3++) {
+            if (!fitsIn(clones[c3], piece)) continue;
+            var left = freeOf(clones[c3]) - piece.len - (clones[c3].count ? kerf : 0);
+            if (left < bestLeft - EPS) { bestLeft = left; target = clones[c3]; }
+          }
+          if (!target) { ok = false; break; }
+          put(target, piece);
+        }
+        if (!ok) continue;
+        var fresh = makeBar(sIdx);
+        for (var k2 = 0; k2 < keep.length; k2++) put(fresh, keep[k2]);
+        run.avail[bar.stockIdx]++; run.avail[sIdx]--;
+        clones.splice(Math.min(bi, clones.length), 0, fresh);
+        run.bars = clones;
+        return true;
+      }
+    }
+    return false;
+  }
+  function tryRelieve(run) {
+    // Take material out of the least-loaded stick: move a piece out, or swap it
+    // for a shorter one. Either way that stick gets closer to disappearing or
+    // to fitting on shorter stock.
+    if (run.bars.length < 2) return false;
+    var di = 0;
+    for (var i = 1; i < run.bars.length; i++) if (usedOf(run.bars[i]) < usedOf(run.bars[di])) di = i;
+    var donor = run.bars[di], ops = 0;
+    for (var a = 0; a < donor.pieces.length; a++) {
+      var piece = donor.pieces[a];
+      for (var j = 0; j < run.bars.length; j++) {
+        if (j === di) continue;
+        var b = run.bars[j];
+        if (fitsIn(b, piece)) { put(b, take(donor, a)); return true; }
+        for (var q = 0; q < b.pieces.length; q++) {
+          if (++ops > 150000) return false;
+          var w = b.pieces[q];
+          if (w.len >= piece.len - EPS) continue;
+          var bAfter = b.sum - w.len + piece.len + (b.count > 1 ? (b.count - 1) * kerf : 0);
+          if (bAfter > b.usable + EPS) continue;
+          var dAfter = donor.sum - piece.len + w.len + (donor.count > 1 ? (donor.count - 1) * kerf : 0);
+          if (dAfter > donor.usable + EPS) continue;
+          take(b, q); take(donor, a); put(b, piece); put(donor, w);
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  function improve(run0) {
+    var run = cloneRun(run0);
+    var best = cloneRun(run);
+    placeLeftovers(run); dropEmpty(run); tryShrink(run);
+    if (better(run, best)) best = cloneRun(run);
+    for (var round = 0; round < improveRounds; round++) {
+      var moved = false;
+      while (tryEliminate(run)) { moved = true; }
+      if (dropEmpty(run)) moved = true;
+      if (placeLeftovers(run)) moved = true;
+      if (tryShrink(run)) moved = true;
+      var dg = 0;
+      while (dg++ < 60 && tryDowngrade(run)) { moved = true; }
+      if (better(run, best)) best = cloneRun(run);
+      if (!tryRelieve(run) && !moved) break;
+    }
+    if (dropEmpty(run)) { /* keep tidy */ }
+    tryShrink(run);
+    var dg2 = 0;
+    while (dg2++ < 60 && tryDowngrade(run)) { /* squeeze the last sticks down */ }
+    if (better(run, best)) best = cloneRun(run);
+    best.name = run0.name + ' + improvement';
+    return best;
+  }
+
+  /* ---------- run every strategy ---------- */
+  var candidates = [];
+  var fitModes = ['first', 'best'];
+  var policies = lookahead ? ['bestfill', 'longest', 'shortest'] : ['longest', 'shortest'];
+  for (var f = 0; f < fitModes.length; f++) {
+    for (var pol = 0; pol < policies.length; pol++) {
+      candidates.push(construct(sortedDesc, fitModes[f], policies[pol],
+        (fitModes[f] === 'first' ? 'FFD' : 'BFD') + '/' + policies[pol]));
+    }
+  }
+  candidates.push(sequential(sortedDesc, 'stick-at-a-time best fill'));
+
+  // Seeded shuffles: same input always gives the same answer.
+  var seed = 20240917 >>> 0;
+  function rnd() { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }
+  for (var rs = 0; rs < restarts; rs++) {
+    var order = sortedDesc.slice();
+    for (var t = 0; t < order.length - 1; t++) {
+      if (rnd() < 0.3) {
+        var span = 1 + Math.floor(rnd() * 3);
+        var u2 = Math.min(order.length - 1, t + span);
+        var tmp = order[t]; order[t] = order[u2]; order[u2] = tmp;
+      }
+    }
+    var fm = rnd() < 0.5 ? 'first' : 'best';
+    var pl = policies[Math.floor(rnd() * policies.length)];
+    candidates.push(construct(order, fm, pl, 'randomised restart #' + (rs + 1)));
+  }
+
+  candidates.sort(function (a, b) { return better(a, b) ? -1 : better(b, a) ? 1 : 0; });
+  var topN = nPieces <= 400 ? 4 : 2;
+  var best = null;
+  for (var ci = 0; ci < Math.min(topN, candidates.length); ci++) {
+    var improved = improve(candidates[ci]);
+    if (better(improved, best)) best = improved;
+    if (better(candidates[ci], best)) best = cloneRun(candidates[ci]);
+  }
+  if (!best) best = cloneRun(candidates[0]);
+
+  /* ---------- build the report ---------- */
+  best.bars.sort(function (a, b) { return (b.length - a.length) || (usedOf(b) - usedOf(a)); });
+
+  var bars = [], totals = {
+    stock: 0, parts: 0, kerf: 0, trim: 0, offcut: 0, cuts: 0, placed: 0,
+    longestOffcut: 0, reusable: 0
+  };
+  for (var bi = 0; bi < best.bars.length; bi++) {
+    var b = best.bars[bi];
+    b.pieces.sort(function (x, y) { return (y.len - x.len) || (x.label < y.label ? -1 : x.label > y.label ? 1 : 0); });
+    var pos = trimA, list = [];
+    for (var pp = 0; pp < b.pieces.length; pp++) {
+      var pc = b.pieces[pp];
+      list.push({ label: pc.label, length: r6(pc.len), start: r6(pos), end: r6(pos + pc.len) });
+      pos += pc.len;
+      if (pp < b.pieces.length - 1) pos += kerf;
+    }
+    var partsLen = b.sum;
+    var kerfLen = (b.count > 1 ? (b.count - 1) * kerf : 0);
+    var rem = b.length - trimA - trimB - partsLen - kerfLen;   // material left after the last piece
+    if (rem < 0 && rem > -1e-6) rem = 0;
+    var cuts = Math.max(0, b.count - 1);
+    var offcut = rem;
+    if (rem > EPS) {                       // one more cut frees the last piece from the drop
+      var lastCut = Math.min(kerf, rem);
+      kerfLen += lastCut;
+      offcut = rem - lastCut;
+      cuts += 1;
+    }
+    var barTrim = trimA + trimB;
+    bars.push({
+      index: bi + 1,
+      stockLength: r6(b.length),
+      stockLabel: stock[b.stockIdx].label,
+      usableLength: r6(b.usable),
+      pieces: list,
+      pieceCount: b.count,
+      cuts: cuts,
+      partsLength: r6(partsLen),
+      kerfLength: r6(kerfLen),
+      trimLength: r6(barTrim),
+      offcut: r6(offcut),
+      offcutStart: r6(b.length - trimB - offcut),
+      offcutReusable: offcut >= minOffcut - EPS && offcut > EPS,
+      usedPct: pct(partsLen, b.length)
+    });
+    totals.stock += b.length;
+    totals.parts += partsLen;
+    totals.kerf += kerfLen;
+    totals.trim += barTrim;
+    totals.offcut += offcut;
+    totals.cuts += cuts;
+    totals.placed += b.count;
+    if (offcut > totals.longestOffcut) totals.longestOffcut = offcut;
+    if (offcut >= minOffcut - EPS && offcut > EPS) totals.reusable++;
+  }
+
+  // stock summary
+  var counts = {};
+  for (var bj = 0; bj < best.bars.length; bj++) {
+    var kk = String(r6(best.bars[bj].length));
+    counts[kk] = (counts[kk] || 0) + 1;
+  }
+  var byStock = [];
+  for (var sk = 0; sk < stock.length; sk++) {
+    var key2 = String(r6(stock[sk].length));
+    if (!counts[key2]) continue;
+    byStock.push({
+      length: r6(stock[sk].length),
+      label: stock[sk].label,
+      barsUsed: counts[key2],
+      available: stock[sk].qty === Infinity ? null : stock[sk].qty,
+      totalLength: r6(counts[key2] * stock[sk].length)
+    });
+  }
+  byStock.sort(function (a, b) { return b.length - a.length; });
+
+  // pieces that could not be cut because stock ran out
+  var shortGroups = {}, unplaced = [];
+  for (var ui = 0; ui < best.unplaced.length; ui++) {
+    var up = best.unplaced[ui], gk = up.label + '|' + r6(up.len);
+    if (!shortGroups[gk]) {
+      shortGroups[gk] = { label: up.label, length: r6(up.len), qty: 0, reason: 'Not enough stock on hand.' };
+      unplaced.push(shortGroups[gk]);
+    }
+    shortGroups[gk].qty++;
+  }
+  if (unplaced.length) warnings.push('Ran out of stock: ' + best.unplaced.length + ' piece(s) could not be cut. Increase a quantity or add another stock length.');
+  if (unplaceable.length) warnings.push(unplaceable.length + ' piece type(s) are longer than any stock length available.');
+
+  // per-piece accounting
+  var placedCount = {}, byLabel = [];
+  for (var b3 = 0; b3 < bars.length; b3++) {
+    for (var q3 = 0; q3 < bars[b3].pieces.length; q3++) {
+      var e = bars[b3].pieces[q3], gk3 = e.label + '|' + e.length;
+      placedCount[gk3] = (placedCount[gk3] || 0) + 1;
+    }
+  }
+  for (var d3 = 0; d3 < partDefs.length; d3++) {
+    var gk4 = partDefs[d3].label + '|' + r6(partDefs[d3].length);
+    byLabel.push({
+      label: partDefs[d3].label, length: r6(partDefs[d3].length),
+      qtyRequested: partDefs[d3].qty, qtyPlaced: placedCount[gk4] || 0
+    });
+  }
+
+  /* ---------- integrity check (never trust a heuristic silently) ---------- */
+  var issues = [];
+  for (var v = 0; v < bars.length; v++) {
+    var bar = bars[v], consumed = bar.trimLength + bar.partsLength + bar.kerfLength + bar.offcut;
+    if (consumed > bar.stockLength + 1e-4) issues.push('Bar ' + bar.index + ' over-filled by ' + r6(consumed - bar.stockLength) + '.');
+    if (bar.offcut < -1e-6) issues.push('Bar ' + bar.index + ' has a negative offcut.');
+    for (var w2 = 1; w2 < bar.pieces.length; w2++) {
+      if (bar.pieces[w2].start < bar.pieces[w2 - 1].end + kerf - 1e-4) {
+        issues.push('Bar ' + bar.index + ': piece ' + (w2 + 1) + ' starts before the previous cut is clear.');
+      }
+    }
+    if (bar.pieces.length && bar.pieces[bar.pieces.length - 1].end > bar.stockLength - trimB + 1e-4) {
+      issues.push('Bar ' + bar.index + ': last piece runs past the end of the stock.');
+    }
+  }
+  var accounted = totals.placed + best.unplaced.length;
+  for (var u3 = 0; u3 < unplaceable.length; u3++) accounted += unplaceable[u3].qty;
+  if (accounted !== requested) issues.push('Piece count mismatch: ' + accounted + ' accounted for, ' + requested + ' requested.');
+
+  return {
+    ok: errors.length === 0,
+    unit: unit,
+    errors: errors,
+    warnings: warnings,
+    bars: bars,
+    byStock: byStock,
+    byLabel: byLabel,
+    summary: {
+      barsUsed: bars.length,
+      stockLengthTotal: r6(totals.stock),
+      partsLengthTotal: r6(totals.parts),
+      kerfLengthTotal: r6(totals.kerf),
+      trimLengthTotal: r6(totals.trim),
+      offcutTotal: r6(totals.offcut),
+      longestOffcut: r6(totals.longestOffcut),
+      reusableOffcuts: totals.reusable,
+      cutsTotal: totals.cuts,
+      piecesPlaced: totals.placed,
+      piecesRequested: requested,
+      yieldPct: pct(totals.parts, totals.stock),
+      wastePct: Math.round((100 - pct(totals.parts, totals.stock)) * 10) / 10
+    },
+    unplaceable: unplaceable,
+    unplaced: unplaced,
+    strategy: best.name,
+    integrity: { ok: issues.length === 0, issues: issues },
+    settings: { kerf: kerf, trimStart: trimA, trimEnd: trimB, objective: objective, minOffcut: minOffcut }
+  };
+}
+/* ===== END PURE CALCULATION CORE ===== */
+
+
+/* ---------- units, parsing, formatting ---------- */
+function parseLen(raw, unit) {
+  if (typeof raw === 'number') return raw;
+  var s = String(raw == null ? '' : raw).trim().toLowerCase().replace(/,/g, '.');
+  if (!s) return NaN;
+  // A leading minus is never a valid length. In inch mode the hyphen is also the
+  // trade separator in "6-1/4", so it is split on below — without this guard
+  // "-5" would come back as +5 instead of being rejected.
+  if (s.charAt(0) === '-') return NaN;
+  if (unit === 'mm') {
+    var m;
+    if ((m = s.match(/^(\d*\.?\d+)\s*m$/))) return parseFloat(m[1]) * 1000;
+    if ((m = s.match(/^(\d*\.?\d+)\s*cm$/))) return parseFloat(m[1]) * 10;
+    s = s.replace(/mm$/, '').trim();
+    return /^\d*\.?\d+$/.test(s) ? parseFloat(s) : NaN;
+  }
+  var total = 0, matched = false, mm2;
+  if ((mm2 = s.match(/^(\d*\.?\d+)\s*(?:'|ft|feet|foot)\s*(.*)$/))) {
+    total += parseFloat(mm2[1]) * 12; s = mm2[2].trim(); matched = true;
+  }
+  s = s.replace(/(?:"|''|in|inch|inches)\s*$/, '').trim();
+  if (s) {
+    var parts = s.split(/[\s\-]+/).filter(Boolean);
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i];
+      if (/^\d+\/\d+$/.test(p)) {
+        var ab = p.split('/'), a = parseFloat(ab[0]), b = parseFloat(ab[1]);
+        if (!b) return NaN;
+        total += a / b; matched = true;
+      } else if (/^\d*\.?\d+$/.test(p)) {
+        total += parseFloat(p); matched = true;
+      } else return NaN;
+    }
+  }
+  return matched ? total : NaN;
+}
+function fmtInch(v) {
+  var neg = v < 0; v = Math.abs(v);
+  var six = Math.round(v * 16), whole = Math.floor(six / 16), num = six % 16, den = 16;
+  while (num && num % 2 === 0) { num /= 2; den /= 2; }
+  var exact = Math.abs(v - six / 16) < 1e-6;
+  var s = num ? (whole ? whole + ' ' + num + '/' + den : num + '/' + den) : String(whole);
+  return (neg ? '-' : '') + (exact ? '' : '~') + s + '"';
+}
+function fmtLen(v, unit) {
+  if (typeof v !== 'number' || !isFinite(v)) return '—';
+  if (unit === 'in') return fmtInch(v);
+  var r = Math.round(v * 10) / 10;
+  return (Math.abs(r - Math.round(r)) < 1e-9) ? String(Math.round(r)) : r.toFixed(1);
+}
+function fmtBig(v, unit) {           // running totals: metres / feet
+  if (unit === 'in') return (v / 12).toFixed(1) + ' ft';
+  return (v / 1000).toFixed(2) + ' m';
+}
+function fmtInput(v, unit) {
+  if (!isFinite(v)) return '';
+  if (unit === 'in') return String(Math.round(v * 1000) / 1000);
+  return String(Math.round(v * 100) / 100);
+}
+
+/* ---------- UI ---------- */
+var $ = function (s) { return document.querySelector(s); };
+var stockBody = $('#stock'), partsBody = $('#parts');
+var currentUnit = 'mm';
+
+var PRESETS = {
+  mm: [['2400', 'Skirting / trim 2.4 m'], ['3000', 'Trim, tube 3 m'], ['3600', 'Moulding 3.6 m'],
+       ['4000', 'Bar 4 m'], ['5000', 'Tube 5 m'], ['6000', 'Steel 6 m'], ['6100', 'Timber 6.1 m']],
+  in: [['96', '8 ft stick'], ['120', '10 ft stick'], ['144', '12 ft stick'],
+       ['192', '16 ft stick'], ['240', '20 ft bar'], ['288', '24 ft bar']]
+};
+var DEFAULTS = {
+  mm: {
+    kerf: '3', minoff: '300',
+    stock: [{ len: '2400', qty: '', note: 'MDF skirting 2.4 m' }, { len: '3000', qty: '', note: 'MDF skirting 3.0 m' }],
+    parts: [
+      { label: 'Living room, long wall', len: '2350', qty: 2 },
+      { label: 'Living room, end wall', len: '1820', qty: 2 },
+      { label: 'Hall', len: '940', qty: 4 },
+      { label: 'Under window', len: '610', qty: 3 },
+      { label: 'Door returns', len: '145', qty: 6 }
+    ]
+  },
+  in: {
+    kerf: '1/8', minoff: '12',
+    stock: [{ len: '96', qty: '', note: '8 ft base' }, { len: '120', qty: '', note: '10 ft base' }],
+    parts: [
+      { label: 'Living room, long wall', len: '92 1/2', qty: 2 },
+      { label: 'Living room, end wall', len: '71 3/4', qty: 2 },
+      { label: 'Hall', len: '37', qty: 4 },
+      { label: 'Under window', len: '24', qty: 3 },
+      { label: 'Door returns', len: '5 3/4', qty: 6 }
+    ]
+  }
+};
+
+function esc(t) { var d = document.createElement('div'); d.textContent = (t == null ? '' : t); return d.innerHTML; }
+
+function addStockRow(d) {
+  d = d || {};
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="text" class="s-note" placeholder="e.g. 40×40 box section" value="' + esc(d.note || '') + '"></td>' +
+    '<td><input type="text" class="s-len" value="' + esc(d.len || '') + '"></td>' +
+    '<td><input type="number" class="s-qty" min="0" step="1" placeholder="any" value="' + esc(d.qty == null ? '' : d.qty) + '"></td>' +
+    '<td><button class="icon del" title="Remove" type="button">✕</button></td>';
+  tr.querySelector('.del').onclick = function () { tr.remove(); };
+  stockBody.appendChild(tr);
+}
+function addPartRow(d) {
+  d = d || {};
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="text" class="p-label" placeholder="Wall A" value="' + esc(d.label || '') + '"></td>' +
+    '<td><input type="text" class="p-len" value="' + esc(d.len == null ? '' : d.len) + '"></td>' +
+    '<td><input type="number" class="p-qty" min="1" step="1" value="' + esc(d.qty == null ? 1 : d.qty) + '"></td>' +
+    '<td><button class="icon del" title="Remove" type="button">✕</button></td>';
+  tr.querySelector('.del').onclick = function () { tr.remove(); };
+  partsBody.appendChild(tr);
+}
+function fillPresets() {
+  var sel = $('#preset'), list = PRESETS[currentUnit];
+  sel.innerHTML = '<option value="">Add a common length…</option>';
+  for (var i = 0; i < list.length; i++) {
+    var o = document.createElement('option');
+    o.value = list[i][0];
+    o.textContent = list[i][0] + (currentUnit === 'mm' ? ' mm' : '"') + ' — ' + list[i][1];
+    sel.appendChild(o);
+  }
+}
+function loadDefaults() {
+  var D = DEFAULTS[currentUnit];
+  stockBody.innerHTML = ''; partsBody.innerHTML = '';
+  D.stock.forEach(addStockRow);
+  D.parts.forEach(addPartRow);
+  $('#kerf').value = D.kerf;
+  $('#minoff').value = D.minoff;
+  $('#trimA').value = '0';
+  $('#trimB').value = '0';
+}
+
+function readStock() {
+  return [].slice.call(stockBody.querySelectorAll('tr')).map(function (tr) {
+    return {
+      label: tr.querySelector('.s-note').value.trim(),
+      length: parseLen(tr.querySelector('.s-len').value, currentUnit),
+      qty: tr.querySelector('.s-qty').value.trim()
+    };
+  });
+}
+function readParts() {
+  return [].slice.call(partsBody.querySelectorAll('tr')).map(function (tr) {
+    return {
+      label: tr.querySelector('.p-label').value.trim(),
+      length: parseLen(tr.querySelector('.p-len').value, currentUnit),
+      qty: tr.querySelector('.p-qty').value
+    };
+  });
+}
+
+function convertAll(from, to) {
+  var factor = (from === 'mm' && to === 'in') ? 1 / 25.4 : (from === 'in' && to === 'mm') ? 25.4 : 1;
+  var fields = [].slice.call(document.querySelectorAll('.s-len,.p-len,#kerf,#trimA,#trimB,#minoff'));
+  fields.forEach(function (el) {
+    var v = parseLen(el.value, from);
+    el.value = isFinite(v) ? fmtInput(v * factor, to) : el.value;
+  });
+}
+
+$('#unit').onchange = function () {
+  var next = $('#unit').value;
+  if (next === currentUnit) return;
+  convertAll(currentUnit, next);
+  currentUnit = next;
+  fillPresets();
+  run();
+};
+$('#preset').onchange = function (e) {
+  if (!e.target.value) return;
+  var note = '';
+  var list = PRESETS[currentUnit];
+  for (var i = 0; i < list.length; i++) if (list[i][0] === e.target.value) note = list[i][1];
+  addStockRow({ len: e.target.value, note: note });
+  e.target.value = '';
+  run();
+};
+$('#addStock').onclick = function () { addStockRow({}); };
+$('#add').onclick = function () { addPartRow({}); };
+$('#clear').onclick = function () {
+  stockBody.innerHTML = ''; partsBody.innerHTML = ''; $('#out').innerHTML = '';
+  addStockRow({}); addPartRow({});
+};
+$('#demo').onclick = function () { loadDefaults(); run(); };
+$('#go').onclick = function () { run(); };
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT') { e.preventDefault(); run(); }
+});
+
+function run() {
+  var res = optimizeLinearCuts({
+    unit: currentUnit,
+    kerf: parseLen($('#kerf').value, currentUnit),
+    trimStart: parseLen($('#trimA').value, currentUnit),
+    trimEnd: parseLen($('#trimB').value, currentUnit),
+    minOffcut: parseLen($('#minoff').value, currentUnit),
+    objective: $('#obj').value,
+    stock: readStock(),
+    parts: readParts()
+  });
+  render(res);
+}
+
+function render(res) {
+  var u = res.unit, out = $('#out');
+  var L = function (v) { return fmtLen(v, u); };
+  var html = '';
+
+  if (res.errors.length) {
+    html += '<div class="card"><div class="warn"><strong>Cannot calculate:</strong> ' +
+      res.errors.map(esc).join(' ') + '</div></div>';
+    out.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="card">';
+  if (res.warnings.length) {
+    html += '<div class="warn">' + res.warnings.map(function (w) { return esc(w); }).join('<br>') + '</div>';
+  }
+  if (res.unplaceable.length) {
+    html += '<div class="warn"><strong>Too long to cut from any stock:</strong> ' +
+      res.unplaceable.map(function (p) { return esc(p.label) + ' (' + L(p.length) + ' × ' + p.qty + ')'; }).join(', ') +
+      '. Add a longer stock length or split these into joined sections.</div>';
+  }
+  if (res.unplaced.length) {
+    html += '<div class="warn"><strong>Not enough stock:</strong> ' +
+      res.unplaced.map(function (p) { return esc(p.label) + ' (' + L(p.length) + ' × ' + p.qty + ')'; }).join(', ') +
+      ' could not be placed.</div>';
+  }
+  if (!res.integrity.ok) {
+    html += '<div class="warn"><strong>Internal check failed — do not cut from this:</strong> ' +
+      res.integrity.issues.map(esc).join(' ') + '</div>';
+  }
+
+  var s = res.summary;
+  html += '<div class="stats">' +
+    '<div class="stat"><b>' + s.barsUsed + '</b><span>Sticks needed</span></div>' +
+    '<div class="stat"><b>' + s.yieldPct + '%</b><span>Material used</span></div>' +
+    '<div class="stat"><b>' + s.wastePct + '%</b><span>Waste</span></div>' +
+    '<div class="stat"><b>' + fmtBig(s.stockLengthTotal, u) + '</b><span>Stock consumed</span></div>' +
+    '<div class="stat"><b>' + s.cutsTotal + '</b><span>Saw cuts</span></div>' +
+    '<div class="stat"><b>' + s.piecesPlaced + '</b><span>Pieces cut</span></div>' +
+    '</div>';
+
+  html += '<p class="hint" style="margin-top:0">Buy list: ' +
+    res.byStock.map(function (b) {
+      return '<span class="pill">' + b.barsUsed + ' × ' + L(b.length) + (u === 'mm' ? ' mm' : '') +
+        (b.label ? ' (' + esc(b.label) + ')' : '') + '</span>';
+    }).join(' ') +
+    ' — offcut total ' + fmtBig(s.offcutTotal, u) + ', longest drop ' + L(s.longestOffcut) + (u === 'mm' ? ' mm' : '') +
+    ', ' + s.reusableOffcuts + ' drop(s) worth keeping. Kerf lost: ' + fmtBig(s.kerfLengthTotal, u) +
+    (s.trimLengthTotal > 0 ? ', end trims: ' + fmtBig(s.trimLengthTotal, u) : '') + '.</p>';
+
+  html += '<div class="actions noprint"><button class="primary" type="button" onclick="window.print()">Print cut list</button></div>';
+  html += '</div>';
+
+  /* ---- diagrams ---- */
+  var maxLen = 0;
+  res.bars.forEach(function (b) { if (b.stockLength > maxLen) maxLen = b.stockLength; });
+  if (maxLen <= 0) maxLen = 1;
+  var H = maxLen * 0.10, barH = H * 0.46, Y0 = H * 0.13, FS = maxLen * 0.0125;
+  var trimA = res.settings.trimStart, trimB = res.settings.trimEnd, kerf = res.settings.kerf;
+
+  html += '<div class="card"><h2>Cutting diagrams</h2>' +
+    '<div class="legend noprint"><span><i class="sw-part"></i>Piece</span>' +
+    '<span><i class="sw-drop"></i>Offcut / trim</span>' +
+    '<span><i class="sw-cut"></i>Saw cut (kerf ' + L(kerf) + ')</span></div>';
+
+  res.bars.forEach(function (b) {
+    html += '<div class="sheet"><h3>Stick ' + b.index + ' of ' + s.barsUsed + ' — ' +
+      L(b.stockLength) + (u === 'mm' ? ' mm' : '') + (b.stockLabel ? ' · ' + esc(b.stockLabel) : '') +
+      ' · ' + b.pieceCount + ' piece' + (b.pieceCount === 1 ? '' : 's') +
+      ' · ' + b.cuts + ' cut' + (b.cuts === 1 ? '' : 's') +
+      ' · offcut ' + L(b.offcut) + (b.offcutReusable ? ' (keep)' : '') + '</h3>';
+
+    html += '<svg viewBox="0 0 ' + maxLen + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+      'aria-label="Stick ' + b.index + ' cutting diagram">';
+    // stock body (what is left = drop colour)
+    html += '<rect class="bar-stock" x="0" y="' + Y0 + '" width="' + b.stockLength + '" height="' + barH + '" rx="' + (FS * 0.3) + '"/>';
+    if (trimA > 0) html += '<rect class="bar-trim" x="0" y="' + Y0 + '" width="' + trimA + '" height="' + barH + '"/>';
+    if (trimB > 0) html += '<rect class="bar-trim" x="' + (b.stockLength - trimB) + '" y="' + Y0 + '" width="' + trimB + '" height="' + barH + '"/>';
+
+    // Is there a cut after the last piece? Yes when the cut count exceeds the
+    // gaps between pieces. Testing b.offcut > 0 instead would miss the case
+    // where the kerf swallows the whole remaining drop: a cut is still made.
+    var lastCutMark = b.cuts > b.pieceCount - 1;
+    var lastLabelX = -1e9;
+    b.pieces.forEach(function (p, i) {
+      html += '<rect class="part" x="' + p.start + '" y="' + Y0 + '" width="' + p.length + '" height="' + barH + '" rx="' + (FS * 0.25) + '"/>';
+      // kerf mark at the end of this piece
+      var cutW = Math.max(kerf, maxLen * 0.0012);
+      if (i < b.pieces.length - 1 || lastCutMark) {
+        html += '<rect class="bar-cut" fill="var(--cut)" x="' + p.end + '" y="' + (Y0 - barH * 0.10) + '" width="' + cutW + '" height="' + (barH * 1.20) + '"/>';
+      }
+      if (p.length > FS * 3.0) {
+        var cx = p.start + p.length / 2;
+        html += '<text class="plabel" x="' + cx + '" y="' + (Y0 + barH * 0.62) + '" text-anchor="middle" style="font-size:' + FS + 'px">' +
+          esc(fmtLen(p.length, u)) + '</text>';
+        if (p.length > FS * 7) {
+          html += '<text class="dim" x="' + cx + '" y="' + (Y0 + barH * 0.28) + '" text-anchor="middle" style="font-size:' + (FS * 0.8) + 'px">' +
+            esc(shorten(p.label, Math.floor(p.length / (FS * 0.55)))) + '</text>';
+        }
+      }
+      // cut position under the bar
+      var px = p.end;
+      if (px - lastLabelX > FS * 4.2 && (i < b.pieces.length - 1 || lastCutMark)) {
+        html += '<line class="tick" x1="' + px + '" y1="' + (Y0 + barH) + '" x2="' + px + '" y2="' + (Y0 + barH + FS * 0.6) + '"/>';
+        html += '<text class="dim" x="' + px + '" y="' + (Y0 + barH + FS * 1.7) + '" text-anchor="middle" style="font-size:' + (FS * 0.85) + 'px">' +
+          esc(fmtLen(p.end, u)) + '</text>';
+        lastLabelX = px;
+      }
+    });
+    if (b.offcut > 0.0001) {
+      var ox = b.offcutStart + b.offcut / 2;
+      if (b.offcut > FS * 3.2) {
+        html += '<text class="dim" x="' + ox + '" y="' + (Y0 + barH * 0.62) + '" text-anchor="middle" style="font-size:' + (FS * 0.9) + 'px">' +
+          'drop ' + esc(fmtLen(b.offcut, u)) + '</text>';
+      }
+    }
+    html += '<text class="dim" x="0" y="' + (Y0 - FS * 0.35) + '" style="font-size:' + (FS * 0.85) + 'px">0</text>';
+    html += '<text class="dim" x="' + b.stockLength + '" y="' + (Y0 - FS * 0.35) + '" text-anchor="end" style="font-size:' + (FS * 0.85) + 'px">' +
+      esc(fmtLen(b.stockLength, u)) + '</text>';
+    html += '</svg>';
+
+    html += '<table class="tight" style="margin-top:8px"><thead><tr><th style="width:8%">#</th><th>Piece</th>' +
+      '<th class="num">Length</th><th class="num">Cut from</th><th class="num">Cut to</th></tr></thead><tbody>';
+    b.pieces.forEach(function (p, i) {
+      html += '<tr><td>' + (i + 1) + '</td><td>' + esc(p.label) + '</td>' +
+        '<td class="num">' + L(p.length) + '</td><td class="num">' + L(p.start) + '</td><td class="num">' + L(p.end) + '</td></tr>';
+    });
+    html += '<tr><td></td><td style="color:var(--muted)">Offcut' + (b.offcutReusable ? ' — worth keeping' : '') + '</td>' +
+      '<td class="num">' + L(b.offcut) + '</td><td class="num">' + L(b.offcutStart) + '</td><td class="num">' + L(b.stockLength - trimB) + '</td></tr>';
+    html += '</tbody></table></div>';
+  });
+  html += '</div>';
+
+  /* ---- printable cut list ---- */
+  html += '<div class="card"><h2>Cut list</h2><table class="tight"><thead><tr>' +
+    '<th>Stick</th><th>Stock</th><th>Pieces (in cutting order)</th><th class="num">Used</th><th class="num">Offcut</th>' +
+    '</tr></thead><tbody>';
+  res.bars.forEach(function (b) {
+    var listTxt = b.pieces.map(function (p) { return esc(p.label) + ' ' + L(p.length); }).join(' | ');
+    html += '<tr><td>' + b.index + '</td><td class="num">' + L(b.stockLength) + '</td><td>' + listTxt + '</td>' +
+      '<td class="num">' + b.usedPct + '%</td><td class="num">' + L(b.offcut) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+
+  html += '<table class="tight" style="margin-top:18px"><thead><tr><th>Piece</th><th class="num">Length</th>' +
+    '<th class="num">Wanted</th><th class="num">Cut</th></tr></thead><tbody>';
+  res.byLabel.forEach(function (r) {
+    html += '<tr><td>' + esc(r.label) + '</td><td class="num">' + L(r.length) + '</td>' +
+      '<td class="num">' + r.qtyRequested + '</td><td class="num">' + r.qtyPlaced +
+      (r.qtyPlaced < r.qtyRequested ? ' ⚠' : '') + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  html += '<p class="hint">Positions are measured from the same end of each stick, cumulative, with the kerf already added between pieces. ' +
+    'Cut in the order listed and keep your tape hooked on the same end.' +
+    (u === 'in' ? ' Lengths and positions are shown to the nearest 1/16"; a leading ~ means the true value falls between two sixteenths.' : '') +
+    ' Strategy: ' + esc(res.strategy || '') + '.</p>';
+  html += '</div>';
+
+  out.innerHTML = html;
+}
+
+function shorten(t, max) {
+  t = String(t == null ? '' : t);
+  if (max < 3) return '';
+  return t.length > max ? t.slice(0, Math.max(1, max - 1)) + '…' : t;
+}
+
+fillPresets();
+loadDefaults();
+run();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

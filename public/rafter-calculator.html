@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rafter Calculator — Common, Hip &amp; Valley Length, Plumb &amp; Seat Cut Angles</title>
+<meta name="description" content="Free rafter length calculator for common, hip and valley rafters. Roof pitch in degrees or 6:12 ratio, birdsmouth seat cut and plumb cut angles, ridge height, overhang and ridge board deduction. Metric or imperial, dimensioned diagram, printable cut card, runs offline in your browser.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+/* ---- additions specific to the rafter calculator ---- */
+.hint{font-size:.78rem;color:var(--muted);max-width:26ch}
+.err{background:#fdecec;border:1px solid #e8b4b4;color:#7a1212;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.err{background:#2c1414;border-color:#5c2a2a;color:#eaa0a0}}
+.err ul,.warn ul{margin:6px 0 0;padding-left:18px}
+.grp{border-top:1px solid var(--line);margin-top:16px;padding-top:14px}
+.grp:first-of-type{border-top:none;margin-top:0;padding-top:0}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em}
+.alt{color:var(--muted);font-size:.85em}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tim{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.tim2{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6;opacity:.62}
+.wall{fill:none;stroke:var(--muted);stroke-width:1.4;opacity:.5}
+.ctr{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:14 5 3 5;fill:none;opacity:.75}
+.dim{stroke:var(--muted);stroke-width:1.3;fill:none}
+.ext{stroke:var(--muted);stroke-width:1;fill:none;opacity:.65}
+.arw{fill:var(--muted)}
+.ang{stroke:var(--accent);stroke-width:1.6;fill:none}
+.tx{fill:var(--ink);font-size:16px;font-family:ui-sans-serif,system-ui,sans-serif;
+  paint-order:stroke;stroke:var(--surface);stroke-width:4px;stroke-linejoin:round}
+.tx.sm{font-size:14px}
+.tx.mut{fill:var(--muted)}
+.tx.acc{fill:var(--accent);font-weight:600}
+.legend{font-size:.82rem;color:var(--muted);margin:8px 0 0}
+@media print{
+  :root{--bg:#fff;--surface:#fff;--ink:#111;--muted:#555;--line:#bbb;
+        --accent:#7a4f26;--accent-soft:#f2ece4}
+  svg{border:1px solid #ccc;page-break-inside:avoid}
+  .sheet,.card{page-break-inside:avoid}
+  .warn{background:#fff;border:1px solid #999;color:#000}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Rafter &amp; Roof Framing Calculator</h1>
+<p class="sub">Rafter lengths and cut angles for a straightforward gable or hip roof: common rafter, hip rafter, valley rafter, plumb cut, seat cut, birdsmouth and ridge height. Enter the pitch in degrees or as a 6:12 ratio — both work, and every result is shown in all three notations. You get a fully dimensioned section drawing and a cut card you can take to the saw. Everything runs in your browser; nothing is uploaded and nothing is stored.</p>
+
+<div class="warn">
+  <strong>Geometry only.</strong> This tool works out lengths and angles. It says nothing about
+  whether a rafter is deep enough, whether a ridge needs to be a beam rather than a board, or how
+  far a member can span. Member sizing, connections and load paths are the job of a qualified
+  engineer or building designer for your project and location. Do not use these numbers as a
+  substitute for that.
+</div>
+
+<div class="card noprint">
+  <h2>Roof</h2>
+  <div class="row">
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+    <div class="f"><label>Building span (out to out)</label><input type="number" id="span" value="7200" min="1" step="1"></div>
+    <div class="f"><label>Pitch entered as</label>
+      <select id="pitchMode">
+        <option value="ratio">Ratio (rise : run)</option>
+        <option value="deg">Degrees</option>
+        <option value="percent">Percent</option>
+      </select></div>
+    <div class="f"><label>Pitch value</label><input type="text" id="pitchVal" value="6:12" style="width:104px"></div>
+    <div class="f"><label>Eave overhang (level run)</label><input type="number" id="overhang" value="450" min="0" step="1"></div>
+    <div class="f"><label>Ridge board thickness</label><input type="number" id="ridgeT" value="45" min="0" step="1"></div>
+    <div class="f"><label>Building length (optional)</label><input type="number" id="bldgLen" value="12000" min="0" step="1"></div>
+  </div>
+  <p class="hint" style="max-width:none;margin:10px 0 0">Span is measured over the wall plates, wall face to wall face. Overhang is the horizontal projection past the wall, not the sloping length.</p>
+</div>
+
+<div class="card noprint">
+  <h2>Rafter &amp; bearing</h2>
+  <div class="row">
+    <div class="f"><label>Rafter depth (width of stock)</label><input type="number" id="depth" value="220" min="1" step="1"></div>
+    <div class="f"><label>Rafter thickness</label><input type="number" id="thick" value="47" min="1" step="1"></div>
+    <div class="f"><label>Wall plate width (bearing)</label><input type="number" id="plate" value="100" min="1" step="1"></div>
+    <div class="f"><label>Height above plate (HAP)</label><input type="number" id="hap" value="196" min="0.1" step="1"></div>
+    <div class="f"><label>Valley: intersecting span</label><input type="number" id="valSpan" value="7200" min="0" step="1"></div>
+  </div>
+  <p class="hint" style="max-width:none;margin:10px 0 0">HAP is the plumb distance from the seat cut up to the top edge of the rafter. It sets how deep the birdsmouth is: the seat cut length follows from it. Leave the intersecting span equal to the main span for a simple L or T of the same width.</p>
+  <div class="actions">
+    <button id="fitHap">Set HAP for full bearing on the plate</button>
+    <button id="demoImp">Load imperial example</button>
+    <button class="primary" id="go">Calculate</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+
+  <h3>Is the hip run really the span times 1.414?</h3>
+  <p>No — and this is the single most common mistake in rafter arithmetic. The hip runs diagonally
+  across a square corner whose sides are each one <em>common rafter run</em>, so the hip's plan run is
+  the <strong>common run</strong> × √2, which is half the span × √2 (less the ridge deduction). Using the
+  full span doubles the hip. As a sanity check on any tool: on a 6:12 roof a common rafter measures
+  13.4164 units of length for every 12 units of run, and the hip measures exactly 18.0000 for the same
+  12 units of <em>common</em> run. Those two numbers have been in framing tables for a century. If a
+  calculator disagrees with them, it is wrong.</p>
+
+  <h3>Where exactly are the lengths measured from and to?</h3>
+  <p>Along the top edge of the rafter, from the ridge plumb cut to the plumb line at the outside face
+  of the wall — that is the "line length". Half the ridge board thickness has already been taken off
+  the run, so the length given is the piece you actually cut, not a theoretical centreline. The
+  overall length adds the tail, measured to a plumb fascia cut. Rise is measured from the top edge at
+  the wall line, which is why HAP is added to it to get the ridge height above the plate.</p>
+
+  <h3>Why doesn't my birdsmouth land on the plate the way I expected?</h3>
+  <p>Because HAP and the seat cut length are two ends of the same stick. Once you fix HAP, the seat
+  cut length is (rafter plumb depth − HAP) ÷ tan(pitch), and it may be longer or shorter than your
+  plate. The tool tells you when the seat does not match the bearing width, and the "set HAP for full
+  bearing" button gives you the HAP that makes them agree. Deep rafters on shallow pitches produce
+  surprisingly long seat cuts.</p>
+
+  <h3>What this tool does not do</h3>
+  <p>It does not size anything: no span tables, no load cases, no snow, wind or point loads, no
+  nailing or strap schedules, and no advice on ridge beams versus ridge boards. It assumes both roof
+  planes have the same pitch and that hips and valleys sit at 45° in plan — irregular or "bastard"
+  hips, unequal pitches, curved and swept eaves are outside its scope. Valley lengths for an
+  intersecting roof narrower than the main roof are given to the theoretical intersection point;
+  what you deduct at the top depends on whether it lands on the main ridge, a header or the
+  sheathing plane. Cut one rafter, offer it up, and check it before you cut thirty.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li><li style="margin:4px 0"><a href="./stud-wall-layout.html" style="color:var(--accent)">Stud Wall Layout Calculator</a> <span style="color:var(--muted)">— Stud positions with the first-stud correction so sheet edges land on framing, plus the material list.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Geometry only — structural sizing is a matter for a qualified professional.
+</footer>
+</div>
+
+<script>
+/* ============================================================================
+   PURE CALCULATION CORE — no DOM, no globals, no I/O, no side effects.
+   Everything the maths needs lives inside calculateRafter().
+   Extract this single function and it runs anywhere.
+
+   calculateRafter(input) -> results object (never throws; reports via .errors)
+   ============================================================================ */
+
+function calculateRafter(input) {
+  var DEG = 180 / Math.PI;
+  var SQRT2 = Math.SQRT2;
+
+  input = input || {};
+  var errors = [];
+  var warnings = [];
+
+  /* ---- small local helpers (kept inside so the function is self-contained) ---- */
+  function num(v) {
+    if (typeof v === 'number') return v;
+    if (v === null || v === undefined) return NaN;
+    var s = String(v).trim().replace(',', '.');
+    if (s === '') return NaN;
+    return parseFloat(s);
+  }
+  function fin(v) { return typeof v === 'number' && isFinite(v); }
+  function r4(v) { return fin(v) ? Math.round(v * 1e4) / 1e4 : null; }
+  function r3(v) { return fin(v) ? Math.round(v * 1e3) / 1e3 : null; }
+
+  // Reads a length input, validates it, returns NaN and pushes an error if bad.
+  function len(raw, label, opts) {
+    opts = opts || {};
+    var v = num(raw);
+    if (!fin(v)) {
+      if (opts.optional) return opts.dflt === undefined ? NaN : opts.dflt;
+      errors.push(label + ': enter a number.');
+      return NaN;
+    }
+    if (v < 0) { errors.push(label + ' cannot be negative.'); return NaN; }
+    if (!opts.allowZero && v === 0) { errors.push(label + ' must be greater than zero.'); return NaN; }
+    if (v > 1e7) { errors.push(label + ' is implausibly large — check the value and the units.'); return NaN; }
+    return v;
+  }
+
+  var unit = (input.unit === 'in' || input.unit === 'inch' || input.unit === 'inches') ? 'in' : 'mm';
+
+  /* ------------------------------------------------------------------ pitch */
+  // Accepted: degrees, a rise:run ratio (any base, "6:12", "6/12", "6 12"),
+  // or a percentage. All three are converted to a single angle in radians.
+  var angle = null;
+  var mode = String(input.pitchMode || 'ratio').toLowerCase();
+  var ratioRise = null, ratioRun = null;
+
+  if (mode === 'deg' || mode === 'degree' || mode === 'degrees') {
+    var d = num(input.pitchValue !== undefined ? input.pitchValue : input.pitchDeg);
+    if (!fin(d)) errors.push('Pitch: enter the roof angle in degrees.');
+    else if (d <= 0) errors.push('Pitch must be greater than 0°. A flat roof has no rafter geometry to work out.');
+    else if (d >= 90) errors.push('Pitch must be less than 90°. A vertical rafter is a wall.');
+    else angle = d / DEG;
+
+  } else if (mode === 'percent' || mode === 'pct' || mode === '%') {
+    var p = num(input.pitchValue !== undefined ? input.pitchValue : input.pitchPercent);
+    if (!fin(p)) errors.push('Pitch: enter the slope as a percentage.');
+    else if (p <= 0) errors.push('Slope percentage must be greater than zero.');
+    else if (p > 1e6) errors.push('Slope percentage is implausibly large.');
+    else angle = Math.atan(p / 100);
+
+  } else if (mode === 'ratio' || mode === 'rise:run' || mode === 'riserun') {
+    var rise = num(input.pitchRise), run = num(input.pitchRun);
+    var raw = input.pitchValue !== undefined ? input.pitchValue : input.pitchRatio;
+    if (raw !== undefined && raw !== null && String(raw).trim() !== '') {
+      var s = String(raw).trim().replace(/,/g, '.');
+      var m = s.match(/^\s*(\d+(?:\.\d+)?)\s*(?::|\/|\s+|in\s+|-)\s*(\d+(?:\.\d+)?)\s*$/i);
+      if (m) { rise = parseFloat(m[1]); run = parseFloat(m[2]); }
+      else {
+        var single = parseFloat(s);
+        if (isFinite(single) && /^[\d.\s]+$/.test(s)) { rise = single; run = 12; }
+        else errors.push('Pitch: could not read "' + s + '". Use a ratio such as 6:12.');
+      }
+    }
+    if (!fin(run)) run = 12;
+    if (errors.length === 0) {
+      if (!fin(rise)) errors.push('Pitch: enter a ratio such as 6:12.');
+      else if (rise <= 0) errors.push('Pitch ratio: the rise must be greater than zero.');
+      else if (run <= 0) errors.push('Pitch ratio: the run must be greater than zero.');
+      else { angle = Math.atan(rise / run); ratioRise = rise; ratioRun = run; }
+    }
+  } else {
+    errors.push('Unknown pitch mode "' + mode + '". Use "ratio", "deg" or "percent".');
+  }
+
+  /* ---------------------------------------------------------------- lengths */
+  var span      = len(input.span, 'Building span');
+  var overhang  = len(input.overhang, 'Eave overhang', { allowZero: true, optional: true, dflt: 0 });
+  var ridgeT    = len(input.ridgeThickness, 'Ridge board thickness', { allowZero: true, optional: true, dflt: 0 });
+  var depth     = len(input.rafterDepth, 'Rafter depth');
+  var thick     = len(input.rafterThickness, 'Rafter thickness');
+  var plateW    = len(input.plateWidth, 'Wall plate width');
+  var hap       = len(input.hap, 'Height above plate (HAP)');
+  var bldgLen   = len(input.buildingLength, 'Building length', { allowZero: true, optional: true, dflt: 0 });
+  var valSpan   = len(input.valleySpan, 'Intersecting span', { allowZero: true, optional: true, dflt: NaN });
+
+  if (fin(span) && fin(ridgeT) && ridgeT >= span) {
+    errors.push('The ridge board is as thick as the whole span. Check the units.');
+  }
+
+  var halfSpan = fin(span) ? span / 2 : NaN;
+  var totalRun = (fin(halfSpan) && fin(ridgeT)) ? halfSpan - ridgeT / 2 : NaN;
+  if (fin(totalRun) && totalRun <= 0) {
+    errors.push('Half the ridge thickness is greater than half the span — there is no rafter run left.');
+  }
+
+  if (errors.length) {
+    return { ok: false, unit: unit, errors: errors, warnings: warnings,
+             pitch: null, common: null, ridge: null, birdsmouth: null,
+             hip: null, valley: null, cuts: [], geom: null };
+  }
+
+  /* ------------------------------------------------------- pitch quantities */
+  var cosA = Math.cos(angle);
+  var tanA = Math.tan(angle);
+  var sinA = Math.sin(angle);
+  var slopeFactor = 1 / cosA;                 // length per unit of run
+  var angleDeg = angle * DEG;
+
+  if (angleDeg < 1)  warnings.push('Below 1° this is effectively a flat roof; the seat cut and birdsmouth geometry stop being meaningful.');
+  if (angleDeg > 75) warnings.push('Above 75° the "rafter" is closer to a wall stud; check that the pitch was entered in the right notation.');
+
+  /* --------------------------------------------------------- common rafter  */
+  // Measuring line = top edge of the rafter.
+  // Run is taken from the FACE of the ridge board, so half its thickness is deducted.
+  var lineLength   = totalRun / cosA;              // ridge plumb cut -> heel plumb line
+  var rise         = totalRun * tanA;              // top edge at wall line -> top edge at ridge
+  var tailLength   = overhang / cosA;              // heel plumb line -> plumb fascia cut
+  var overallLen   = (totalRun + overhang) / cosA; // full piece, top edge, both cuts plumb
+  var plumbDepth   = depth / cosA;                 // depth of the rafter measured plumb
+
+  /* ------------------------------------------------------------- birdsmouth */
+  // Seat cut is horizontal, heel cut is plumb at the outside face of the wall.
+  // HAP fixes the notch: seat run = (plumb depth - HAP) / tan(pitch).
+  var seatRun = null, notchPlumb = null, notchPerp = null, remaining = null, remainPct = null;
+  var hapFull = plumbDepth - plateW * tanA;   // HAP that makes the seat exactly cover the plate
+
+  if (hap >= plumbDepth) {
+    errors.push('HAP (' + r3(hap) + ') is not less than the rafter\'s plumb depth (' + r3(plumbDepth) +
+                '). There is no material left to cut a birdsmouth — increase the rafter depth or reduce HAP.');
+  } else {
+    notchPlumb = plumbDepth - hap;             // height of the heel plumb cut
+    seatRun    = notchPlumb / tanA;            // horizontal length of the seat cut
+    notchPerp  = notchPlumb * cosA;            // notch depth square to the rafter
+    remaining  = depth - notchPerp;            // material left above the notch
+    remainPct  = 100 * remaining / depth;
+
+    // At very shallow pitches the seat cut runs away to infinity. Catch it as an
+    // error rather than printing a notch longer than the rafter.
+    if (seatRun >= totalRun) {
+      errors.push('At this pitch the seat cut works out at ' + r3(seatRun) + ', which is longer than the whole rafter run of ' +
+        r3(totalRun) + '. Raise the pitch, reduce the rafter depth, or increase HAP (a HAP of ' + r3(hapFull) +
+        ' would give a seat cut matching the plate).');
+    }
+
+    var diff = seatRun - plateW;
+    if (Math.abs(diff) > Math.max(plateW * 0.02, unit === 'mm' ? 1 : 0.05)) {
+      if (diff > 0) {
+        warnings.push('The seat cut is ' + r3(seatRun) + ' long but the plate is only ' + r3(plateW) +
+          ' wide, so the notch runs ' + r3(diff) + ' past the inside face of the plate. HAP of ' +
+          r3(hapFull) + ' would make the seat match the plate exactly.');
+      } else {
+        warnings.push('The seat cut is ' + r3(seatRun) + ' long against a ' + r3(plateW) +
+          ' plate, so the rafter bears on only part of the plate. HAP of ' + r3(hapFull) +
+          ' would give full bearing.');
+      }
+    }
+    if (remainPct < 66.6) {
+      warnings.push('The notch removes ' + r3(100 - remainPct) + '% of the rafter depth, leaving ' +
+        r3(remaining) + '. Many designers keep the notch well under a third of the depth. Whether this ' +
+        'section is acceptable is a structural question for the person responsible for the design.');
+    }
+  }
+
+  if (errors.length) {
+    return { ok: false, unit: unit, errors: errors, warnings: warnings,
+             pitch: null, common: null, ridge: null, birdsmouth: null,
+             hip: null, valley: null, cuts: [], geom: null };
+  }
+
+  /* -------------------------------------------------------------- hip/valley */
+  // A hip over a square corner of an equal-pitch roof sits at 45° in plan.
+  // Its PLAN RUN is the common run x sqrt(2)  (NOT the span x sqrt(2)).
+  // Its rise is identical to the common rafter's rise, so it is shallower:
+  //   tan(hip pitch) = tan(pitch) / sqrt(2)
+  //   hip length     = common run x sqrt(2 + tan^2(pitch))
+  function diagonalMember(memberRun, memberOverhang) {
+    var planRun   = memberRun * SQRT2;
+    var psi       = Math.atan(tanA / SQRT2);          // hip/valley pitch angle
+    var factor    = Math.sqrt(2 + tanA * tanA);       // length per unit of COMMON run
+    var length    = memberRun * factor;
+    var tailPlan  = memberOverhang * SQRT2;
+    var tailLen   = memberOverhang * factor;
+    var backing   = Math.atan(Math.sin(psi));         // backing bevel on the top edge
+    var drop      = (thick / 2) * tanA / SQRT2;       // plumb drop instead of backing
+    return {
+      commonRun: r4(memberRun),
+      planRun: r4(planRun),
+      angleDeg: r4(psi * DEG),
+      angleRad: psi,
+      lineLength: r4(length),
+      tailPlanRun: r4(tailPlan),
+      tailLength: r4(tailLen),
+      overallLength: r4(length + tailLen),
+      rise: r4(memberRun * tanA),
+      unitLengthPer12: r4(12 * factor),
+      slopeFactor: r4(factor / SQRT2),                // length per unit of its OWN plan run
+      backingAngleDeg: r4(backing * DEG),
+      dropPlumb: r4(drop),
+      cheekMitreDeg: r4(psi * DEG),                   // saw mitre, cut on the plumb line
+      cheekBevelDeg: 45,
+      plumbCutFromEdgeDeg: r4(90 - psi * DEG),
+      seatCutFromEdgeDeg: r4(psi * DEG),
+      plumbDepth: r4(depth / Math.cos(psi))
+    };
+  }
+
+  var hip = diagonalMember(totalRun, overhang);
+
+  var valleyRun, valleyBasis;
+  if (fin(valSpan) && valSpan > 0) {
+    valleyRun = valSpan / 2 - ridgeT / 2;
+    valleyBasis = valSpan;
+  } else {
+    valleyRun = totalRun;
+    valleyBasis = span;
+  }
+  var valley = null;
+  if (valleyRun > 0) {
+    valley = diagonalMember(valleyRun, overhang);
+    valley.basisSpan = r4(valleyBasis);
+    if (fin(valSpan) && valSpan > 0 && Math.abs(valSpan - span) > 1e-9) {
+      valley.note = 'Theoretical length to the intersection point. The deduction at the top depends on how the valley lands (main ridge, header, or sheathing plane).';
+      warnings.push('The intersecting span differs from the main span, so the valley length is given to the theoretical intersection point only — the shortening at the top depends on your framing method.');
+    }
+    if (fin(valSpan) && valSpan > span) {
+      warnings.push('The intersecting span is wider than the main span. That is a valid roof, but the "valley" is then the wider roof\'s ridge running into the smaller one — check which member you are actually cutting.');
+    }
+  } else if (fin(valSpan) && valSpan > 0) {
+    warnings.push('The intersecting span is smaller than the ridge thickness — no valley geometry produced.');
+  }
+
+  /* ------------------------------------------------------------------ ridge */
+  var ridgeHeight  = rise + hap;                  // top of ridge board above top of plate
+  var ridgeLength  = null;
+  if (fin(bldgLen) && bldgLen > 0) {
+    ridgeLength = bldgLen - span;                 // hip roof, equal pitches, 45° hips
+    if (ridgeLength <= 0) {
+      ridgeLength = null;
+      warnings.push('For a hipped roof the ridge length is the building length minus the span. With these figures that is zero or negative, which means a pyramid roof (no ridge) — the ridge length has been left out.');
+    }
+  }
+
+  /* ------------------------------------------------------------- cut angles */
+  // Convention used throughout:
+  //   "from edge"    = angle between the cut line and the rafter's top edge
+  //   "mitre"        = saw setting away from a square crosscut (rafter lying flat)
+  //   "bevel"        = blade tilt away from vertical
+  var plumbFromEdge = 90 - angleDeg;
+  var seatFromEdge  = angleDeg;
+
+  var cuts = [
+    { member: 'Common rafter', cut: 'Ridge plumb cut', fromEdge: r3(plumbFromEdge), mitre: r3(angleDeg), bevel: 0,
+      note: 'Full depth, square across the face.' },
+    { member: 'Common rafter', cut: 'Birdsmouth seat cut (level)', fromEdge: r3(seatFromEdge), mitre: r3(90 - angleDeg), bevel: 0,
+      note: 'Length ' + r3(seatRun) + ', bears on the plate.' },
+    { member: 'Common rafter', cut: 'Birdsmouth heel cut (plumb)', fromEdge: r3(plumbFromEdge), mitre: r3(angleDeg), bevel: 0,
+      note: 'Height ' + r3(notchPlumb) + ', against the outside face of the wall.' },
+    { member: 'Common rafter', cut: 'Tail plumb cut (fascia)', fromEdge: r3(plumbFromEdge), mitre: r3(angleDeg), bevel: 0,
+      note: overhang > 0 ? 'At ' + r3(tailLength) + ' beyond the heel plumb line.' : 'No overhang entered.' },
+    { member: 'Common rafter', cut: 'Tail level cut (soffit)', fromEdge: r3(seatFromEdge), mitre: r3(90 - angleDeg), bevel: 0,
+      note: 'Optional, for a boxed eave.' },
+    { member: 'Hip rafter', cut: 'Ridge cheek cut (double)', fromEdge: r3(90 - hip.angleDeg), mitre: r3(hip.angleDeg), bevel: 45,
+      note: 'Mark the plumb line on the face, tilt the blade 45°, cut both cheeks.' },
+    { member: 'Hip rafter', cut: 'Birdsmouth seat cut (level)', fromEdge: r3(hip.angleDeg), mitre: r3(90 - hip.angleDeg), bevel: 0,
+      note: 'Set out on the hip\'s own pitch, not the common pitch.' },
+    { member: 'Hip rafter', cut: 'Tail cut', fromEdge: r3(90 - hip.angleDeg), mitre: r3(hip.angleDeg), bevel: 0,
+      note: 'Plumb; use a 45° double cheek if it dies into a mitred fascia.' },
+    { member: 'Hip rafter', cut: 'Backing bevel (top edge)', fromEdge: null, mitre: null, bevel: r3(hip.backingAngleDeg),
+      note: 'Or drop the hip ' + r3(hip.dropPlumb) + ' plumb instead of backing it.' }
+  ];
+  if (valley) {
+    cuts.push({ member: 'Valley rafter', cut: 'Top cheek cut (double)', fromEdge: r3(90 - valley.angleDeg), mitre: r3(valley.angleDeg), bevel: 45,
+      note: 'Same geometry as the hip, cut the other way.' });
+    cuts.push({ member: 'Valley rafter', cut: 'Birdsmouth seat cut (level)', fromEdge: r3(valley.angleDeg), mitre: r3(90 - valley.angleDeg), bevel: 0,
+      note: 'On the valley\'s own pitch.' });
+  }
+
+  /* --------------------------------------------------------------- geometry */
+  // Model coordinates for the drawings, in real units.
+  // x = 0 at the ridge centreline, increasing towards the eave.
+  // y = 0 at the top of the wall plate, increasing upwards.
+  var xRidgeFace = ridgeT / 2;
+  var xWall      = halfSpan;
+  var xTail      = halfSpan + overhang;
+  var yRidgeTop  = hap + rise;
+  var yHeelTop   = hap;
+  var yTailTop   = hap - overhang * tanA;
+
+  var outline = [
+    [xRidgeFace, yRidgeTop],                       // top edge at ridge
+    [xTail,      yTailTop],                        // top edge at tail
+    [xTail,      yTailTop - plumbDepth],           // bottom of tail plumb cut
+    [xWall,      yHeelTop - plumbDepth],           // bottom edge at the heel plumb line
+    [xWall,      0],                               // heel point (top of plate)
+    [xWall - seatRun, 0],                          // inner end of the seat cut
+    [xRidgeFace, yRidgeTop - plumbDepth]           // bottom edge at ridge
+  ];
+
+  var geom = {
+    xRidgeFace: r4(xRidgeFace), xWall: r4(xWall), xTail: r4(xTail),
+    ridgeHalf: r4(ridgeT / 2),
+    yRidgeTop: r4(yRidgeTop), yHeelTop: r4(yHeelTop), yTailTop: r4(yTailTop),
+    plumbDepth: r4(plumbDepth), seatRun: r4(seatRun), notchPlumb: r4(notchPlumb),
+    plateWidth: r4(plateW), depth: r4(depth), thickness: r4(thick),
+    hap: r4(hap), rise: r4(rise), totalRun: r4(totalRun), overhang: r4(overhang),
+    halfSpan: r4(halfSpan), span: r4(span), buildingLength: fin(bldgLen) && bldgLen > 0 ? r4(bldgLen) : null,
+    angleRad: angle, tan: tanA, cos: cosA, sin: sinA,
+    outline: outline.map(function (p) { return [r4(p[0]), r4(p[1])]; })
+  };
+
+  /* ----------------------------------------------------------------- output */
+  return {
+    ok: true,
+    unit: unit,
+    errors: errors,
+    warnings: warnings,
+    pitch: {
+      angleDeg: r4(angleDeg),
+      angleRad: angle,
+      riseIn12: r4(12 * tanA),
+      ratioText: r3(12 * tanA) + ' : 12',
+      inputRatio: (ratioRise !== null ? r3(ratioRise) + ' : ' + r3(ratioRun) : null),
+      percent: r4(100 * tanA),
+      slopeFactor: r4(slopeFactor),
+      unitLengthPer12: r4(12 * slopeFactor),
+      cos: r4(cosA), tan: r4(tanA)
+    },
+    common: {
+      span: r4(span),
+      halfSpan: r4(halfSpan),
+      ridgeDeduction: r4(ridgeT / 2),
+      totalRun: r4(totalRun),
+      lineLength: r4(lineLength),
+      rise: r4(rise),
+      tailRun: r4(overhang),
+      tailLength: r4(tailLength),
+      overallLength: r4(overallLen),
+      plumbDepth: r4(plumbDepth),
+      plumbCutFromEdgeDeg: r3(plumbFromEdge),
+      plumbCutMitreDeg: r3(angleDeg),
+      seatCutFromEdgeDeg: r3(seatFromEdge),
+      seatCutMitreDeg: r3(90 - angleDeg)
+    },
+    ridge: {
+      thickness: r4(ridgeT),
+      heightAbovePlate: r4(ridgeHeight),
+      riseAbovePlate: r4(rise),
+      hap: r4(hap),
+      boardLength: ridgeLength === null ? null : r4(ridgeLength)
+    },
+    birdsmouth: {
+      hap: r4(hap),
+      seatRun: r4(seatRun),
+      heelPlumbHeight: r4(notchPlumb),
+      notchDepthPerp: r4(notchPerp),
+      remainingDepth: r4(remaining),
+      remainingPercent: r3(remainPct),
+      plateWidth: r4(plateW),
+      hapForFullBearing: r4(hapFull)
+    },
+    hip: hip,
+    valley: valley,
+    cuts: cuts,
+    geom: geom
+  };
+}
+
+/* ===== END PURE CALCULATION CORE ===== */
+
+if (typeof module !== 'undefined' && module.exports) { module.exports = { calculateRafter: calculateRafter }; }
+
+
+/* ============================================================================
+   Presentation: formatting, SVG drawing, DOM wiring.
+   ============================================================================ */
+
+var $ = function (s) { return document.querySelector(s); };
+
+/* ------------------------------------------------------------- formatting */
+function feetInches(v) {
+  var neg = v < 0; v = Math.abs(v);
+  var sixteenths = Math.round(v * 16);
+  var ft = Math.floor(sixteenths / 192);
+  var rem = sixteenths - ft * 192;
+  var inch = Math.floor(rem / 16);
+  var n = rem % 16, den = 16;
+  while (n && n % 2 === 0) { n /= 2; den /= 2; }
+  var s = '';
+  if (ft) s += ft + "' ";
+  s += inch;
+  if (n) s += '-' + n + '/' + den;
+  s += '"';
+  return (neg ? '-' : '') + s;
+}
+function fmt(v, unit) {
+  if (v === null || v === undefined || !isFinite(v)) return '—';
+  if (unit === 'in') {
+    var dec = (Math.round(v * 1000) / 1000).toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+    return dec + ' in <span class="alt">(' + feetInches(v) + ')</span>';
+  }
+  return (Math.round(v * 10) / 10).toFixed(1) + ' mm';
+}
+function fmtPlain(v, unit) {
+  if (v === null || v === undefined || !isFinite(v)) return '—';
+  if (unit === 'in') return (Math.round(v * 16) / 16).toFixed(4).replace(/0+$/, '').replace(/\.$/, '') + '"';
+  return (Math.round(v * 10) / 10).toFixed(1);
+}
+function ang(v) { return (v === null || v === undefined) ? '—' : (Math.round(v * 100) / 100).toFixed(2) + '°'; }
+function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+/* ------------------------------------------------------------ SVG helpers */
+var svgUid = 0;
+
+function svgLine(x1, y1, x2, y2, cls) {
+  return '<line x1="' + x1.toFixed(2) + '" y1="' + y1.toFixed(2) + '" x2="' + x2.toFixed(2) +
+         '" y2="' + y2.toFixed(2) + '" class="' + cls + '"/>';
+}
+function svgText(x, y, txt, cls, anchor, rot) {
+  var t = '<text x="' + x.toFixed(2) + '" y="' + y.toFixed(2) + '" class="' + cls +
+          '" text-anchor="' + (anchor || 'middle') + '"';
+  if (rot) t += ' transform="rotate(' + rot.toFixed(2) + ' ' + x.toFixed(2) + ' ' + y.toFixed(2) + ')"';
+  return t + '>' + txt + '</text>';
+}
+function arrowHead(x, y, ux, uy, size, cls) {
+  // triangle at (x,y) pointing along (ux,uy)
+  var px = -uy, py = ux;
+  var bx = x - ux * size, by = y - uy * size;
+  return '<polygon class="' + cls + '" points="' +
+    x.toFixed(2) + ',' + y.toFixed(2) + ' ' +
+    (bx + px * size * 0.32).toFixed(2) + ',' + (by + py * size * 0.32).toFixed(2) + ' ' +
+    (bx - px * size * 0.32).toFixed(2) + ',' + (by - py * size * 0.32).toFixed(2) + '"/>';
+}
+// Dimension line offset perpendicular from segment p1->p2 (all in screen coords).
+function dimension(x1, y1, x2, y2, off, label, opt) {
+  opt = opt || {};
+  var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy);
+  if (!(L > 0.5)) return '';
+  var ux = dx / L, uy = dy / L;
+  var nx = -uy, ny = ux;
+  var ax = x1 + nx * off, ay = y1 + ny * off;
+  var bx = x2 + nx * off, by = y2 + ny * off;
+  var s = '';
+  s += svgLine(x1 + nx * 3, y1 + ny * 3, ax + nx * 7, ay + ny * 7, 'ext');
+  s += svgLine(x2 + nx * 3, y2 + ny * 3, bx + nx * 7, by + ny * 7, 'ext');
+  s += svgLine(ax, ay, bx, by, 'dim');
+  var head = Math.min(11, L / 3);
+  if (L > 26) {
+    s += arrowHead(ax, ay, -ux, -uy, head, 'arw');
+    s += arrowHead(bx, by, ux, uy, head, 'arw');
+  }
+  var mx = (ax + bx) / 2, my = (ay + by) / 2;
+  var deg = Math.atan2(dy, dx) * 180 / Math.PI;
+  var flip = (deg > 90 || deg < -90);
+  if (flip) deg -= 180;
+  var lift = opt.below ? 15 : -7;
+  var lx = mx + (flip ? -nx : nx) * lift * (opt.below ? -1 : 1);
+  var ly = my + (flip ? -ny : ny) * lift * (opt.below ? -1 : 1);
+  s += svgText(lx, ly, label, 'tx sm' + (opt.cls ? ' ' + opt.cls : ''), 'middle', deg);
+  return s;
+}
+function arcPath(cx, cy, r, a1, a2) {
+  var d = a2 - a1;
+  while (d <= -Math.PI) d += 2 * Math.PI;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  var large = Math.abs(d) > Math.PI ? 1 : 0, sweep = d > 0 ? 1 : 0;
+  return 'M' + (cx + r * Math.cos(a1)).toFixed(2) + ' ' + (cy + r * Math.sin(a1)).toFixed(2) +
+         ' A' + r + ' ' + r + ' 0 ' + large + ' ' + sweep + ' ' +
+         (cx + r * Math.cos(a2)).toFixed(2) + ' ' + (cy + r * Math.sin(a2)).toFixed(2);
+}
+function angleMark(cx, cy, r, a1, a2, label) {
+  var d = a2 - a1;
+  while (d <= -Math.PI) d += 2 * Math.PI;
+  while (d > Math.PI) d -= 2 * Math.PI;
+  var mid = a1 + d / 2;
+  var s = '<path class="ang" d="' + arcPath(cx, cy, r, a1, a2) + '"/>';
+  s += svgText(cx + (r + 20) * Math.cos(mid), cy + (r + 20) * Math.sin(mid) + 5, label, 'tx sm acc', 'middle');
+  return s;
+}
+
+/* ------------------------------------------- section drawing (common rafter) */
+function sectionSVG(res, mode) {
+  var g = res.geom, u = res.unit;
+  var plateThk = g.plateWidth * 0.45;         // drawing only, not a calculated value
+  var W = 1000;
+  var win, pad, showAll = (mode === 'full');
+
+  if (showAll) {
+    var minX = -g.ridgeHalf - g.plateWidth * 0.4;
+    var maxX = g.xTail + g.plateWidth * 0.4;
+    var minY = Math.min(g.yTailTop - g.plumbDepth, -plateThk - g.depth * 0.9);
+    var maxY = g.yRidgeTop + g.depth * 0.15;
+    win = { minX: minX, maxX: maxX, minY: minY, maxY: maxY };
+    pad = { l: 96, r: 60, t: 92, b: 104 };
+  } else {
+    // Zoom on the birdsmouth: frame the notch itself, not the whole rafter.
+    var roiW = Math.max(g.seatRun, g.plateWidth);
+    win = {
+      minX: g.xWall - roiW * 1.35 - g.plumbDepth * 0.22,
+      maxX: g.xWall + g.plumbDepth * 0.44,
+      minY: g.yHeelTop - g.plumbDepth * 1.14,
+      maxY: g.yHeelTop + g.plumbDepth * 0.12
+    };
+    pad = { l: 90, r: 150, t: 62, b: 104 };
+  }
+
+  var mw = win.maxX - win.minX, mh = win.maxY - win.minY;
+  if (!(mw > 0) || !(mh > 0)) return '';
+  var k = (W - pad.l - pad.r) / mw;
+  var H = Math.round(mh * k + pad.t + pad.b);
+  if (H > 900) { k = (900 - pad.t - pad.b) / mh; H = 900; }
+  // Centre horizontally when the height, not the width, is what limits the scale.
+  var xoff = pad.l + Math.max(0, (W - pad.l - pad.r - mw * k) / 2);
+  var X = function (x) { return xoff + (x - win.minX) * k; };
+  var Y = function (y) { return pad.t + (win.maxY - y) * k; };
+
+  var uid = 'clip' + (++svgUid);
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+          'aria-label="Dimensioned section through the common rafter">';
+  s += '<defs><clipPath id="' + uid + '"><rect x="0" y="0" width="' + W + '" height="' + H + '"/></clipPath></defs>';
+  s += '<g clip-path="url(#' + uid + ')">';
+
+  // plate-top reference line and ridge centreline
+  s += svgLine(X(win.minX), Y(0), X(win.maxX), Y(0), 'ctr');
+  if (showAll) s += svgLine(X(0), Y(win.minY), X(0), Y(g.yRidgeTop + g.depth * 0.12), 'ctr');
+
+  // ridge board
+  if (showAll && g.ridgeHalf > 0) {
+    s += '<rect class="tim2" x="' + X(-g.ridgeHalf).toFixed(2) + '" y="' + Y(g.yRidgeTop).toFixed(2) +
+         '" width="' + (2 * g.ridgeHalf * k).toFixed(2) + '" height="' + (g.plumbDepth * k).toFixed(2) + '"/>';
+  }
+
+  // wall plate + a stub of wall below it
+  s += '<rect class="tim2" x="' + X(g.xWall - g.plateWidth).toFixed(2) + '" y="' + Y(0).toFixed(2) +
+       '" width="' + (g.plateWidth * k).toFixed(2) + '" height="' + (plateThk * k).toFixed(2) + '"/>';
+  s += svgLine(X(g.xWall), Y(-plateThk), X(g.xWall), Y(win.minY), 'wall');
+  s += svgLine(X(g.xWall - g.plateWidth), Y(-plateThk), X(g.xWall - g.plateWidth), Y(win.minY), 'wall');
+
+  // the rafter itself
+  var pts = g.outline.map(function (p) { return X(p[0]).toFixed(2) + ',' + Y(p[1]).toFixed(2); }).join(' ');
+  s += '<polygon class="tim" points="' + pts + '"/>';
+  s += '</g>';
+
+  var P = {};
+  ['ridgeTop', 'tailTop', 'tailBot', 'heelBot', 'heel', 'seatIn', 'ridgeBot'].forEach(function (n, i) {
+    P[n] = { x: X(g.outline[i][0]), y: Y(g.outline[i][1]) };
+  });
+
+  var slopeDeg = Math.atan2(P.tailTop.y - P.ridgeTop.y, P.tailTop.x - P.ridgeTop.x); // screen radians
+  var a = res.pitch.angleDeg;
+
+  if (showAll) {
+    // ---- horizontal chain: total run, overhang
+    var yBase = Y(win.minY) + 46;
+    s += dimension(X(g.xRidgeFace), yBase, X(g.xWall), yBase, 0,
+      'Run ' + fmtPlain(g.totalRun, u), {});
+    if (g.overhang > 0) {
+      s += dimension(X(g.xWall), yBase, X(g.xTail), yBase, 0, 'Overhang ' + fmtPlain(g.overhang, u), {});
+    }
+    s += dimension(X(0), yBase + 40, X(g.xWall), yBase + 40, 0, 'Half span ' + fmtPlain(g.halfSpan, u), {});
+
+    // ---- vertical: rise, HAP, ridge height
+    var xL = X(win.minX) - 34;
+    s += dimension(xL + 40, Y(g.yHeelTop), xL + 40, Y(g.yRidgeTop), 0, 'Rise ' + fmtPlain(g.rise, u), {});
+    s += dimension(xL, Y(0), xL, Y(g.yRidgeTop), 0, 'Ridge height above plate ' + fmtPlain(res.ridge.heightAbovePlate, u), {});
+    s += svgLine(X(g.xRidgeFace), Y(g.yRidgeTop), xL - 8, Y(g.yRidgeTop), 'ext');
+    s += svgLine(X(g.xWall), Y(g.yHeelTop), xL + 32, Y(g.yHeelTop), 'ext');
+
+    // HAP at the wall
+    s += dimension(X(g.xWall) + 30, Y(g.yHeelTop), X(g.xWall) + 30, Y(0), 0, 'HAP ' + fmtPlain(g.hap, u), {});
+
+    // ---- along the top edge: line length and overall
+    s += dimension(P.ridgeTop.x, P.ridgeTop.y, X(g.xWall), Y(g.yHeelTop), -34,
+      'Line length ' + fmtPlain(res.common.lineLength, u), {});
+    s += dimension(P.ridgeTop.x, P.ridgeTop.y, P.tailTop.x, P.tailTop.y, -76,
+      'Overall ' + fmtPlain(res.common.overallLength, u), {});
+
+    // ---- angles
+    s += angleMark(P.ridgeTop.x, P.ridgeTop.y, 54, Math.PI / 2, slopeDeg, ang(a) + ' plumb cut');
+    s += angleMark(P.heel.x, P.heel.y, 46, Math.PI, slopeDeg + Math.PI, ang(a) + ' seat cut');
+    if (g.overhang > 0) {
+      s += angleMark(P.tailTop.x, P.tailTop.y, 44, slopeDeg + Math.PI, Math.PI / 2, ang(a));
+    }
+
+    s += svgText(X(g.xRidgeFace) + 8, Y(g.yRidgeTop) - 26, 'Ridge', 'tx sm mut', 'start');
+    s += svgText(X(g.xWall - g.plateWidth / 2), Y(-plateThk) + 34, 'Wall plate', 'tx sm mut', 'middle');
+
+  } else {
+    // ---- birdsmouth detail
+    s += dimension(P.seatIn.x, P.seatIn.y, P.heel.x, P.heel.y, 52, 'Seat cut ' + fmtPlain(g.seatRun, u), {});
+    s += dimension(P.heel.x, P.heel.y, P.heelBot.x, P.heelBot.y, 46, 'Heel ' + fmtPlain(g.notchPlumb, u), {});
+    s += dimension(X(g.xWall) + 62, Y(g.yHeelTop), X(g.xWall) + 62, Y(0), 0, 'HAP ' + fmtPlain(g.hap, u), {});
+    s += svgLine(X(g.xWall), Y(g.yHeelTop), X(g.xWall) + 70, Y(g.yHeelTop), 'ext');
+
+    // notch depth square to the rafter
+    var nx = Math.sin(slopeDeg), ny = -Math.cos(slopeDeg);
+    s += dimension(P.seatIn.x, P.seatIn.y,
+                   P.seatIn.x + nx * res.birdsmouth.notchDepthPerp * k,
+                   P.seatIn.y + ny * res.birdsmouth.notchDepthPerp * k, 0,
+                   'Notch ' + fmtPlain(res.birdsmouth.notchDepthPerp, u), {});
+
+    s += dimension(X(g.xWall - g.plateWidth), Y(-plateThk) - 2, X(g.xWall), Y(-plateThk) - 2, 44,
+      'Plate ' + fmtPlain(g.plateWidth, u), {});
+
+    s += angleMark(P.heel.x, P.heel.y, 52, Math.PI, slopeDeg + Math.PI, ang(a) + ' seat cut');
+    s += angleMark(P.seatIn.x, P.seatIn.y, 40, 0, slopeDeg, ang(90 - a));
+    s += svgText(P.seatIn.x, P.seatIn.y - 54, 'Remaining depth ' + fmtPlain(res.birdsmouth.remainingDepth, u) +
+      ' (' + res.birdsmouth.remainingPercent.toFixed(1) + '%)', 'tx sm mut', 'middle');
+  }
+
+  s += '</svg>';
+  return s;
+}
+
+/* ------------------------------------------------------- hip plan drawing */
+function planSVG(res) {
+  var g = res.geom, u = res.unit;
+  var span = g.span, L = g.buildingLength;
+  var pyramid = false;
+  if (!L || L <= span) { L = span; pyramid = true; }
+
+  var W = 1000, pad = { l: 90, r: 90, t: 74, b: 92 };
+  var ov = g.overhang;
+  var minX = -ov, maxX = L + ov, minY = -ov, maxY = span + ov;
+  var mw = maxX - minX, mh = maxY - minY;
+  var k = Math.min((W - pad.l - pad.r) / mw, 520 / mh);
+  var H = Math.round(mh * k + pad.t + pad.b);
+  var X = function (x) { return pad.l + (x - minX) * k; };
+  var Y = function (y) { return pad.t + (y - minY) * k; };
+
+  var hs = span / 2;
+  var rA = { x: hs, y: hs }, rB = { x: L - hs, y: hs };
+
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+          'aria-label="Roof plan showing hip lines at 45 degrees">';
+  // eave outline (overhang)
+  if (ov > 0) {
+    s += '<rect x="' + X(-ov).toFixed(2) + '" y="' + Y(-ov).toFixed(2) + '" width="' + ((L + 2 * ov) * k).toFixed(2) +
+         '" height="' + ((span + 2 * ov) * k).toFixed(2) + '" fill="none" class="ext" stroke-dasharray="7 5"/>';
+  }
+  // wall line
+  s += '<rect class="tim" x="' + X(0).toFixed(2) + '" y="' + Y(0).toFixed(2) + '" width="' + (L * k).toFixed(2) +
+       '" height="' + (span * k).toFixed(2) + '" fill-opacity="0.35"/>';
+  // ridge
+  if (!pyramid) s += svgLine(X(rA.x), Y(rA.y), X(rB.x), Y(rB.y), 'dim');
+  // hips
+  [[0, 0, rA], [0, span, rA], [L, 0, rB], [L, span, rB]].forEach(function (h) {
+    s += svgLine(X(h[0]), Y(h[1]), X(h[2].x), Y(h[2].y), 'ang');
+  });
+  // one common rafter shown for reference
+  var xc = pyramid ? L / 2 : (rA.x + rB.x) / 2;
+  s += svgLine(X(xc), Y(0), X(xc), Y(hs), 'dim');
+
+  s += dimension(X(xc), Y(0), X(xc), Y(hs), 0, 'Common run ' + fmtPlain(g.halfSpan, u), {});
+  s += dimension(X(0), Y(0), X(rA.x), Y(rA.y), -18, 'Hip run ' + fmtPlain(g.halfSpan * Math.SQRT2, u), {});
+  s += dimension(X(0), Y(span) + 46, X(L), Y(span) + 46, 0, 'Building length ' + fmtPlain(g.buildingLength || L, u), {});
+  s += dimension(X(L) + 46, Y(0), X(L) + 46, Y(span), 0, 'Span ' + fmtPlain(span, u), {});
+  if (!pyramid) s += dimension(X(rA.x), Y(rA.y) - 34, X(rB.x), Y(rB.y) - 34, 0,
+    'Ridge ' + fmtPlain(res.ridge.boardLength, u), {});
+
+  s += angleMark(X(0), Y(0), 52, 0, Math.PI / 4, '45°');
+  s += svgText(X(rA.x) + (X(rB.x) - X(rA.x)) / 2, Y(hs) + 22,
+    'plan view — hips at 45°, run x √2 = ' + fmtPlain(g.halfSpan * Math.SQRT2, u), 'tx sm mut', 'middle');
+  s += '</svg>';
+  return s;
+}
+
+/* --------------------------------------------------------------- rendering */
+function render(res) {
+  var out = $('#out');
+  if (!res.ok) {
+    out.innerHTML = '<div class="card"><div class="err"><strong>Check the inputs:</strong><ul>' +
+      res.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div></div>';
+    return;
+  }
+  var u = res.unit, c = res.common, h = res.hip, v = res.valley, b = res.birdsmouth, p = res.pitch;
+  var html = '';
+
+  html += '<div class="card">';
+  html += '<div class="stats">' +
+    '<div class="stat"><b>' + fmtPlain(c.lineLength, u) + '</b><span>Common, ridge to wall</span></div>' +
+    '<div class="stat"><b>' + fmtPlain(c.overallLength, u) + '</b><span>Common, overall</span></div>' +
+    '<div class="stat"><b>' + fmtPlain(h.overallLength, u) + '</b><span>Hip, overall</span></div>' +
+    '<div class="stat"><b>' + fmtPlain(res.ridge.heightAbovePlate, u) + '</b><span>Ridge above plate</span></div>' +
+    '<div class="stat"><b>' + ang(p.angleDeg) + '</b><span>Pitch angle</span></div>' +
+    '</div>';
+
+  if (res.warnings.length) {
+    html += '<div class="warn"><strong>Worth a second look:</strong><ul>' +
+      res.warnings.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul></div>';
+  }
+  html += '<button class="primary noprint" onclick="window.print()">Print cut card</button>';
+  html += '</div>';
+
+  // ---- pitch conversions
+  html += '<div class="card"><h2>Pitch, in every notation</h2><table><tbody>' +
+    row('Angle', ang(p.angleDeg)) +
+    row('Ratio (rise in 12)', esc(p.ratioText) + (p.inputRatio && p.inputRatio !== p.ratioText ? ' <span class="alt">(entered as ' + esc(p.inputRatio) + ')</span>' : '')) +
+    row('Percent', (Math.round(p.percent * 100) / 100).toFixed(2) + ' %') +
+    row('Rafter length per 12 of run', (Math.round(p.unitLengthPer12 * 1e4) / 1e4).toFixed(4)) +
+    row('Hip length per 12 of common run', (Math.round(h.unitLengthPer12 * 1e4) / 1e4).toFixed(4)) +
+    '</tbody></table></div>';
+
+  // ---- section drawing
+  html += '<div class="card sheet"><h2>Common rafter — section</h2>' + sectionSVG(res, 'full') +
+    '<p class="legend">All lengths are measured along the top edge of the rafter. The run is taken from the face of the ridge board, so half the ridge thickness has already been deducted.</p></div>';
+
+  html += '<div class="card sheet"><h2>Birdsmouth — detail</h2>' + sectionSVG(res, 'detail') +
+    '<p class="legend">Seat cut length follows from HAP and the pitch. The notch depth shown is measured square to the rafter.</p></div>';
+
+  html += '<div class="card sheet"><h2>Roof plan — where the hip run comes from</h2>' + planSVG(res) +
+    '<p class="legend">The hip crosses a square corner whose sides are each one common run, so its plan run is the common run × √2 — not the span × √2.</p></div>';
+
+  // ---- lengths table
+  html += '<div class="card sheet"><h2>Lengths</h2><table><thead><tr><th>Member</th><th>Measurement</th><th class="num">Value</th></tr></thead><tbody>';
+  html += lrow('Common rafter', 'Total run (ridge face to wall face)', c.totalRun, u);
+  html += lrow('Common rafter', 'Line length — ridge plumb cut to heel plumb line', c.lineLength, u);
+  html += lrow('Common rafter', 'Rise over the run', c.rise, u);
+  html += lrow('Common rafter', 'Tail length (sloping) for ' + fmtPlain(c.tailRun, u) + ' of overhang', c.tailLength, u);
+  html += lrow('Common rafter', 'Overall length, both cuts plumb', c.overallLength, u);
+  html += lrow('Common rafter', 'Plumb depth of the stock', c.plumbDepth, u);
+  html += lrow('Ridge', 'Top of ridge above the top of the plate', res.ridge.heightAbovePlate, u);
+  html += lrow('Ridge', 'Deduction applied at the ridge (half its thickness)', c.ridgeDeduction, u);
+  if (res.ridge.boardLength !== null) html += lrow('Ridge', 'Ridge board length for a hipped roof', res.ridge.boardLength, u);
+  html += lrow('Hip rafter', 'Plan run (common run × √2)', h.planRun, u);
+  html += lrow('Hip rafter', 'Line length to the ridge', h.lineLength, u);
+  html += lrow('Hip rafter', 'Tail length', h.tailLength, u);
+  html += lrow('Hip rafter', 'Overall length', h.overallLength, u);
+  if (v) {
+    html += lrow('Valley rafter', 'Plan run (based on a ' + fmtPlain(v.basisSpan, u) + ' intersecting span)', v.planRun, u);
+    html += lrow('Valley rafter', 'Line length', v.lineLength, u);
+    html += lrow('Valley rafter', 'Overall length with tail', v.overallLength, u);
+  }
+  html += lrow('Birdsmouth', 'Seat cut length', b.seatRun, u);
+  html += lrow('Birdsmouth', 'Heel (plumb) cut height', b.heelPlumbHeight, u);
+  html += lrow('Birdsmouth', 'Notch depth, square to the rafter', b.notchDepthPerp, u);
+  html += lrow('Birdsmouth', 'Material left above the notch (' + b.remainingPercent.toFixed(1) + '%)', b.remainingDepth, u);
+  html += lrow('Birdsmouth', 'HAP that gives full bearing on the plate', b.hapForFullBearing, u);
+  html += lrow('Hip rafter', 'Drop, if you drop rather than back the hip', h.dropPlumb, u);
+  html += '</tbody></table></div>';
+
+  // ---- cut card
+  html += '<div class="card sheet"><h2>Cut card</h2><table><thead><tr>' +
+    '<th>Member</th><th>Cut</th><th class="num">Angle from edge</th><th class="num">Saw mitre</th><th class="num">Blade bevel</th><th>Note</th>' +
+    '</tr></thead><tbody>';
+  res.cuts.forEach(function (ct) {
+    html += '<tr><td>' + esc(ct.member) + '</td><td>' + esc(ct.cut) + '</td>' +
+      '<td class="num">' + (ct.fromEdge === null ? '—' : ang(ct.fromEdge)) + '</td>' +
+      '<td class="num">' + (ct.mitre === null ? '—' : ang(ct.mitre)) + '</td>' +
+      '<td class="num">' + (ct.bevel === null ? '—' : ang(ct.bevel)) + '</td>' +
+      '<td class="alt">' + esc(ct.note) + '</td></tr>';
+  });
+  html += '</tbody></table>' +
+    '<p class="legend"><strong>Angle from edge</strong> is the angle between the cut line and the top edge of the rafter — what you mark with a bevel gauge. ' +
+    '<strong>Saw mitre</strong> is the setting away from a square crosscut with the rafter lying flat. ' +
+    '<strong>Blade bevel</strong> is the tilt of the blade; 45° on a hip cheek because the hip runs at 45° in plan.</p>' +
+    '<p class="legend">Hip pitch is ' + ang(h.angleDeg) + ', shallower than the common pitch of ' + ang(p.angleDeg) +
+    ' because the hip covers the same rise over a longer run. Backing bevel on the hip: ' + ang(h.backingAngleDeg) + '.</p>' +
+    '</div>';
+
+  html += '<div class="card"><div class="warn" style="margin:0"><strong>Before you cut.</strong> ' +
+    'These are geometric results from the numbers you typed. Check the span you measured, cut one rafter as a pattern, ' +
+    'offer it up, and only then cut the rest. Member sizes, ridge type, connections and bearing are for a qualified ' +
+    'engineer or building designer — this tool does not address them.</div></div>';
+
+  out.innerHTML = html;
+}
+function row(a, b) { return '<tr><td>' + a + '</td><td>' + b + '</td></tr>'; }
+function lrow(member, what, val, u) {
+  return '<tr><td>' + member + '</td><td>' + what + '</td><td class="num mono">' + fmt(val, u) + '</td></tr>';
+}
+
+/* ------------------------------------------------------------- DOM wiring */
+function readInputs() {
+  return {
+    unit: $('#unit').value,
+    span: $('#span').value,
+    pitchMode: $('#pitchMode').value,
+    pitchValue: $('#pitchVal').value,
+    overhang: $('#overhang').value,
+    ridgeThickness: $('#ridgeT').value,
+    buildingLength: $('#bldgLen').value,
+    rafterDepth: $('#depth').value,
+    rafterThickness: $('#thick').value,
+    plateWidth: $('#plate').value,
+    hap: $('#hap').value,
+    valleySpan: $('#valSpan').value
+  };
+}
+function run() { render(calculateRafter(readInputs())); }
+
+var lengthFields = ['#span', '#overhang', '#ridgeT', '#bldgLen', '#depth', '#thick', '#plate', '#hap', '#valSpan'];
+var currentUnit = 'mm';
+
+$('#unit').addEventListener('change', function () {
+  var next = $('#unit').value;
+  if (next === currentUnit) return;
+  var f = next === 'in' ? 1 / 25.4 : 25.4;
+  lengthFields.forEach(function (sel) {
+    var el = $(sel), v = parseFloat(el.value);
+    if (isFinite(v)) el.value = next === 'in' ? (Math.round(v * f * 100) / 100) : Math.round(v * f);
+  });
+  currentUnit = next;
+  run();
+});
+
+$('#pitchMode').addEventListener('change', function () {
+  // Convert the value shown so switching notation does not change the roof.
+  var res = calculateRafter(readInputs());
+  var mode = $('#pitchMode').value;
+  if (res.ok) {
+    if (mode === 'deg') $('#pitchVal').value = (Math.round(res.pitch.angleDeg * 100) / 100);
+    else if (mode === 'percent') $('#pitchVal').value = (Math.round(res.pitch.percent * 100) / 100);
+    else $('#pitchVal').value = (Math.round(res.pitch.riseIn12 * 100) / 100) + ':12';
+  } else {
+    $('#pitchVal').value = mode === 'ratio' ? '6:12' : (mode === 'deg' ? '26.57' : '50');
+  }
+  run();
+});
+
+$('#fitHap').addEventListener('click', function () {
+  var res = calculateRafter(readInputs());
+  if (res.ok) {
+    var v = res.birdsmouth.hapForFullBearing;
+    $('#hap').value = $('#unit').value === 'in' ? (Math.round(v * 100) / 100) : (Math.round(v * 10) / 10);
+    run();
+  } else { render(res); }
+});
+
+$('#demoImp').addEventListener('click', function () {
+  $('#unit').value = 'in'; currentUnit = 'in';
+  $('#span').value = 288; $('#pitchMode').value = 'ratio'; $('#pitchVal').value = '6:12';
+  $('#overhang').value = 12; $('#ridgeT').value = 1.5; $('#bldgLen').value = 480;
+  $('#depth').value = 9.25; $('#thick').value = 1.5; $('#plate').value = 3.5;
+  $('#hap').value = 8.59; $('#valSpan').value = 288;
+  run();
+});
+
+$('#go').addEventListener('click', run);
+document.querySelectorAll('input,select').forEach(function (el) {
+  el.addEventListener('input', run);
+});
+
+run();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stair Stringer Calculator — Riser, Going &amp; Printable Cutting Template</title>
+<meta name="description" content="Free stair stringer calculator: works out riser height, going, stringer length, stair angle and the dropped-stringer bottom cut. Gives a dimensioned side elevation and a printable marking-out table for laying out a cut stringer. No sign-up, runs offline in your browser.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+/* ---- additions specific to the stair stringer calculator ---- */
+.check{display:flex;gap:10px;align-items:baseline;padding:7px 0;border-bottom:1px solid var(--line);font-size:.92rem}
+.check:last-child{border-bottom:none}
+.badge{font-size:.68rem;text-transform:uppercase;letter-spacing:.05em;border-radius:999px;
+  padding:2px 9px;border:1px solid var(--line);white-space:nowrap;flex:0 0 auto}
+.badge.pass{color:var(--good);border-color:var(--good)}
+.badge.flag{color:var(--warn);border-color:var(--warn)}
+.check b{font-weight:600}
+.check span{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.kv{width:100%;font-size:.93rem}
+.kv td{padding:5px 8px}
+.kv td:first-child{color:var(--muted)}
+.kv td:last-child{text-align:right;font-family:ui-monospace,monospace}
+.floorpc{fill:var(--line);stroke:var(--muted);stroke-width:1.2}
+.stringerpc{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.treadpc{fill:var(--accent);fill-opacity:.3;stroke:var(--accent);stroke-width:1.2}
+.riserpc{fill:var(--accent);fill-opacity:.14;stroke:var(--accent);stroke-width:1}
+.dim{stroke:var(--muted);stroke-width:1.3;fill:none}
+.dimthin{stroke:var(--muted);stroke-width:.9;fill:none;stroke-dasharray:6 6;opacity:.8}
+.pitch{stroke:var(--accent);stroke-width:1.4;fill:none;stroke-dasharray:14 9;opacity:.85}
+.dimtext{fill:var(--ink);font-family:ui-monospace,monospace}
+.dimtext.mut{fill:var(--muted)}
+.mono{font-family:ui-monospace,monospace}
+.frac{color:var(--muted);font-size:.85em}
+@media print{
+  .card{break-inside:avoid}
+  table{font-size:.82rem}
+  h1{font-size:1.3rem}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Stair Stringer Calculator</h1>
+<p class="sub">Enter the floor-to-floor rise and the run you have available, and this works out how many risers you need, the exact riser height, the going, the stair angle and the length of stringer stock to buy. It also gives you the bottom cut for a dropped stringer — the tread-thickness deduction that catches people out — plus a dimensioned side elevation and a marking-out table you can print and take to the bench. Everything runs in your browser; nothing is uploaded and it works offline.</p>
+
+<div class="card noprint">
+  <h2>Stair dimensions</h2>
+  <div class="row">
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+    <div class="f"><label>Total rise (finished floor to finished floor)</label>
+      <input type="number" id="rise" value="2700" min="0" step="0.1"></div>
+    <div class="f"><label>Total run available</label>
+      <input type="number" id="run" value="3800" min="0" step="0.1"></div>
+    <div class="f"><label>Target riser height</label>
+      <input type="number" id="triser" value="175" min="0" step="0.1"></div>
+    <div class="f"><label>Going (run per step)</label>
+      <input type="number" id="going" value="250" min="0" step="0.1"></div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <div class="f"><label>Nosing overhang</label>
+      <input type="number" id="nosing" value="25" min="0" step="0.1"></div>
+    <div class="f"><label>Tread thickness</label>
+      <input type="number" id="tread" value="32" min="0" step="0.1"></div>
+    <div class="f"><label>Finish floor not yet laid (bottom)</label>
+      <input type="number" id="finish" value="18" min="0" step="0.1"></div>
+    <div class="f"><label>Throat (uncut material below notch)</label>
+      <input type="number" id="throat" value="89" min="0" step="0.1"></div>
+    <div class="f"><label style="margin-bottom:3px">Going source</label>
+      <label style="font-size:.9rem;color:var(--ink)"><input type="checkbox" id="fitrun" style="width:auto;margin-right:6px">Fit going to available run</label>
+      <span style="font-size:.78rem;color:var(--muted)">Divides the run you have by the tread count</span></div>
+  </div>
+  <div class="actions">
+    <button class="primary" id="go">Calculate</button>
+    <button id="reset">Reset defaults</button>
+    <button id="print">Print template</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+
+  <h3>What is the bottom cut, and why does my first step come out too tall?</h3>
+  <p>You lay a stringer out as a row of identical triangles, so every notch is the same. But the first tread sits <em>on top</em> of the stringer, which makes the first step taller than all the others by the thickness of the tread. The fix is to shorten the stringer at the bottom by that same amount before you cut the seat — "dropping the stringer". If the finish floor at the bottom of the flight has not been laid yet and you are standing the stringer on bare subfloor, you take off less: drop = tread thickness &minus; finish floor thickness. That single subtraction is the most common reason a newly built flight has one step that feels wrong underfoot.</p>
+
+  <h3>Do I use the going or the tread depth for the layout?</h3>
+  <p>The going. That is the horizontal distance from one riser face to the next, and it is what you mark on the stringer with the framing square. The tread board is wider than the going because it overhangs with a nosing — the tool shows both, and the nosing does not change the stringer layout at all. It only changes the board you buy.</p>
+
+  <h3>Which stringer length number do I order material to?</h3>
+  <p>Use the "stock length per stringer" figure, not the diagonal. The diagonal is the straight line from the bottom of the first riser to the top of the last one; the actual board has to run past that at both ends to leave a seat cut at the bottom and a plumb cut at the top, and it has to be wide enough to keep the throat you specified below the deepest notch. The tool reports the minimum board width it needs — if that number comes out above about 235 mm (9¼ in) you are past what a 2×10 will do and you need a 2×12, or a laminated/engineered stringer.</p>
+
+  <h3>What this tool does not do</h3>
+  <p>It handles a single straight flight with equal risers, on a level floor. It does not do winders, landings, curved or tapered flights, and it does not calculate headroom, handrail heights, guard spacing or fixings — measure your headroom separately before you commit to a riser count. The comfort ranges it flags (riser 150&ndash;200 mm, going 250 mm and up, 2&times;riser + going between 600 and 640 mm) are common rules of thumb used in the trade for a flight that walks well; they are not a code check and this tool makes no claim about compliance with any building regulation in your jurisdiction. Whatever you build, check it against the rules that apply where you are, and against the inspector who will actually look at it.</p>
+</div>
+
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./rafter-calculator.html" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li><li style="margin:4px 0"><a href="./stud-wall-layout.html" style="color:var(--accent)">Stud Wall Layout Calculator</a> <span style="color:var(--muted)">— Stud positions with the first-stud correction so sheet edges land on framing, plus the material list.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Check every figure against the actual opening before you cut — measure the rise in three places, floors are rarely level.
+</footer>
+</div>
+
+<script>
+/* ===== PURE CALC START =====
+ * computeStairStringer(input) -> results object.
+ * No DOM, no globals beyond this block. Unit-agnostic arithmetic: every length
+ * is in the unit given by input.unit ('mm' or 'in'). Only the comfort checks
+ * convert to mm, because those thresholds are stated in mm.
+ */
+var MM_PER_IN = 25.4;
+
+function computeStairStringer(input) {
+  input = input || {};
+  var unit = (input.unit === 'in') ? 'in' : 'mm';
+  var toMM = (unit === 'in') ? MM_PER_IN : 1;   // value * toMM -> millimetres
+
+  function num(v) {
+    if (v === null || v === undefined || v === '') return NaN;
+    var n = (typeof v === 'string') ? parseFloat(v) : v;
+    return (typeof n === 'number' && isFinite(n)) ? n : NaN;
+  }
+  function opt(v, dflt) { var n = num(v); return isNaN(n) ? dflt : n; }
+  function r2(v) { return Math.round(v * 1e6) / 1e6; }
+
+  var errors = [];
+  var warnings = [];
+
+  var totalRise      = num(input.totalRise);
+  var totalRunAvail  = opt(input.totalRun, 0);
+  var targetRiser    = num(input.targetRiser);
+  var goingWanted    = num(input.going);
+  var nosing         = opt(input.nosing, 0);
+  var treadThickness = opt(input.treadThickness, 0);
+  var floorFinish    = opt(input.floorFinish, 0);
+  var throat         = opt(input.throat, unit === 'in' ? 3.5 : 89);
+  var fitRun         = !!input.fitRun;
+
+  /* ---- input validation: never throw, never divide by zero ---- */
+  if (isNaN(totalRise))        errors.push('Total rise is missing or not a number.');
+  else if (totalRise <= 0)     errors.push('Total rise must be greater than zero.');
+
+  if (isNaN(targetRiser))      errors.push('Target riser height is missing or not a number.');
+  else if (targetRiser <= 0)   errors.push('Target riser height must be greater than zero.');
+
+  if (fitRun) {
+    if (!(totalRunAvail > 0))  errors.push('To fit the going to the available run, enter a total run greater than zero.');
+  } else {
+    if (isNaN(goingWanted))    errors.push('Going is missing or not a number.');
+    else if (goingWanted <= 0) errors.push('Going must be greater than zero.');
+  }
+  if (totalRunAvail < 0)       errors.push('Total run available cannot be negative.');
+  if (nosing < 0)              errors.push('Nosing overhang cannot be negative.');
+  if (treadThickness < 0)      errors.push('Tread thickness cannot be negative.');
+  if (floorFinish < 0)         errors.push('Finish floor thickness cannot be negative.');
+  if (throat < 0)              throat = 0;
+
+  if (errors.length) {
+    return { ok: false, unit: unit, errors: errors, warnings: [], checks: [],
+             marks: [], alternatives: [] };
+  }
+
+  /* ---- riser count and exact riser height ----
+   * Round to the nearest whole number of risers, then divide the rise back out
+   * so every riser is identical. Never round the riser height itself: a 0.5 mm
+   * rounding repeated 16 times is 8 mm of error at the top step. */
+  var riserCount = Math.max(1, Math.round(totalRise / targetRiser));
+  if (riserCount > 60) {
+    return { ok: false, unit: unit, marks: [], alternatives: [], checks: [], warnings: [],
+             errors: ['That works out at ' + riserCount + ' risers. Check your units — the rise and the target riser height look inconsistent.'] };
+  }
+  var riserHeight = totalRise / riserCount;
+  var treadCount  = riserCount - 1;   // top "tread" is the upper floor itself
+
+  /* ---- going ---- */
+  var going;
+  if (fitRun && treadCount > 0) going = totalRunAvail / treadCount;
+  else if (fitRun)              going = goingWanted > 0 ? goingWanted : totalRunAvail;
+  else                          going = goingWanted;
+  if (!(going > 0)) {
+    return { ok: false, unit: unit, marks: [], alternatives: [], checks: [], warnings: [],
+             errors: ['The going worked out at zero or less. With ' + riserCount + ' riser(s) there ' +
+                      (treadCount === 1 ? 'is 1 tread' : 'are ' + treadCount + ' treads') + '.'] };
+  }
+
+  var treadDepth   = going + nosing;                 // board width you actually buy
+  var totalRunUsed = treadCount * going;
+  var runSlack     = totalRunAvail > 0 ? (totalRunAvail - totalRunUsed) : null;
+
+  /* ---- geometry ---- */
+  var stepDiagonal     = Math.sqrt(riserHeight * riserHeight + going * going);
+  var angleDeg         = Math.atan2(riserHeight, going) * 180 / Math.PI;
+  var pitchLineLength  = treadCount * stepDiagonal;                       // corner to corner
+  var stringerDiagonal = Math.sqrt(totalRise * totalRise + totalRunUsed * totalRunUsed);
+
+  /* ---- dropped stringer ----
+   * The tread sits on the notch, so the built first riser is riserHeight +
+   * treadThickness unless we shorten the stringer. If the bottom finish floor
+   * is still to be laid, the stringer stands proud of it by floorFinish, so we
+   * take off less. drop = treadThickness - floorFinish (can be negative, which
+   * means the stringer has to be packed UP off the subfloor). */
+  var drop          = treadThickness - floorFinish;
+  var firstRiserCut = riserHeight - drop;   // height of the bottom plumb cut as sawn
+  var stringerTopAboveBase = riserCount * riserHeight - drop;
+
+  if (drop < 0) {
+    warnings.push('The finish floor at the bottom is thicker than the tread, so the drop is negative: pack the stringer up off the subfloor by ' +
+      Math.abs(r2(drop)) + ' ' + unit + ' instead of cutting it down.');
+  }
+  if (firstRiserCut <= 0) {
+    warnings.push('The bottom deduction (' + r2(drop) + ' ' + unit + ') is as big as a riser. There is nothing left of the first riser cut — re-check the tread thickness.');
+  }
+
+  /* ---- material ----
+   * Work in as-built coordinates: y = 0 at the bottom finished floor, the
+   * stringer standing on the subfloor at y = -floorFinish, notch corners on the
+   * pitch line y = (R/G)x + (R - treadThickness).
+   * Project every corner of the cut board onto the pitch direction; the spread
+   * is the board length actually needed, seat cut and plumb cut included.
+   * Notch depth is measured perpendicular to the pitch line — that is what
+   * limits how narrow a board you can get away with. */
+  var L = stepDiagonal;
+  var notchDepth    = going * riserHeight / L;
+  var minBoardWidth = notchDepth + throat;
+
+  // highest point of the top plumb cut
+  var maxProj = (treadCount * going * going +
+                 (riserCount * riserHeight - treadThickness) * riserHeight) / L;
+  // bottom seat cut: front corner on the subfloor, and where the back edge meets it
+  var xBottomBack   = (going / riserHeight) * (drop - riserHeight) + throat * L / riserHeight;
+  var pBottomFront  = (-floorFinish * riserHeight) / L;
+  var pBottomBack   = (xBottomBack * going - floorFinish * riserHeight) / L;
+  var minProj       = Math.min(pBottomFront, pBottomBack);
+  var boardLength   = maxProj - minProj;
+
+  /* ---- comfort checks: rules of thumb, not a code check ---- */
+  var riserMM = riserHeight * toMM;
+  var goingMM = going * toMM;
+  var rule    = 2 * riserHeight + going;
+  var ruleMM  = rule * toMM;
+
+  var checks = [];
+  function check(label, value, pass, note) {
+    checks.push({ label: label, value: value, status: pass ? 'ok' : 'flag',
+                  note: pass ? null : note });
+    if (!pass) warnings.push(note);
+  }
+
+  check('Riser height', riserHeight,
+    riserMM >= 150 - 1e-9 && riserMM <= 200 + 1e-9,
+    'Riser is ' + Math.round(riserMM) + ' mm, outside the 150–200 mm range most people find comfortable. ' +
+    (riserMM > 200 ? 'Add a riser to bring it down.' : 'Remove a riser to bring it up.'));
+
+  check('Going', going,
+    goingMM >= 250 - 1e-9,
+    'Going is ' + Math.round(goingMM) + ' mm. Under about 250 mm there is not enough room for a full foot on the tread.');
+
+  check('2 × riser + going', rule,
+    ruleMM >= 600 - 1e-9 && ruleMM <= 640 + 1e-9,
+    '2R + G is ' + Math.round(ruleMM) + ' mm, outside the usual 600–640 mm comfort band. ' +
+    (ruleMM > 640 ? 'The steps will feel stretched.' : 'The steps will feel cramped.'));
+
+  if (totalRunAvail > 0) {
+    check('Fits the run available', totalRunUsed,
+      totalRunUsed <= totalRunAvail + 1e-9,
+      'The flight needs ' + r2(Math.round(totalRunUsed * 10) / 10) + ' ' + unit + ' of run but only ' +
+      r2(totalRunAvail) + ' ' + unit + ' is available — over by ' +
+      r2(Math.round((totalRunUsed - totalRunAvail) * 10) / 10) + ' ' + unit +
+      '. Reduce the going to ' + r2(Math.round((totalRunAvail / Math.max(1, treadCount)) * 10) / 10) +
+      ' ' + unit + ' or add a riser.');
+  }
+
+  /* ---- alternative riser counts, so the flags are actionable ---- */
+  var alternatives = [];
+  for (var n = riserCount - 2; n <= riserCount + 2; n++) {
+    if (n < 1) continue;
+    var rh = totalRise / n;
+    var rhMM = rh * toMM;
+    alternatives.push({
+      riserCount: n,
+      riserHeight: rh,
+      treadCount: n - 1,
+      runNeeded: (n - 1) * going,
+      rule: 2 * rh + going,
+      comfortable: rhMM >= 150 - 1e-9 && rhMM <= 200 + 1e-9,
+      current: n === riserCount
+    });
+  }
+
+  /* ---- marking-out table ----
+   * Datum = the bottom front corner of the layout triangle, i.e. the face of
+   * the first riser at the bottom of the flight, BEFORE the drop is taken off.
+   * runMark / riseMark are cumulative so framing-square error does not stack.
+   * alongPitch is the tape distance from the first notch corner, measured
+   * along the pitch line — the fastest way to check the layout end to end. */
+  var marks = [];
+  for (var i = 1; i <= riserCount; i++) {
+    marks.push({
+      step: i,
+      runMark: (i - 1) * going,
+      riseMark: i * riserHeight,
+      alongPitch: (i - 1) * stepDiagonal,
+      treadTop: (i <= treadCount) ? i * riserHeight : null,   // above bottom finished floor
+      isTopRiser: i === riserCount
+    });
+  }
+
+  return {
+    ok: true,
+    unit: unit,
+    errors: errors,
+    warnings: warnings,
+    checks: checks,
+
+    /* echoed inputs, cleaned */
+    totalRise: totalRise,
+    totalRunAvailable: totalRunAvail > 0 ? totalRunAvail : null,
+    targetRiser: targetRiser,
+    nosing: nosing,
+    treadThickness: treadThickness,
+    floorFinish: floorFinish,
+    throat: throat,
+
+    /* the numbers you cut to */
+    riserCount: riserCount,
+    treadCount: treadCount,
+    riserHeight: riserHeight,
+    going: going,
+    treadDepth: treadDepth,
+    totalRunUsed: totalRunUsed,
+    runSlack: runSlack,
+    angleDeg: angleDeg,
+    stepDiagonal: stepDiagonal,
+    pitchLineLength: pitchLineLength,
+    stringerDiagonal: stringerDiagonal,
+
+    drop: drop,
+    firstRiserCut: firstRiserCut,
+    topRiserCut: riserHeight,
+    stringerTopAboveBase: stringerTopAboveBase,
+
+    notchDepth: notchDepth,
+    minBoardWidth: minBoardWidth,
+    boardLength: boardLength,
+    rule2RG: rule,
+
+    alternatives: alternatives,
+    marks: marks
+  };
+}
+/* ===== PURE CALC END ===== */
+
+
+/* ---------- formatting ---------- */
+function fmtLen(v, unit) {
+  if (v === null || v === undefined || !isFinite(v)) return '—';
+  if (unit === 'in') return (Math.round(v * 1000) / 1000).toFixed(3);
+  return (Math.round(v * 10) / 10).toFixed(1);
+}
+/** Nearest 1/16 in, for people working off a tape rather than a calculator. */
+function toFraction(v) {
+  if (!isFinite(v)) return '';
+  var sign = v < 0 ? '-' : '';
+  v = Math.abs(v);
+  var whole = Math.floor(v);
+  var num = Math.round((v - whole) * 16);
+  if (num === 16) { whole++; num = 0; }
+  if (num === 0) return sign + whole + '"';
+  var den = 16;
+  while (num % 2 === 0) { num /= 2; den /= 2; }
+  return sign + (whole ? whole + ' ' : '') + num + '/' + den + '"';
+}
+function unitCell(v, unit) {
+  if (v === null || v === undefined || !isFinite(v)) return '—';
+  if (unit === 'in') return fmtLen(v, unit) + ' <span class="frac">' + toFraction(v) + '</span>';
+  return fmtLen(v, unit);
+}
+
+/* ---------- SVG side elevation ---------- */
+function buildSvg(r) {
+  var N = r.riserCount, R = r.riserHeight, G = r.going, U = r.unit;
+  var T = r.treadThickness, F = r.floorFinish, nose = r.nosing, throat = r.throat;
+  var rise = r.totalRise;
+  var run = r.totalRunUsed > 0 ? r.totalRunUsed : G;   // degenerate single-riser case
+  var L = r.stepDiagonal;
+
+  var landing  = Math.max(G * 0.85, run * 0.10);
+  var floorThk = Math.max(R * 0.6, F + T);
+
+  // Screen y grows downward: sy = rise - y
+  function Y(y) { return rise - y; }
+
+  // Font size is derived from the stair itself, not from the viewBox, so the
+  // padding maths below stays non-circular and labels never fall off the edge.
+  var fs   = Math.max(run, rise) / 42;
+  var fsS  = Math.min(fs * 0.88, R * 0.42);   // in-drawing callouts must fit inside one step
+  var tick = fs * 0.4;
+
+  var padL = landing + G * 0.55 + fs * 2.0;
+  var padR = landing + fs * 2.0;
+  var padT = Math.max(R * 0.8, fs * 1.5);
+  var padB = floorThk + R * 0.95 + fs * 3.4;
+
+  var vbX = -padL, vbY = -padT;
+  var vbW = run + padL + padR;
+  var vbH = rise + padT + padB;
+
+  var s = '<svg viewBox="' + f(vbX) + ' ' + f(vbY) + ' ' + f(vbW) + ' ' + f(vbH) +
+          '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Side elevation of the stair with dimensions">';
+
+  function f(v) { return Math.round(v * 100) / 100; }
+
+  /* floors */
+  s += '<rect class="floorpc" x="' + f(-landing) + '" y="' + f(Y(0)) + '" width="' + f(landing) + '" height="' + f(floorThk) + '"/>';
+  s += '<rect class="floorpc" x="' + f(run) + '" y="' + f(Y(rise)) + '" width="' + f(landing) + '" height="' + f(floorThk) + '"/>';
+
+  /* stringer profile, drawn as built (bottom sits on the subfloor, F below the
+     finished floor; tread seats sit T below each tread surface) */
+  var pts = [];
+  pts.push([0, -F]);
+  for (var i = 1; i <= N - 1; i++) {
+    pts.push([(i - 1) * G, i * R - T]);
+    pts.push([i * G, i * R - T]);
+  }
+  if (N === 1) pts.push([0, R - T]);
+  pts.push([(N - 1) * G, N * R - T]);
+  // back edge: y = (R/G)x + (R - T) - throat*L/G   (offset perpendicular by throat)
+  var backAt = function (x) { return (R / G) * x + (R - T) - throat * L / G; };
+  pts.push([(N - 1) * G, backAt((N - 1) * G)]);
+  var xBottomBack = (G / R) * (r.drop - R) + throat * L / R;   // back edge meets the subfloor
+  pts.push([xBottomBack, -F]);
+  var poly = pts.map(function (p) { return f(p[0]) + ',' + f(Y(p[1])); }).join(' ');
+  s += '<polygon class="stringerpc" points="' + poly + '"/>';
+
+  /* treads and risers */
+  for (var t = 1; t <= N - 1; t++) {
+    s += '<rect class="treadpc" x="' + f((t - 1) * G - nose) + '" y="' + f(Y(t * R)) +
+         '" width="' + f(G + nose) + '" height="' + f(Math.max(T, R * 0.06)) + '"/>';
+  }
+  for (var v = 1; v <= N; v++) {
+    s += '<rect class="riserpc" x="' + f((v - 1) * G - Math.max(T, R * 0.06) * 0.5) + '" y="' + f(Y(v * R)) +
+         '" width="' + f(Math.max(T, R * 0.06)) + '" height="' + f(R) + '"/>';
+  }
+
+  /* pitch line — through the notch corners, which is the line you actually
+     strike on the board (slope R/G, not the overall rise-over-run diagonal) */
+  s += '<line class="pitch" x1="' + f(-G * 0.25) + '" y1="' + f(Y(R - T - (R / G) * G * 0.25)) +
+       '" x2="' + f((N - 1) * G) + '" y2="' + f(Y(N * R - T)) + '"/>';
+
+  /* total rise dimension, to the left */
+  var xR = -landing - G * 0.55;
+  s += '<line class="dim" x1="' + f(xR) + '" y1="' + f(Y(0)) + '" x2="' + f(xR) + '" y2="' + f(Y(rise)) + '"/>';
+  s += '<line class="dim" x1="' + f(xR - tick) + '" y1="' + f(Y(0)) + '" x2="' + f(xR + tick) + '" y2="' + f(Y(0)) + '"/>';
+  s += '<line class="dim" x1="' + f(xR - tick) + '" y1="' + f(Y(rise)) + '" x2="' + f(xR + tick) + '" y2="' + f(Y(rise)) + '"/>';
+  s += '<line class="dimthin" x1="' + f(xR) + '" y1="' + f(Y(rise)) + '" x2="' + f(run) + '" y2="' + f(Y(rise)) + '"/>';
+  s += '<text class="dimtext" transform="translate(' + f(xR - fs * 0.5) + ',' + f(Y(rise / 2)) +
+       ') rotate(-90)" text-anchor="middle" style="font-size:' + f(fs) + 'px">total rise ' + fmtLen(rise, U) + ' ' + U + '</text>';
+
+  /* total run dimension, below */
+  var yRun = Y(0) + floorThk + R * 0.95;
+  s += '<line class="dim" x1="0" y1="' + f(yRun) + '" x2="' + f(run) + '" y2="' + f(yRun) + '"/>';
+  s += '<line class="dim" x1="0" y1="' + f(yRun - tick) + '" x2="0" y2="' + f(yRun + tick) + '"/>';
+  s += '<line class="dim" x1="' + f(run) + '" y1="' + f(yRun - tick) + '" x2="' + f(run) + '" y2="' + f(yRun + tick) + '"/>';
+  s += '<line class="dimthin" x1="' + f(run) + '" y1="' + f(Y(rise)) + '" x2="' + f(run) + '" y2="' + f(yRun) + '"/>';
+  s += '<text class="dimtext" x="' + f(run / 2) + '" y="' + f(yRun + fs * 1.4) +
+       '" text-anchor="middle" style="font-size:' + f(fs) + 'px">total run ' + fmtLen(r.totalRunUsed, U) + ' ' + U +
+       ' (' + r.treadCount + ' × ' + fmtLen(G, U) + ')</text>';
+
+  /* one going called out on the second tread: the space directly above a tread
+     is open, so the label goes there, sized to fit inside one riser height */
+  var st = Math.max(1, Math.min(2, r.treadCount));   // never point at the upper floor
+  var xg1 = (st - 1) * G, xg2 = st * G, yg = st * R;
+  if (r.treadCount >= 1) {
+    s += '<line class="dim" x1="' + f(xg1) + '" y1="' + f(Y(yg)) + '" x2="' + f(xg2) + '" y2="' + f(Y(yg)) + '"/>';
+    s += '<line class="dim" x1="' + f(xg1) + '" y1="' + f(Y(yg) - tick) + '" x2="' + f(xg1) + '" y2="' + f(Y(yg) + tick) + '"/>';
+    s += '<line class="dim" x1="' + f(xg2) + '" y1="' + f(Y(yg) - tick) + '" x2="' + f(xg2) + '" y2="' + f(Y(yg) + tick) + '"/>';
+    s += '<text class="dimtext" x="' + f((xg1 + xg2) / 2) + '" y="' + f(Y(yg) - fsS * 0.32) +
+         '" text-anchor="middle" style="font-size:' + f(fsS) + 'px">G ' + fmtLen(G, U) + '</text>';
+  }
+
+  /* one riser called out to the left of the flight, clear of the steps */
+  var xr2 = -Math.max(G * 0.35, fs * 1.5);
+  s += '<line class="dim" x1="' + f(xr2) + '" y1="' + f(Y((st - 1) * R)) + '" x2="' + f(xr2) + '" y2="' + f(Y(st * R)) + '"/>';
+  s += '<line class="dim" x1="' + f(xr2 - tick) + '" y1="' + f(Y((st - 1) * R)) + '" x2="' + f(xr2 + tick) + '" y2="' + f(Y((st - 1) * R)) + '"/>';
+  s += '<line class="dim" x1="' + f(xr2 - tick) + '" y1="' + f(Y(st * R)) + '" x2="' + f(xr2 + tick) + '" y2="' + f(Y(st * R)) + '"/>';
+  s += '<line class="dimthin" x1="' + f(xr2) + '" y1="' + f(Y(st * R)) + '" x2="' + f((st - 1) * G) + '" y2="' + f(Y(st * R)) + '"/>';
+  s += '<line class="dimthin" x1="' + f(xr2) + '" y1="' + f(Y((st - 1) * R)) + '" x2="' + f((st - 1) * G) + '" y2="' + f(Y((st - 1) * R)) + '"/>';
+  s += '<text class="dimtext" transform="translate(' + f(xr2 - fsS * 0.45) + ',' + f(Y((st - 0.5) * R)) +
+       ') rotate(-90)" text-anchor="middle" style="font-size:' + f(fsS) + 'px">R ' + fmtLen(R, U) + '</text>';
+
+  /* angle arc at the foot */
+  var ar = Math.min(run, rise) * 0.2 + G * 0.1;
+  var th = r.angleDeg * Math.PI / 180;
+  s += '<path class="dim" d="M ' + f(ar) + ' ' + f(Y(0)) + ' A ' + f(ar) + ' ' + f(ar) + ' 0 0 0 ' +
+       f(ar * Math.cos(th)) + ' ' + f(Y(ar * Math.sin(th))) + '"/>';
+  s += '<text class="dimtext" x="' + f(ar * 1.1) + '" y="' + f(Y(0) - ar * 0.14) +
+       '" style="font-size:' + f(fs * 0.9) + 'px">' + (Math.round(r.angleDeg * 10) / 10) + '°</text>';
+
+  /* bottom cut callout, clear of the lower floor slab */
+  var yc = Y(0) + floorThk + fs * 0.95;
+  s += '<text class="dimtext mut" x="' + f(-landing * 0.5) + '" y="' + f(yc) +
+       '" text-anchor="middle" style="font-size:' + f(fs * 0.78) + 'px">drop ' + fmtLen(r.drop, U) + '</text>';
+  s += '<text class="dimtext mut" x="' + f(-landing * 0.5) + '" y="' + f(yc + fs * 0.95) +
+       '" text-anchor="middle" style="font-size:' + f(fs * 0.78) + 'px">1st riser cut ' + fmtLen(r.firstRiserCut, U) + '</text>';
+
+  s += '</svg>';
+  return s;
+}
+
+/* ---------- UI ---------- */
+var $ = function (sel) { return document.querySelector(sel); };
+var FIELDS = ['rise', 'run', 'triser', 'going', 'nosing', 'tread', 'finish', 'throat'];
+var DEFAULTS = {
+  mm: { rise: 2700, run: 3800, triser: 175, going: 250, nosing: 25, tread: 32, finish: 18, throat: 89 },
+  in: { rise: 106.25, run: 149.5, triser: 6.875, going: 9.875, nosing: 1, tread: 1.0625, finish: 0.75, throat: 3.5 }
+};
+var currentUnit = 'mm';
+
+function readInputs() {
+  return {
+    unit: $('#unit').value,
+    totalRise: $('#rise').value,
+    totalRun: $('#run').value,
+    targetRiser: $('#triser').value,
+    going: $('#going').value,
+    nosing: $('#nosing').value,
+    treadThickness: $('#tread').value,
+    floorFinish: $('#finish').value,
+    throat: $('#throat').value,
+    fitRun: $('#fitrun').checked
+  };
+}
+
+function esc(t) { var d = document.createElement('div'); d.textContent = String(t); return d.innerHTML; }
+
+function render() {
+  var res = computeStairStringer(readInputs());
+  var out = $('#out');
+  var U = res.unit;
+
+  if (!res.ok) {
+    out.innerHTML = '<div class="card"><div class="warn"><strong>Cannot calculate yet.</strong><ul style="margin:6px 0 0 18px;padding:0">' +
+      res.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div></div>';
+    return;
+  }
+
+  var v = function (x) { return unitCell(x, U); };
+  var h = '';
+
+  h += '<div class="card">';
+  h += '<div class="stats">' +
+    '<div class="stat"><b>' + res.riserCount + '</b><span>Risers</span></div>' +
+    '<div class="stat"><b>' + fmtLen(res.riserHeight, U) + '</b><span>Riser height ' + U + '</span></div>' +
+    '<div class="stat"><b>' + res.treadCount + '</b><span>Treads</span></div>' +
+    '<div class="stat"><b>' + fmtLen(res.going, U) + '</b><span>Going ' + U + '</span></div>' +
+    '<div class="stat"><b>' + (Math.round(res.angleDeg * 10) / 10) + '°</b><span>Stair angle</span></div>' +
+    '<div class="stat"><b>' + fmtLen(res.boardLength, U) + '</b><span>Stock per stringer ' + U + '</span></div>' +
+    '</div>';
+
+  if (res.warnings.length) {
+    h += '<div class="warn"><strong>Worth a second look:</strong><ul style="margin:6px 0 0 18px;padding:0">' +
+      res.warnings.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul></div>';
+  }
+  h += '<button class="primary noprint" onclick="window.print()">Print template</button>';
+  h += '</div>';
+
+  /* elevation */
+  h += '<div class="card sheet"><h2>Side elevation</h2>' + buildSvg(res) +
+       '<p class="faq" style="margin:10px 0 0"><span style="color:var(--muted);font-size:.88rem">' +
+       'Drawn to scale from your figures. The dashed line is the pitch line, struck through the notch corners. The stringer stands on the subfloor with the bottom already dropped by ' +
+       fmtLen(res.drop, U) + ' ' + U + '.</span></p></div>';
+
+  /* numbers */
+  h += '<div class="card"><h2>Cutting figures</h2><div class="grid2">';
+
+  h += '<table class="kv"><tbody>' +
+    row('Risers', res.riserCount) +
+    row('Riser height (each)', v(res.riserHeight)) +
+    row('Treads', res.treadCount) +
+    row('Going (riser face to riser face)', v(res.going)) +
+    row('Tread board depth (going + nosing)', v(res.treadDepth)) +
+    row('Total rise', v(res.totalRise)) +
+    row('Total run used', v(res.totalRunUsed)) +
+    row('Run left over', res.runSlack === null ? '—' : v(res.runSlack)) +
+    row('Stair angle', (Math.round(res.angleDeg * 100) / 100) + '°') +
+    '</tbody></table>';
+
+  h += '<table class="kv"><tbody>' +
+    row('Bottom cut (drop)', v(res.drop)) +
+    row('First riser cut, as sawn', v(res.firstRiserCut)) +
+    row('Top riser cut', v(res.topRiserCut)) +
+    row('Stringer top above its base', v(res.stringerTopAboveBase)) +
+    row('One step along the pitch line', v(res.stepDiagonal)) +
+    row('Pitch line, first to last notch', v(res.pitchLineLength)) +
+    row('Overall diagonal', v(res.stringerDiagonal)) +
+    row('Notch depth (perpendicular)', v(res.notchDepth)) +
+    row('Minimum board width', v(res.minBoardWidth)) +
+    row('Stock length per stringer', v(res.boardLength)) +
+    '</tbody></table>';
+
+  h += '</div></div>';
+
+  /* checks */
+  h += '<div class="card"><h2>Comfort checks — rules of thumb, not a code check</h2>';
+  res.checks.forEach(function (c) {
+    h += '<div class="check"><span class="badge ' + (c.status === 'ok' ? 'pass">ok' : 'flag">check') + '</span>' +
+      '<b>' + esc(c.label) + ':</b> <span class="mono">' + fmtLen(c.value, U) + ' ' + U + '</span>' +
+      (c.status === 'ok' ? '' : ' <span>— ' + esc(c.note) + '</span>') + '</div>';
+  });
+  h += '<p style="color:var(--muted);font-size:.86rem;margin:12px 0 0">Ranges used: riser 150–200 mm, going 250 mm minimum, 2×riser + going 600–640 mm. These are common trade rules of thumb for a flight that walks comfortably. They are not a regulatory check — verify against the rules that apply where you are building.</p>';
+  h += '</div>';
+
+  /* alternatives */
+  h += '<div class="card noprint"><h2>If you change the riser count</h2><table><thead><tr>' +
+    '<th>Risers</th><th>Riser height</th><th>Treads</th><th>Run needed</th><th>2R + G</th><th></th></tr></thead><tbody>';
+  res.alternatives.forEach(function (a) {
+    h += '<tr' + (a.current ? ' style="font-weight:600"' : '') + '><td>' + a.riserCount + '</td><td>' +
+      v(a.riserHeight) + '</td><td>' + a.treadCount + '</td><td>' + v(a.runNeeded) + '</td><td>' +
+      v(a.rule) + '</td><td>' + (a.current ? 'current' : (a.comfortable ? '' : 'riser out of range')) + '</td></tr>';
+  });
+  h += '</tbody></table></div>';
+
+  /* marking table */
+  h += '<div class="card sheet"><h2>Marking out the stringer</h2>' +
+    '<p style="color:var(--muted);font-size:.9rem;margin:0 0 12px">All measurements are cumulative from the datum — the face of the bottom riser, before the drop is taken off. ' +
+    'Mark them all from the datum rather than step to step, so square error does not stack up. ' +
+    '<strong>Then</strong> take ' + fmtLen(res.drop, U) + ' ' + U + ' off the bottom before cutting the seat.</p>' +
+    '<table><thead><tr><th>Step</th><th>Run mark (X)</th><th>Rise mark (Y)</th><th>Along pitch line</th><th>Tread top above lower floor</th></tr></thead><tbody>';
+  res.marks.forEach(function (m) {
+    h += '<tr><td>' + m.step + (m.isTopRiser ? ' <span style="color:var(--muted)">top riser</span>' : '') + '</td><td class="mono">' +
+      v(m.runMark) + '</td><td class="mono">' + v(m.riseMark) + '</td><td class="mono">' + v(m.alongPitch) + '</td><td class="mono">' +
+      (m.treadTop === null ? 'upper floor' : v(m.treadTop)) + '</td></tr>';
+  });
+  h += '</tbody></table>';
+  h += '<table class="kv" style="margin-top:14px"><tbody>' +
+    row('Bottom seat cut: shorten by', v(res.drop)) +
+    row('Board: minimum width', v(res.minBoardWidth)) +
+    row('Board: length per stringer', v(res.boardLength)) +
+    '</tbody></table></div>';
+
+  out.innerHTML = h;
+}
+
+function row(k, val) { return '<tr><td>' + k + '</td><td>' + val + '</td></tr>'; }
+
+/* unit switch converts the values in place rather than throwing them away */
+$('#unit').addEventListener('change', function () {
+  var next = $('#unit').value;
+  if (next === currentUnit) return;
+  var factor = (next === 'in') ? (1 / 25.4) : 25.4;
+  FIELDS.forEach(function (id) {
+    var el = $('#' + id);
+    var n = parseFloat(el.value);
+    if (isFinite(n)) el.value = String(next === 'in' ? Math.round(n * factor * 1000) / 1000
+                                                    : Math.round(n * factor * 10) / 10);
+  });
+  currentUnit = next;
+  render();
+});
+
+FIELDS.forEach(function (id) { $('#' + id).addEventListener('input', render); });
+$('#fitrun').addEventListener('change', function () {
+  $('#going').disabled = $('#fitrun').checked;
+  render();
+});
+$('#go').addEventListener('click', render);
+$('#print').addEventListener('click', function () { window.print(); });
+$('#reset').addEventListener('click', function () {
+  var d = DEFAULTS[currentUnit];
+  FIELDS.forEach(function (id) { $('#' + id).value = d[id]; });
+  $('#fitrun').checked = false;
+  $('#going').disabled = false;
+  render();
+});
+
+render();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cut List Optimizer — Plywood &amp; Sheet Goods, Kerf &amp; Grain Aware</title>
+<meta name="description" content="Free cut list optimizer for plywood, MDF and sheet goods. Accounts for saw kerf and grain direction, shows scaled cutting diagrams and a printable cut list. No sign-up, runs entirely in your browser.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Cut List Optimizer</h1>
+<p class="sub">Work out how to cut your parts from full sheets with the least waste. Accounts for saw kerf and grain direction, and gives you scaled diagrams plus a printable cut list. Everything runs in your browser — nothing is uploaded, no sign-up.</p>
+
+<div class="card noprint">
+  <h2>Sheet stock</h2>
+  <div class="row">
+    <div class="f"><label>Preset</label>
+      <select id="preset">
+        <option value="2440,1220">2440 × 1220 mm (8×4 ft)</option>
+        <option value="2500,1250">2500 × 1250 mm</option>
+        <option value="3050,1220">3050 × 1220 mm (10×4 ft)</option>
+        <option value="2440,610">2440 × 610 mm</option>
+        <option value="">Custom…</option>
+      </select></div>
+    <div class="f"><label>Sheet length</label><input type="number" id="sw" value="2440" min="1"></div>
+    <div class="f"><label>Sheet width</label><input type="number" id="sh" value="1220" min="1"></div>
+    <div class="f"><label>Saw kerf</label><input type="number" id="kerf" value="3" min="0" step="0.1"></div>
+    <div class="f"><label>Edge trim</label><input type="number" id="trim" value="0" min="0"></div>
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <div class="f"><label><input type="checkbox" id="grain" style="width:auto;margin-right:6px">Respect grain direction</label>
+      <span style="font-size:.78rem;color:var(--muted)">Locked parts keep their orientation</span></div>
+  </div>
+</div>
+
+<div class="card noprint">
+  <h2>Parts to cut</h2>
+  <table>
+    <thead><tr><th style="width:32%">Part name</th><th>Length</th><th>Width</th><th>Qty</th><th>Grain locked</th><th></th></tr></thead>
+    <tbody id="parts"></tbody>
+  </table>
+  <div class="actions">
+    <button id="add">+ Add part</button>
+    <button id="demo">Load example</button>
+    <button id="clear">Clear all</button>
+    <button class="primary" id="go">Optimize</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+  <h3>Why the kerf matters</h3>
+  <p>Every cut destroys a strip of material as wide as your blade — typically 3 mm on a table saw, 1 mm on a track saw with a thin-kerf blade. Ignore it and a layout that looks perfect on screen comes up short on the last piece.</p>
+  <h3>How the layouts are produced</h3>
+  <p>Only guillotine cuts are used: every cut runs edge to edge across the piece, which is what a table saw or panel saw actually does. Six sorting strategies and three splitting rules are tried, and the best result is kept.</p>
+  <h3>What this does not do</h3>
+  <p>It does not sequence your cuts for you, and it assumes every sheet is identical and defect-free. Check the diagram against your actual sheet before cutting — knots, damaged corners and factory edges are not accounted for.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./board-foot-calculator.html" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Measure twice, cut once — verify the layout before cutting.
+</footer>
+</div>
+
+<script>
+/**
+ * Optimiseur de plan de découpe — algorithme guillotine 2D avec trait de scie.
+ *
+ * Pourquoi cet algorithme et pas une page de calcul : un réseau de contenu
+ * généré en série ne produit pas un packer qui fonctionne. C'est la barrière.
+ *
+ * Contraintes réelles du métier prises en compte :
+ *  - trait de scie (kerf) consommé à chaque coupe
+ *  - sens du fil (grain) : certaines pièces ne peuvent pas pivoter
+ *  - coupes guillotine uniquement (une scie sur table traverse la planche)
+ *  - marge de rive (trim) sur le panneau brut
+ */
+
+function optimize(opts) {
+  const {
+    sheetW, sheetH,
+    kerf = 3,
+    trim = 0,
+    parts = [],           // [{w, h, qty, label, canRotate}]
+    respectGrain = false, // si true, canRotate=false est respecté
+  } = opts;
+
+  const usableW = sheetW - 2 * trim;
+  const usableH = sheetH - 2 * trim;
+
+  // Développe les quantités en pièces individuelles
+  const queue = [];
+  for (const p of parts) {
+    for (let i = 0; i < (p.qty || 1); i++) {
+      queue.push({
+        w: p.w, h: p.h,
+        label: p.label || `${p.w}x${p.h}`,
+        canRotate: respectGrain ? (p.canRotate !== false) : true,
+      });
+    }
+  }
+
+  // Pièces trop grandes : on les sort proprement au lieu de boucler
+  const impossible = queue.filter(p => !fitsAnywhere(p, usableW, usableH));
+  const todo = queue.filter(p => fitsAnywhere(p, usableW, usableH));
+
+  // Une seule heuristique de tri donne des résultats médiocres selon les cas.
+  // On en essaie plusieurs et on garde la meilleure : le calcul est instantané,
+  // et c'est ce qui fait la différence entre 68 % et 85 % de rendement.
+  const strategies = [
+    (a, b) => (b.w * b.h) - (a.w * a.h),                          // surface
+    (a, b) => Math.max(b.w, b.h) - Math.max(a.w, a.h),            // plus grand côté
+    (a, b) => Math.min(b.w, b.h) - Math.min(a.w, a.h),            // plus petit côté
+    (a, b) => (b.w + b.h) - (a.w + a.h),                          // périmètre
+    (a, b) => (b.h - a.h) || (b.w - a.w),                         // hauteur puis largeur
+    (a, b) => (b.w - a.w) || (b.h - a.h),                         // largeur puis hauteur
+  ];
+
+  // Le sens de refente (horizontal d'abord ou vertical d'abord) change beaucoup
+  // le rendement selon la géométrie : on teste les deux pour chaque tri.
+  let bestRun = null;
+  for (const sortFn of strategies) {
+    for (const splitMode of ['auto', 'horizontal', 'vertical']) {
+      const run = pack(todo.slice().sort(sortFn), usableW, usableH, trim, kerf, splitMode);
+      if (!bestRun ||
+          run.sheets.length < bestRun.sheets.length ||
+          (run.sheets.length === bestRun.sheets.length && run.placedTotal > bestRun.placedTotal)) {
+        bestRun = run;
+      }
+    }
+  }
+
+  return {
+    sheets: bestRun.sheets,
+    impossible,
+    stats: computeStats(bestRun.sheets, usableW, usableH, todo),
+  };
+}
+
+function pack(sorted, usableW, usableH, trim, kerf, splitMode = 'auto') {
+  const sheets = [];
+  let remaining = sorted;
+
+  while (remaining.length > 0) {
+    const sheet = {
+      index: sheets.length + 1,
+      placed: [],
+      freeRects: [{ x: trim, y: trim, w: usableW, h: usableH }],
+    };
+
+    let progress = true;
+    while (progress) {
+      progress = false;
+      for (let i = 0; i < remaining.length; i++) {
+        const part = remaining[i];
+        const spot = findBestSpot(sheet.freeRects, part);
+        if (!spot) continue;
+
+        place(sheet, spot, part, kerf, splitMode);
+        remaining.splice(i, 1);
+        progress = true;
+        break; // on repart du début : les pièces restantes sont déjà triées
+      }
+    }
+
+    if (sheet.placed.length === 0) break; // sécurité : jamais de boucle infinie
+    delete sheet.freeRects;
+    sheets.push(sheet);
+  }
+
+  return { sheets, placedTotal: sheets.reduce((n, s) => n + s.placed.length, 0) };
+}
+
+function fitsAnywhere(p, W, H) {
+  return (p.w <= W && p.h <= H) || (p.canRotate && p.h <= W && p.w <= H);
+}
+
+/** Best Short Side Fit : on choisit l'emplacement qui laisse le moins de chute. */
+function findBestSpot(freeRects, part) {
+  let best = null;
+  for (let r = 0; r < freeRects.length; r++) {
+    const rect = freeRects[r];
+    const orientations = [{ w: part.w, h: part.h, rotated: false }];
+    if (part.canRotate && part.w !== part.h) {
+      orientations.push({ w: part.h, h: part.w, rotated: true });
+    }
+    for (const o of orientations) {
+      if (o.w > rect.w || o.h > rect.h) continue;
+      const leftoverH = rect.w - o.w;
+      const leftoverV = rect.h - o.h;
+      const score = Math.min(leftoverH, leftoverV);
+      const tiebreak = Math.max(leftoverH, leftoverV);
+      if (!best || score < best.score || (score === best.score && tiebreak < best.tiebreak)) {
+        best = { rectIndex: r, ...o, score, tiebreak };
+      }
+    }
+  }
+  return best;
+}
+
+/** Pose la pièce et redécoupe la zone libre en deux (coupe guillotine). */
+function place(sheet, spot, part, kerf, splitMode = 'auto') {
+  const rect = sheet.freeRects[spot.rectIndex];
+
+  sheet.placed.push({
+    x: rect.x, y: rect.y,
+    w: spot.w, h: spot.h,
+    label: part.label,
+    rotated: spot.rotated,
+    origW: part.w, origH: part.h,
+  });
+
+  const rightW = rect.w - spot.w - kerf;
+  const bottomH = rect.h - spot.h - kerf;
+
+  const newRects = [];
+  const cutHorizontalFirst =
+    splitMode === 'horizontal' ? true :
+    splitMode === 'vertical'   ? false :
+    (bottomH >= rightW);
+  // Découpe horizontale d'abord = la chute basse garde toute la largeur du bloc
+  if (cutHorizontalFirst) {
+    if (rightW > 0) newRects.push({ x: rect.x + spot.w + kerf, y: rect.y, w: rightW, h: spot.h });
+    if (bottomH > 0) newRects.push({ x: rect.x, y: rect.y + spot.h + kerf, w: rect.w, h: bottomH });
+  } else {
+    if (rightW > 0) newRects.push({ x: rect.x + spot.w + kerf, y: rect.y, w: rightW, h: rect.h });
+    if (bottomH > 0) newRects.push({ x: rect.x, y: rect.y + spot.h + kerf, w: spot.w, h: bottomH });
+  }
+
+  sheet.freeRects.splice(spot.rectIndex, 1, ...newRects.filter(r => r.w > 0 && r.h > 0));
+}
+
+function computeStats(sheets, usableW, usableH, allParts) {
+  const sheetArea = usableW * usableH;
+  const totalSheetArea = sheets.length * sheetArea;
+  const usedArea = sheets.reduce((sum, s) =>
+    sum + s.placed.reduce((a, p) => a + p.w * p.h, 0), 0);
+  const placedCount = sheets.reduce((n, s) => n + s.placed.length, 0);
+  return {
+    sheetsUsed: sheets.length,
+    partsPlaced: placedCount,
+    partsRequested: allParts.length,
+    yieldPct: totalSheetArea ? +(100 * usedArea / totalSheetArea).toFixed(1) : 0,
+    wasteArea: totalSheetArea - usedArea,
+  };
+}
+
+/** Contrôle d'intégrité : aucun chevauchement, rien hors panneau. */
+function validate(result, sheetW, sheetH, trim = 0) {
+  const errors = [];
+  for (const sheet of result.sheets) {
+    for (const p of sheet.placed) {
+      if (p.x < trim - 0.001 || p.y < trim - 0.001 ||
+          p.x + p.w > sheetW - trim + 0.001 || p.y + p.h > sheetH - trim + 0.001) {
+        errors.push(`Panneau ${sheet.index} : ${p.label} sort du panneau`);
+      }
+    }
+    for (let i = 0; i < sheet.placed.length; i++) {
+      for (let j = i + 1; j < sheet.placed.length; j++) {
+        const a = sheet.placed[i], b = sheet.placed[j];
+        const overlap = a.x < b.x + b.w && b.x < a.x + a.w &&
+                        a.y < b.y + b.h && b.y < a.y + a.h;
+        if (overlap) errors.push(`Panneau ${sheet.index} : ${a.label} chevauche ${b.label}`);
+      }
+    }
+  }
+  return errors;
+}
+
+/* ---------- UI ---------- */
+const $ = s => document.querySelector(s);
+const partsBody = $('#parts');
+
+function addRow(d = {}) {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" class="p-label" placeholder="Shelf" value="${d.label || ''}"></td>
+    <td><input type="number" class="p-w" min="1" step="0.1" value="${d.w || ''}"></td>
+    <td><input type="number" class="p-h" min="1" step="0.1" value="${d.h || ''}"></td>
+    <td><input type="number" class="p-q" min="1" value="${d.qty || 1}"></td>
+    <td style="text-align:center"><input type="checkbox" class="p-g" ${d.lock ? 'checked' : ''}></td>
+    <td><button class="icon del" title="Remove">✕</button></td>`;
+  tr.querySelector('.del').onclick = () => tr.remove();
+  partsBody.appendChild(tr);
+}
+
+function readParts() {
+  return [...partsBody.querySelectorAll('tr')].map(tr => ({
+    label: tr.querySelector('.p-label').value.trim() || 'Part',
+    w: parseFloat(tr.querySelector('.p-w').value),
+    h: parseFloat(tr.querySelector('.p-h').value),
+    qty: parseInt(tr.querySelector('.p-q').value) || 1,
+    canRotate: !tr.querySelector('.p-g').checked,
+  })).filter(p => p.w > 0 && p.h > 0);
+}
+
+$('#preset').onchange = e => {
+  if (!e.target.value) return;
+  const [w, h] = e.target.value.split(',');
+  $('#sw').value = w; $('#sh').value = h;
+};
+$('#add').onclick = () => addRow();
+$('#clear').onclick = () => { partsBody.innerHTML = ''; $('#out').innerHTML = ''; addRow(); };
+$('#demo').onclick = () => {
+  partsBody.innerHTML = '';
+  [{label:'Cabinet side',w:720,h:560,qty:8},
+   {label:'Bottom',w:800,h:560,qty:4},
+   {label:'Shelf',w:596,h:560,qty:6},
+   {label:'Door front',w:400,h:700,qty:4,lock:true}].forEach(addRow);
+};
+
+$('#go').onclick = () => {
+  const parts = readParts();
+  const out = $('#out');
+  if (!parts.length) { out.innerHTML = '<div class="warn">Add at least one part with a length and width.</div>'; return; }
+
+  const sheetW = parseFloat($('#sw').value), sheetH = parseFloat($('#sh').value);
+  const kerf = parseFloat($('#kerf').value) || 0, trim = parseFloat($('#trim').value) || 0;
+  const unit = $('#unit').value;
+
+  const res = optimize({ sheetW, sheetH, kerf, trim, parts, respectGrain: $('#grain').checked });
+  render(res, sheetW, sheetH, unit);
+};
+
+function render(res, sheetW, sheetH, unit) {
+  const s = res.stats;
+  let html = '<div class="card">';
+
+  if (res.impossible.length) {
+    const names = [...new Set(res.impossible.map(p => p.label))].join(', ');
+    html += `<div class="warn"><strong>${res.impossible.length} part(s) do not fit on a sheet:</strong> ${names}. They were left out.</div>`;
+  }
+
+  html += `<div class="stats">
+    <div class="stat"><b>${s.sheetsUsed}</b><span>Sheets needed</span></div>
+    <div class="stat"><b>${s.yieldPct}%</b><span>Material used</span></div>
+    <div class="stat"><b>${s.partsPlaced}</b><span>Parts placed</span></div>
+    <div class="stat"><b>${(s.wasteArea / 1e6).toFixed(2)}</b><span>m² offcut</span></div>
+  </div>
+  <button class="primary noprint" onclick="window.print()">Print cut list</button>`;
+
+  const scale = 720 / sheetW;
+  res.sheets.forEach(sheet => {
+    html += `<div class="sheet"><h3>Sheet ${sheet.index} of ${s.sheetsUsed} — ${sheetW} × ${sheetH} ${unit}</h3>`;
+    html += `<svg viewBox="0 0 ${sheetW} ${sheetH}" preserveAspectRatio="xMidYMid meet">`;
+    sheet.placed.forEach(p => {
+      html += `<rect class="part" x="${p.x}" y="${p.y}" width="${p.w}" height="${p.h}" rx="3"/>`;
+
+      // Le texte doit TENIR dans la piece. On dimensionne d'apres la largeur
+      // disponible et la longueur reelle du libelle, pas d'apres la piece seule :
+      // sinon les libelles debordent et se chevauchent sur les pieces etroites.
+      const dims = `${Math.round(p.w)} \u00d7 ${Math.round(p.h)}${p.rotated ? ' \u21bb' : ''}`;
+      const pad = Math.min(p.w, p.h) * 0.12;
+      const availW = p.w - pad * 2;
+      const availH = p.h - pad * 2;
+
+      const fitW = (txt, size) => Math.min(size, availW / (txt.length * 0.58));
+      let fs = Math.min(availH / 3.2, 74);
+      fs = Math.min(fs, fitW(p.label, fs));
+      const fsDim = Math.min(fs * 0.82, fitW(dims, fs * 0.82));
+
+      const canLabel = fs >= 11 && availW > 0 && availH > 0;
+      const canDims  = fsDim >= 9 && availH > fs * 2.4;
+
+      if (canLabel && canDims) {
+        html += `<text class="plabel" x="${p.x + p.w/2}" y="${p.y + p.h/2 - fs*0.12}" text-anchor="middle" style="font-size:${fs.toFixed(1)}px">${esc(p.label)}</text>`;
+        html += `<text class="plabel" x="${p.x + p.w/2}" y="${p.y + p.h/2 + fsDim*1.25}" text-anchor="middle" style="font-size:${fsDim.toFixed(1)}px" opacity=".62">${dims}</text>`;
+      } else if (canLabel) {
+        html += `<text class="plabel" x="${p.x + p.w/2}" y="${p.y + p.h/2 + fs*0.35}" text-anchor="middle" style="font-size:${fs.toFixed(1)}px">${esc(p.label)}</text>`;
+      } else {
+        // Piece trop petite pour un libelle : on met juste les cotes, au plus grand possible
+        const tiny = Math.max(9, Math.min(availH / 1.6, fitW(dims, availH)));
+        if (tiny >= 9) html += `<text class="plabel" x="${p.x + p.w/2}" y="${p.y + p.h/2 + tiny*0.35}" text-anchor="middle" style="font-size:${tiny.toFixed(1)}px" opacity=".7">${dims}</text>`;
+      }
+    });
+    html += `</svg>`;
+    html += `<table style="margin-top:10px"><thead><tr><th>Part</th><th>Size</th><th>Position (x, y)</th><th>Rotated</th></tr></thead><tbody>`;
+    sheet.placed.forEach(p => {
+      html += `<tr><td>${esc(p.label)}</td><td>${p.w} × ${p.h}</td><td>${p.x}, ${p.y}</td><td>${p.rotated ? 'yes' : 'no'}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+  });
+
+  html += '</div>';
+  $('#out').innerHTML = html;
+  $('#out').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function esc(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+$('#demo').click();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

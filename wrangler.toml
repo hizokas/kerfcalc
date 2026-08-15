@@ -1,0 +1,8 @@
+# Configuration de déploiement Cloudflare.
+# Tout ce qui est dans public/ est servi tel quel. Aucun code serveur.
+name = "getkerfcalc"
+compatibility_date = "2026-08-15"
+
+[assets]
+directory = "./public"
+not_found_handling = "404-page"

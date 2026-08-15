@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KerfCalc &mdash; Free Workshop Calculators That Draw the Layout</title>
+<meta name="description" content="Free calculators for woodworking, framing and finishing: cut list optimisation, stair stringers, rafters, deck boards, tile layout and joinery templates. Scaled diagrams, printable cut lists, no sign-up.">
+<link rel="canonical" href="https://getkerfcalc.com/">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+.hero{padding:8px 0 0}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:.75rem;font-weight:560;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--accent);
+  background:var(--accent-soft);border:1px solid var(--line);
+  padding:6px 13px;border-radius:999px;margin-bottom:18px}
+.hero h1{font-size:clamp(2rem,4.4vw,3.05rem);line-height:1.06;letter-spacing:-.04em;
+  font-weight:700;max-width:17ch;margin:0 0 16px}
+.hero h1 .hl{color:var(--accent)}
+.hero .sub{font-size:clamp(1.02rem,1.6vw,1.15rem);max-width:56ch;margin-bottom:24px}
+.herowrap{display:grid;grid-template-columns:1.05fr .95fr;gap:38px;align-items:center;padding-bottom:30px}
+.figsvg{width:100%;height:auto;border:1px solid var(--line);border-radius:14px;
+  box-shadow:var(--shadow);background:var(--surface)}
+.hsheet{fill:var(--surface);stroke:var(--line);stroke-width:3}
+.hpart rect{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3.5}
+.hpart .hoff{fill:none;stroke:var(--line);stroke-width:3;stroke-dasharray:14 12}
+.hlab text{fill:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:52px;
+  text-anchor:middle;letter-spacing:-.02em}
+.spart{fill:var(--accent-soft);stroke:var(--accent);stroke-width:2}
+.sline{stroke:var(--accent);stroke-width:2}
+.sdim{stroke:var(--muted);stroke-width:1;opacity:.45}
+.sghost{stroke:var(--accent);stroke-width:1.6;stroke-dasharray:7 7;opacity:.65}
+.slab{fill:var(--muted);font-family:ui-monospace,Menlo,monospace;font-size:19px;text-anchor:middle}
+.figcap{font-size:.8rem;color:var(--muted);text-align:center;margin-top:10px}
+.pills{display:flex;flex-wrap:wrap;gap:9px}
+.pill{font-size:.83rem;color:var(--muted);background:var(--surface);
+  border:1px solid var(--line);border-radius:999px;padding:6px 13px}
+.band{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  box-shadow:var(--shadow);overflow:hidden;margin:6px 0}
+.bandit{padding:20px 22px;border-right:1px solid var(--line)}
+.bandit:last-child{border-right:none}
+.bandit b{display:block;font-size:1.72rem;font-weight:680;letter-spacing:-.035em;
+  color:var(--accent);line-height:1.1;font-variant-numeric:tabular-nums}
+.bandit span{font-size:.8rem;color:var(--muted)}
+.section-title{font-size:1.5rem;font-weight:680;letter-spacing:-.03em;color:var(--ink);
+  text-transform:none;margin:52px 0 6px}
+.section-lead{color:var(--muted);font-size:.98rem;max-width:62ch;margin:0 0 22px}
+.showcase{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:16px}
+.shot{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:15px;box-shadow:var(--shadow)}
+.shot .figsvg{border:none;box-shadow:none;border-radius:8px}
+.shot h4{margin:12px 0 3px;font-size:.95rem;font-weight:620;letter-spacing:-.015em}
+.shot p{margin:0;font-size:.86rem;color:var(--muted);line-height:1.5}
+.catblock{margin:40px 0 0}
+.cathead{display:flex;align-items:flex-start;gap:13px;margin-bottom:16px}
+.caticon{flex:none;width:38px;height:38px;border-radius:11px;background:var(--accent-soft);
+  border:1px solid var(--line);display:grid;place-items:center;color:var(--accent)}
+.caticon svg{width:21px;height:21px}
+.cattitle{font-size:1.12rem;font-weight:640;letter-spacing:-.02em;text-transform:none;
+  color:var(--ink);margin:1px 0 3px}
+.catblurb{font-size:.9rem;color:var(--muted);margin:0;max-width:60ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{display:flex;flex-direction:column;gap:5px;padding:19px;text-decoration:none;
+  color:var(--ink);background:var(--surface);border:1px solid var(--line);
+  border-radius:14px;box-shadow:var(--shadow)}
+.tool .go{font-style:normal;font-size:.82rem;font-weight:560;color:var(--accent);
+  margin-top:9px;opacity:0;transform:translateX(-4px);transition:all .18s ease}
+.tool:hover .go{opacity:1;transform:translateX(0)}
+.faqgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.faqitem{background:var(--surface);border:1px solid var(--line);border-radius:14px;
+  padding:19px;box-shadow:var(--shadow)}
+.faqitem b{display:block;font-size:.96rem;font-weight:620;margin-bottom:6px;letter-spacing:-.015em}
+.faqitem p{margin:0;font-size:.89rem;color:var(--muted);line-height:1.58}
+@media (max-width:860px){.herowrap{grid-template-columns:1fr;gap:26px}
+  .bandit{border-right:none;border-bottom:1px solid var(--line)}}
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="#tools">Tools</a><a href="#what">What you get</a><a class="cta" href="#tools">Browse all 15 &rarr;</a></nav></header>
+<div class="hero"><div class="herowrap"><div><span class="eyebrow">15 free tools &middot; no sign-up</span><h1>Calculators that hand you the <span class="hl">layout</span>, not just a number.</h1><p class="sub">Every tool solves the arrangement, draws it to scale, and prints as a working document you can take to the bench. Saw kerf is subtracted at every cut, grain direction is respected, and joints land where they can actually be supported.</p><div class="pills"><span class="pill">Runs in your browser</span><span class="pill">Nothing uploaded</span><span class="pill">mm &amp; inches</span><span class="pill">Printable</span></div></div><div><svg class="figsvg" viewBox="0 0 2440 1220" preserveAspectRatio="xMidYMid meet" aria-label="Example cutting layout">
+  <rect x="0" y="0" width="2440" height="1220" rx="14" class="hsheet"/>
+  <g class="hpart">
+    <rect x="24" y="24" width="717" height="557" rx="6"/><rect x="765" y="24" width="717" height="557" rx="6"/>
+    <rect x="1506" y="24" width="717" height="557" rx="6"/><rect x="24" y="605" width="797" height="557" rx="6"/>
+    <rect x="845" y="605" width="797" height="557" rx="6"/><rect x="1666" y="605" width="593" height="557" rx="6"/>
+    <rect x="2247" y="24" width="169" height="557" rx="6" class="hoff"/>
+    <rect x="2283" y="605" width="133" height="557" rx="6" class="hoff"/>
+  </g>
+  <g class="hlab">
+    <text x="382" y="330">720 &#215; 560</text><text x="1123" y="330">720 &#215; 560</text>
+    <text x="1864" y="330">720 &#215; 560</text><text x="422" y="911">800 &#215; 560</text>
+    <text x="1243" y="911">800 &#215; 560</text><text x="1962" y="911">596 &#215; 560</text>
+  </g>
+</svg><p class="figcap">Real output: 22 parts nested on a 2440 &#215; 1220 sheet, kerf included.</p></div></div></div>
+<div class="band"><div class="bandit"><b>15</b><span>Tools, all free</span></div><div class="bandit"><b>0</b><span>Accounts to create</span></div><div class="bandit"><b>100%</b><span>Runs on your device</span></div><div class="bandit"><b>91.6%</b><span>Best nesting yield</span></div></div>
+<h2 class="section-title" id="what">What you actually get</h2><p class="section-lead">Not a number in a box. A dimensioned drawing you can print, fold into your pocket and work from &mdash; plus the cut list that goes with it.</p><div class="showcase"><div class="shot"><svg class="figsvg" viewBox="0 0 840 470" preserveAspectRatio="xMidYMid meet" aria-label="Stair stringer elevation"><line x1="60" y1="415" x2="790" y2="415" class="sdim"/><line x1="46" y1="415" x2="46" y2="55" class="sdim"/><line x1="60" y1="400" x2="785" y2="58" class="sghost"/><rect x="60" y="384" width="80" height="16" rx="3" class="spart"/><line x1="60" y1="400" x2="60" y2="362" class="sline"/><rect x="140" y="346" width="80" height="16" rx="3" class="spart"/><line x1="140" y1="362" x2="140" y2="324" class="sline"/><rect x="220" y="308" width="80" height="16" rx="3" class="spart"/><line x1="220" y1="324" x2="220" y2="286" class="sline"/><rect x="300" y="270" width="80" height="16" rx="3" class="spart"/><line x1="300" y1="286" x2="300" y2="248" class="sline"/><rect x="380" y="232" width="80" height="16" rx="3" class="spart"/><line x1="380" y1="248" x2="380" y2="210" class="sline"/><rect x="460" y="194" width="80" height="16" rx="3" class="spart"/><line x1="460" y1="210" x2="460" y2="172" class="sline"/><rect x="540" y="156" width="80" height="16" rx="3" class="spart"/><line x1="540" y1="172" x2="540" y2="134" class="sline"/><rect x="620" y="118" width="80" height="16" rx="3" class="spart"/><line x1="620" y1="134" x2="620" y2="96" class="sline"/><rect x="700" y="80" width="80" height="16" rx="3" class="spart"/><line x1="700" y1="96" x2="700" y2="58" class="sline"/><text x="425" y="450" class="slab">total run 3500 &#183; 14 &#215; 250</text><text x="168" y="392" class="slab">R 181.3</text><text x="330" y="318" class="slab">35.8&#176;</text></svg><h4>Stair stringer elevation</h4><p>Every riser dimensioned, the angle, and the dropped-stringer correction applied.</p></div><div class="shot"><svg class="figsvg" viewBox="0 0 840 300" preserveAspectRatio="xMidYMid meet" aria-label="Box joint template"><rect x="62" y="66" width="72" height="140" rx="4" class="spart"/><line x1="62" y1="46" x2="62" y2="226" class="sdim"/><line x1="134" y1="46" x2="134" y2="226" class="sdim"/><rect x="166" y="66" width="72" height="140" rx="4" class="spart"/><line x1="166" y1="46" x2="166" y2="226" class="sdim"/><line x1="238" y1="46" x2="238" y2="226" class="sdim"/><rect x="270" y="66" width="72" height="140" rx="4" class="spart"/><line x1="270" y1="46" x2="270" y2="226" class="sdim"/><line x1="342" y1="46" x2="342" y2="226" class="sdim"/><rect x="374" y="66" width="72" height="140" rx="4" class="spart"/><line x1="374" y1="46" x2="374" y2="226" class="sdim"/><line x1="446" y1="46" x2="446" y2="226" class="sdim"/><rect x="478" y="66" width="72" height="140" rx="4" class="spart"/><line x1="478" y1="46" x2="478" y2="226" class="sdim"/><line x1="550" y1="46" x2="550" y2="226" class="sdim"/><rect x="582" y="66" width="72" height="140" rx="4" class="spart"/><line x1="582" y1="46" x2="582" y2="226" class="sdim"/><line x1="654" y1="46" x2="654" y2="226" class="sdim"/><rect x="686" y="66" width="72" height="140" rx="4" class="spart"/><line x1="686" y1="46" x2="686" y2="226" class="sdim"/><line x1="758" y1="46" x2="758" y2="226" class="sdim"/><line x1="62" y1="250" x2="778" y2="250" class="sdim"/><text x="420" y="282" class="slab">13 segments &#215; 11.54 = 150.00 exactly</text></svg><h4>Box joint template</h4><p>Pin width adjusted so the spacing divides exactly &mdash; printed at 1:1.</p></div><div class="shot"><svg class="figsvg" viewBox="0 0 2440 1220" preserveAspectRatio="xMidYMid meet" aria-label="Example cutting layout">
+  <rect x="0" y="0" width="2440" height="1220" rx="14" class="hsheet"/>
+  <g class="hpart">
+    <rect x="24" y="24" width="717" height="557" rx="6"/><rect x="765" y="24" width="717" height="557" rx="6"/>
+    <rect x="1506" y="24" width="717" height="557" rx="6"/><rect x="24" y="605" width="797" height="557" rx="6"/>
+    <rect x="845" y="605" width="797" height="557" rx="6"/><rect x="1666" y="605" width="593" height="557" rx="6"/>
+    <rect x="2247" y="24" width="169" height="557" rx="6" class="hoff"/>
+    <rect x="2283" y="605" width="133" height="557" rx="6" class="hoff"/>
+  </g>
+  <g class="hlab">
+    <text x="382" y="330">720 &#215; 560</text><text x="1123" y="330">720 &#215; 560</text>
+    <text x="1864" y="330">720 &#215; 560</text><text x="422" y="911">800 &#215; 560</text>
+    <text x="1243" y="911">800 &#215; 560</text><text x="1962" y="911">596 &#215; 560</text>
+  </g>
+</svg><h4>Sheet nesting plan</h4><p>Parts placed, offcuts shown, kerf subtracted at every cut line.</p></div></div>
+<div id="tools"></div>
+<section class="catblock">
+  <div class="cathead">
+    <span class="caticon"><svg viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M2 12h13M15 4v16" stroke="currentColor" stroke-width="1.6"/></svg></span>
+    <div><h2 class="cattitle">Sheet goods</h2><p class="catblurb">Plywood, MDF, bar stock and trim &mdash; every part out of the fewest sheets.</p></div>
+  </div>
+  <div class="grid">
+    <a class="tool" href="./cut-list-optimizer.html">
+      <strong>Cut List Optimizer</strong>
+      <span>Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./linear-cut-optimizer.html">
+      <strong>Linear Cut Optimizer</strong>
+      <span>Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./board-foot-calculator.html">
+      <strong>Board Foot Calculator</strong>
+      <span>Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+  </div>
+</section>
+
+<section class="catblock">
+  <div class="cathead">
+    <span class="caticon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 20L12 5l9 15" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M6.5 14h11M12 5v15" stroke="currentColor" stroke-width="1.4" opacity=".55"/></svg></span>
+    <div><h2 class="cattitle">Framing</h2><p class="catblurb">Stairs, roofs, walls and decks. The geometry, drawn and dimensioned.</p></div>
+  </div>
+  <div class="grid">
+    <a class="tool" href="./stair-stringer-calculator.html">
+      <strong>Stair Stringer Calculator</strong>
+      <span>Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./rafter-calculator.html">
+      <strong>Rafter & Roof Framing Calculator</strong>
+      <span>Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./deck-board-planner.html">
+      <strong>Deck Board Layout Planner</strong>
+      <span>Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./stud-wall-layout.html">
+      <strong>Stud Wall Layout Calculator</strong>
+      <span>Stud positions with the first-stud correction so sheet edges land on framing, plus the material list.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./roof-area-calculator.html">
+      <strong>Roof Area &amp; Material Calculator</strong>
+      <span>True sloped area from footprint and pitch, with squares, bundles, ridge and hip lengths.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./fence-post-planner.html">
+      <strong>Fence Post Spacing Calculator</strong>
+      <span>Even post spacing with no stubby last bay, plus rails, pickets and concrete per hole.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+  </div>
+</section>
+
+<section class="catblock">
+  <div class="cathead">
+    <span class="caticon"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6"/><rect x="13" y="3" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6" opacity=".45"/><rect x="3" y="13" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6" opacity=".45"/><rect x="13" y="13" width="8" height="8" rx="1" stroke="currentColor" stroke-width="1.6"/></svg></span>
+    <div><h2 class="cattitle">Finishing</h2><p class="catblurb">Tile, concrete, gravel and paint &mdash; quantities you can actually order.</p></div>
+  </div>
+  <div class="grid">
+    <a class="tool" href="./tile-layout-planner.html">
+      <strong>Tile Layout Planner</strong>
+      <span>Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./concrete-volume-calculator.html">
+      <strong>Concrete Volume Calculator</strong>
+      <span>Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./gravel-volume-calculator.html">
+      <strong>Gravel &amp; Aggregate Calculator</strong>
+      <span>Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./paint-coverage-calculator.html">
+      <strong>Paint Coverage Calculator</strong>
+      <span>Litres or gallons per coat with openings subtracted, rounded up to real tin sizes.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+  </div>
+</section>
+
+<section class="catblock">
+  <div class="cathead">
+    <span class="caticon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 8h4V4h4v4h4V4h4v16h-4v-4h-4v4H8v-4H4V8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></span>
+    <div><h2 class="cattitle">Joinery</h2><p class="catblurb">Layouts that divide evenly, with templates you print at full size.</p></div>
+  </div>
+  <div class="grid">
+    <a class="tool" href="./box-joint-layout.html">
+      <strong>Box Joint &amp; Dovetail Layout</strong>
+      <span>Even pin and tail spacing that actually divides, plus a 1:1 printable marking template.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+    <a class="tool" href="./compound-miter-calculator.html">
+      <strong>Compound Miter Angle Calculator</strong>
+      <span>Saw miter and bevel settings for crown and sloped work, with the formulas shown.</span>
+      <em class="go">Open tool &rarr;</em>
+    </a>
+  </div>
+</section>
+<h2 class="section-title">Questions</h2><div class="faqgrid"><div class="faqitem"><b>Is any of this really free?</b><p>Yes, and there is nothing to sign up for. The tools run entirely in your browser, so there is no server cost per user and no reason to put anything behind a login.</p></div><div class="faqitem"><b>Do you store what I type?</b><p>No. Nothing is uploaded, nothing is saved, and there is no tracking. Close the tab and it is gone &mdash; which also means write your numbers down if you need them again.</p></div><div class="faqitem"><b>Millimetres or inches?</b><p>Both, on every tool. The unit selector converts the whole form, and the drawings and cut lists follow.</p></div><div class="faqitem"><b>Can I rely on this for structural work?</b><p>No. These are planning aids. Span tables, building regulations and a qualified opinion are what structural decisions need &mdash; the geometry here is a starting point, not a sign-off.</p></div></div>
+<footer><div class="footgrid"><div><h5>KerfCalc</h5><p style="font-size:.88rem;color:var(--muted);margin:0;line-height:1.55;max-width:34ch">Free workshop calculators that solve the layout and draw it to scale. Built for people who actually cut the material.</p></div><div><h5>Sheet goods</h5><a href="./cut-list-optimizer.html">Cut List Optimizer</a><a href="./linear-cut-optimizer.html">Linear Cut Optimizer</a><a href="./board-foot-calculator.html">Board Foot Calculator</a></div><div><h5>Framing</h5><a href="./stair-stringer-calculator.html">Stair Stringer Calculator</a><a href="./rafter-calculator.html">Rafter & Roof Framing Calculator</a><a href="./deck-board-planner.html">Deck Board Layout Planner</a><a href="./stud-wall-layout.html">Stud Wall Layout Calculator</a></div><div><h5>Finishing</h5><a href="./tile-layout-planner.html">Tile Layout Planner</a><a href="./concrete-volume-calculator.html">Concrete Volume Calculator</a><a href="./gravel-volume-calculator.html">Gravel &amp; Aggregate Calculator</a><a href="./paint-coverage-calculator.html">Paint Coverage Calculator</a></div><div><h5>Joinery</h5><a href="./box-joint-layout.html">Box Joint &amp; Dovetail Layout</a><a href="./compound-miter-calculator.html">Compound Miter Angle Calculator</a></div></div><div class="footnote">Everything runs client-side &mdash; no accounts, no uploads, no tracking. Planning aids only: check every layout against the real material before you cut.</div></footer>
+</div>
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

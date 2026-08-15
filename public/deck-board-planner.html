@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deck Board Layout Planner — Board Spacing, Staggered Butt Joints &amp; Deck Board Calculator</title>
+<meta name="description" content="Free deck board layout planner: works out how many deck boards you need, where every board lands, and puts each butt joint on a joist and staggered from the row above. Picture frame border, joist spacing, board spacing, buy list by board length, waste and screw count. Printable top-down plan, mm or inches, runs offline in your browser.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+/* ---- tool-specific additions (deck board planner) ---- */
+.f .hint{font-size:.72rem;color:var(--muted);opacity:.85}
+.f.wide input{width:270px;max-width:100%}
+.chk{flex-direction:row;align-items:center;gap:8px;padding-top:20px}
+.chk input{width:auto}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin:10px 0 4px;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:10px;border-radius:2px;margin-right:5px;
+  vertical-align:middle;border:1px solid var(--accent)}
+.sw-board{background:var(--accent-soft)}
+.sw-frame{background:var(--accent);opacity:.55}
+.sw-rip{background:repeating-linear-gradient(45deg,var(--accent-soft),var(--accent-soft) 3px,var(--bg) 3px,var(--bg) 6px)}
+.sw-joint{background:var(--warn);border-color:var(--warn);width:5px;height:12px}
+.sw-joist{background:transparent;border:0;border-top:2px dashed var(--muted);height:0;width:16px}
+.note{background:var(--accent-soft);border:1px solid var(--line);color:var(--ink);
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.88rem}
+.tight td,.tight th{padding:4px 8px}
+.scroll{overflow-x:auto}
+/* SVG plan */
+.deckedge{fill:none;stroke:var(--ink);stroke-width:1.5;opacity:.55;vector-effect:non-scaling-stroke}
+.joist{stroke:var(--muted);stroke-dasharray:7 6;stroke-width:1;opacity:.6;vector-effect:non-scaling-stroke}
+.board{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1;vector-effect:non-scaling-stroke}
+.board.ripped{fill:var(--bg)}
+.frameboard{fill:var(--accent);fill-opacity:.3;stroke:var(--accent);stroke-width:1;vector-effect:non-scaling-stroke}
+.joint{fill:var(--warn)}
+.dimline{stroke:var(--muted);stroke-width:1;opacity:.7;vector-effect:non-scaling-stroke}
+.dimtext,.blabel,.rowlabel{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;fill:var(--muted)}
+.blabel{fill:var(--ink);opacity:.8}
+@media print{
+  .legend{color:#000}
+  table{font-size:.8rem}
+  svg{border:1px solid #999}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Deck Board Layout Planner</h1>
+<p class="sub">Plan the decking before you buy it. Enter the deck size, the board you are using and the lengths your supplier stocks, and this works out how many rows you get, where every board starts and stops, and how to place the butt joints so each one lands on a joist and is staggered clear of the row next to it. You get a top-down plan, a row-by-row cut list, a buy list by board length and an estimate of offcut and screws. Everything runs in your browser — nothing is uploaded, no sign-up.</p>
+
+<div class="card noprint">
+  <h2>Deck &amp; boards</h2>
+  <div class="row">
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+    <div class="f"><label>Deck length</label><input type="number" id="dl" value="6000" min="1" step="1">
+      <span class="hint">longer side, plan view</span></div>
+    <div class="f"><label>Deck width</label><input type="number" id="dw" value="3600" min="1" step="1">
+      <span class="hint">shorter side</span></div>
+    <div class="f"><label>Boards run</label>
+      <select id="dir">
+        <option value="length">Parallel to deck length</option>
+        <option value="width">Parallel to deck width</option>
+      </select><span class="hint">joists sit at 90° to this</span></div>
+    <div class="f"><label>Board cover width</label><input type="number" id="bw" value="140" min="1" step="0.5">
+      <span class="hint">actual face width</span></div>
+    <div class="f"><label>Gap between boards</label><input type="number" id="gap" value="5" min="0" step="0.5"></div>
+    <div class="f"><label>Joist spacing (centres)</label><input type="number" id="js" value="400" min="1" step="1"></div>
+  </div>
+</div>
+
+<div class="card noprint">
+  <h2>Stock, border &amp; jointing</h2>
+  <div class="row">
+    <div class="f wide"><label>Board lengths in stock</label>
+      <input type="text" id="stock" value="3600, 4200, 4800">
+      <span class="hint">comma separated, in the unit above</span></div>
+    <div class="f"><label>Common lengths</label>
+      <select id="stockPreset">
+        <option value="">Pick a set…</option>
+        <option value="mm|3000, 3600, 4200, 4800">mm — 3.0 / 3.6 / 4.2 / 4.8 m</option>
+        <option value="mm|2400, 3600, 4800">mm — 2.4 / 3.6 / 4.8 m</option>
+        <option value="mm|3600, 5400">mm — 3.6 / 5.4 m</option>
+        <option value="in|96, 120, 144, 192">in — 8 / 10 / 12 / 16 ft</option>
+        <option value="in|144, 192, 240">in — 12 / 16 / 20 ft</option>
+        <option value="in|192, 240">in — 16 / 20 ft</option>
+      </select></div>
+    <div class="f"><label>Picture frame border</label>
+      <select id="frame">
+        <option value="0">None</option>
+        <option value="1" selected>1 board wide</option>
+        <option value="2">2 boards wide</option>
+      </select></div>
+    <div class="f"><label>Stagger (joist bays)</label><input type="number" id="stag" value="2" min="1" max="10" step="1">
+      <span class="hint">min offset between rows</span></div>
+    <div class="f"><label>Min piece length</label><input type="number" id="minp" value="800" min="0" step="1">
+      <span class="hint">shortest offcut you will lay</span></div>
+    <div class="f"><label>Screws per bearing</label><input type="number" id="spb" value="2" min="1" max="6" step="1"></div>
+    <div class="f"><label>Saw kerf</label><input type="number" id="kerf" value="3" min="0" step="0.5">
+      <span class="hint">lost per cross cut</span></div>
+  </div>
+  <div class="actions">
+    <button id="go" class="primary">Plan the deck</button>
+    <button id="reset">Reset to defaults</button>
+    <button id="print">Print plan</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+
+  <h3>Why does the planner refuse to put a joint anywhere except on a joist?</h3>
+  <p>Because a butt joint in mid-air is a trip hazard within two seasons. Both board ends need bearing, and each end needs its own fixings, which is why a joint doubles the screw count at that joist. If your run needs joints and the numbers here look awkward, the usual fixes are to double up the joist under the joint line, or to add a row of blocking so the two ends each get solid timber under them. Some builders prefer a full-width “breaker board” across the deck instead of scattered joints — this tool does not lay that out, but it will tell you how long each run is so you can decide.</p>
+
+  <h3>How is the stagger actually decided?</h3>
+  <p>The first piece of each row is shortened by a whole number of joist bays, cycling through as many distinct starting lengths as will fit before the piece gets shorter than your minimum. That pushes the joint line sideways by at least the stagger you asked for, row after row, and then the pattern repeats. It is the same thing you would do on site with a story pole, just counted for you. The result panel reports the smallest gap between joints in adjacent rows so you can check it against what you actually want.</p>
+
+  <h3>Why is the last row a different width, and can I avoid it?</h3>
+  <p>A deck almost never divides into a whole number of boards plus gaps. The planner fills with full-width boards and then rips the last one to suit, because that is what happens in practice. If the rip comes out as a sliver, the honest answer is not to rip it — nudge the gap by a fraction of a millimetre across all the rows instead, and the result panel gives you the exact gap that makes the boards land whole. Splitting the difference between the first and last row is the other classic dodge, and it looks better against a wall.</p>
+
+  <h3>What this does not do</h3>
+  <p>It does not design the frame — joist sizing, spans, beams, posts, footings and ledger fixing are structural work and are outside this tool. It assumes a rectangular deck on evenly spaced parallel joists, with the last bay shortened if the run does not divide evenly. It ignores expansion gaps at walls, board bow, and the extra blocking a picture frame needs under its mitres and under every field board end. The buy list is an exact-material figure with saw kerf allowed for on each cut — add your own contingency, five to ten per cent is normal, more if you are picking through the stack for straight boards. Offcuts are counted as waste even when they are long enough to be worth keeping.</p>
+</div>
+
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./rafter-calculator.html" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="./stud-wall-layout.html" style="color:var(--accent)">Stud Wall Layout Calculator</a> <span style="color:var(--muted)">— Stud positions with the first-stud correction so sheet edges land on framing, plus the material list.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Check the plan against the real frame before you buy — a joist that is 30&nbsp;mm out of place moves every joint on the deck.
+</footer>
+</div>
+
+<script>
+/**
+ * Deck board layout planner.
+ *
+ * planDeckLayout(input) -> result
+ *
+ * Pure: no DOM, no I/O, no globals, no randomness. Same input, same output.
+ * All lengths are in ONE unit (mm or inches); the function never converts,
+ * it only labels. Areas are the only derived unit (m2 for mm, sq ft for in).
+ *
+ * The hard part of decking is not counting boards, it is the butt joints:
+ * every joint must land on a joist centreline, must leave a piece long
+ * enough to be worth screwing down, and must be offset from the joints in
+ * the neighbouring rows. That is what planRow/stagger below do.
+ */
+function planDeckLayout(input) {
+  'use strict';
+
+  var EPS = 1e-6;
+  var errors = [];
+  var warnings = [];
+
+  function r3(v) { return Math.round(v * 1000) / 1000; }
+  function toNum(v) {
+    if (v === null || v === undefined || v === '') return NaN;
+    var n = (typeof v === 'number') ? v : parseFloat(String(v).trim());
+    return isFinite(n) ? n : NaN;
+  }
+  function fail() {
+    return { ok: false, errors: errors, warnings: warnings, unit: unit };
+  }
+
+  input = input || {};
+  var unit = (input.unit === 'in') ? 'in' : 'mm';
+
+  /* ---------- 1. read and validate ---------- */
+  var deckLength   = toNum(input.deckLength);
+  var deckWidth    = toNum(input.deckWidth);
+  var boardWidth   = toNum(input.boardWidth);
+  var gap          = toNum(input.gap);
+  var joistSpacing = toNum(input.joistSpacing);
+  var direction    = (input.direction === 'width') ? 'width' : 'length';
+  var sawKerf      = toNum(input.sawKerf);
+  if (!isFinite(sawKerf) || sawKerf < 0) sawKerf = 0;
+
+  var frameCourses = Math.round(toNum(input.frameCourses));
+  if (!isFinite(frameCourses) || frameCourses < 0) frameCourses = 0;
+  frameCourses = Math.min(3, frameCourses);
+  if (input.pictureFrame === false) frameCourses = 0;
+  if (input.pictureFrame === true && frameCourses === 0) frameCourses = 1;
+
+  var screwsPerBearing = Math.round(toNum(input.screwsPerBearing));
+  if (!isFinite(screwsPerBearing) || screwsPerBearing < 1) screwsPerBearing = 2;
+  screwsPerBearing = Math.min(6, screwsPerBearing);
+
+  var staggerBays = Math.round(toNum(input.staggerBays));
+  if (!isFinite(staggerBays) || staggerBays < 1) staggerBays = 1;
+  staggerBays = Math.min(20, staggerBays);
+
+  var stock = [];
+  var rawStock = input.stockLengths;
+  if (typeof rawStock === 'string') rawStock = rawStock.split(/[,;\s]+/);
+  if (Array.isArray(rawStock)) {
+    for (var si = 0; si < rawStock.length; si++) {
+      var sv = toNum(rawStock[si]);
+      if (isFinite(sv) && sv > 0 && stock.indexOf(sv) === -1) stock.push(sv);
+    }
+  }
+  stock.sort(function (a, b) { return a - b; });
+
+  if (!(deckLength > 0))   errors.push('Deck length must be a positive number.');
+  if (!(deckWidth > 0))    errors.push('Deck width must be a positive number.');
+  if (!(boardWidth > 0))   errors.push('Board cover width must be a positive number.');
+  if (!(isFinite(gap) && gap >= 0)) errors.push('Board gap must be zero or more.');
+  if (!(joistSpacing > 0)) errors.push('Joist spacing must be a positive number.');
+  if (!stock.length)       errors.push('Enter at least one stock board length.');
+  if (errors.length) return fail();
+
+  var maxStock = stock[stock.length - 1];
+
+  /* run axis = the way the boards point; across axis = the way rows stack */
+  var runLength    = (direction === 'length') ? deckLength : deckWidth;
+  var acrossLength = (direction === 'length') ? deckWidth  : deckLength;
+
+  if (runLength / joistSpacing > 4000) {
+    errors.push('That joist spacing gives an unreasonable number of joists — check the units.');
+    return fail();
+  }
+  if (acrossLength / (boardWidth + gap) > 4000) {
+    errors.push('That board width gives an unreasonable number of rows — check the units.');
+    return fail();
+  }
+
+  var minPiece = toNum(input.minPieceLength);
+  if (!isFinite(minPiece) || minPiece <= 0) minPiece = 2 * joistSpacing;
+  if (minPiece > maxStock * 0.5) minPiece = Math.max(joistSpacing, maxStock * 0.5);
+
+  /* ---------- 2. joist centrelines along the run ---------- */
+  var joists = [];
+  var nBays = Math.floor(runLength / joistSpacing + EPS);
+  for (var ji = 0; ji <= nBays; ji++) joists.push(r3(ji * joistSpacing));
+  if (joists[joists.length - 1] < runLength - EPS) joists.push(r3(runLength));
+  var lastBay = r3(joists[joists.length - 1] - joists[joists.length - 2]);
+  if (joists.length > 1 && lastBay < joistSpacing - EPS) {
+    warnings.push('The run does not divide evenly by the joist spacing: the last bay is ' +
+      r3(lastBay) + ' ' + unit + ' instead of ' + r3(joistSpacing) + '.');
+  }
+
+  /* ---------- 3. picture frame band and field envelope ---------- */
+  var band = 0;
+  if (frameCourses > 0) band = frameCourses * boardWidth + (frameCourses - 1) * gap;
+  var inset = (frameCourses > 0) ? band + gap : 0;
+
+  var fieldRunStart    = inset;
+  var fieldRunEnd      = runLength - inset;
+  var fieldRunSpan     = fieldRunEnd - fieldRunStart;
+  var fieldAcrossStart = inset;
+  var fieldAcrossSpan  = acrossLength - 2 * inset;
+
+  if (fieldRunSpan <= 0 || fieldAcrossSpan <= 0) {
+    errors.push('The picture frame is wider than the deck — there is no field left to board.');
+    return fail();
+  }
+
+  /* ---------- 4. rows across the field ---------- */
+  var pitch = boardWidth + gap;
+  var fullRows = Math.floor((fieldAcrossSpan + gap) / pitch + EPS);
+  if (fullRows < 1) {
+    errors.push('Not even one full board fits across the field. Check the board width and deck size.');
+    return fail();
+  }
+  var covered   = fullRows * boardWidth + (fullRows - 1) * gap;
+  var remainder = r3(fieldAcrossSpan - covered);
+
+  var rowWidths = [];
+  var rippedWidth = null;
+  var residual = 0;
+  for (var rw = 0; rw < fullRows; rw++) rowWidths.push(boardWidth);
+  if (remainder > gap + EPS) {
+    rippedWidth = r3(remainder - gap);
+    rowWidths.push(rippedWidth);
+    if (rippedWidth < boardWidth * 0.25) {
+      warnings.push('The last row rips down to ' + r3(rippedWidth) + ' ' + unit +
+        ' — a sliver that will cup and split. Widen the gap slightly, or split the difference across the first and last rows.');
+    }
+  } else if (remainder > EPS) {
+    residual = remainder;
+  }
+  var rowCount = rowWidths.length;
+
+  /* gap that would make the boards land whole with no rip */
+  var suggestedGap = (rowCount > 1)
+    ? r3((fieldAcrossSpan - rowCount * boardWidth) / (rowCount - 1))
+    : null;
+  var suggestedGapFull = (fullRows > 1)
+    ? r3((fieldAcrossSpan - fullRows * boardWidth) / (fullRows - 1))
+    : null;
+
+  /* ---------- 5. split each row into pieces, joints on joists ---------- */
+  function nearestJoist(cands, target) {
+    var best = cands[0], bd = Math.abs(cands[0] - target);
+    for (var i = 1; i < cands.length; i++) {
+      var d = Math.abs(cands[i] - target);
+      if (d < bd - EPS || (Math.abs(d - bd) <= EPS && cands[i] > best)) { best = cands[i]; bd = d; }
+    }
+    return best;
+  }
+
+  /* candidate joists for a cut starting at `pos`, given the run must finish at `end` */
+  function candidatesFrom(pos, end) {
+    var limit = pos + maxStock;
+    var out = [];
+    for (var i = 0; i < joists.length; i++) {
+      var j = joists[i];
+      if (j < pos + minPiece - EPS) continue;
+      if (j > limit + EPS) break;
+      if (j > end - minPiece + EPS) continue;   // remaining tail would be too short
+      out.push(j);
+    }
+    return out;
+  }
+
+  function planRow(start, end, firstTarget) {
+    var pieces = [];
+    var pos = start;
+    var first = true;
+    var guard = 0;
+    while (end - pos > maxStock + EPS) {
+      if (++guard > 2000) return null;
+      var cands = candidatesFrom(pos, end);
+      if (!cands.length) return null;
+      var cut;
+      if (first && firstTarget !== null && firstTarget !== undefined) {
+        cut = nearestJoist(cands, pos + firstTarget);
+      } else {
+        cut = cands[cands.length - 1];         // reach as far as the stock allows
+      }
+      first = false;
+      pieces.push({ start: r3(pos), end: r3(cut), length: r3(cut - pos) });
+      pos = cut;
+    }
+    pieces.push({ start: r3(pos), end: r3(end), length: r3(end - pos) });
+    return pieces;
+  }
+
+  var needsJoints = fieldRunSpan > maxStock + EPS;
+  var maxFirst = null, patternLength = 1;
+
+  if (needsJoints) {
+    var firstCands = candidatesFrom(fieldRunStart, fieldRunEnd);
+    if (!firstCands.length) {
+      errors.push('No butt joint can land on a joist: the run is ' + r3(fieldRunSpan) + ' ' + unit +
+        ' but the longest stock board is ' + r3(maxStock) + ' ' + unit +
+        ' and no joist falls in the usable window. Use a longer board, move a joist, or lower the minimum piece length.');
+      return fail();
+    }
+    maxFirst = r3(firstCands[firstCands.length - 1] - fieldRunStart);
+    var step = staggerBays * joistSpacing;
+    patternLength = Math.floor((maxFirst - minPiece) / step + EPS) + 1;
+    if (!isFinite(patternLength) || patternLength < 1) patternLength = 1;
+    if (patternLength > 12) patternLength = 12;
+    if (patternLength === 1) {
+      warnings.push('There is no room to stagger: every row would joint on the same joist. ' +
+        'Reduce the stagger, lower the minimum piece length, or buy a longer board.');
+    }
+  }
+
+  var rows = [];
+  var acrossPos = fieldAcrossStart;
+  for (var ri = 0; ri < rowCount; ri++) {
+    var target = null;
+    if (needsJoints && maxFirst !== null) {
+      target = maxFirst - (ri % patternLength) * staggerBays * joistSpacing;
+      if (target < minPiece) target = minPiece;
+    }
+    var pieces = planRow(fieldRunStart, fieldRunEnd, target);
+    if (!pieces) {
+      errors.push('Row ' + (ri + 1) + ' cannot be split with joints on joists. ' +
+        'Check the stock lengths, joist spacing and minimum piece length.');
+      return fail();
+    }
+    var joints = [];
+    for (var pi = 0; pi < pieces.length - 1; pi++) joints.push(pieces[pi].end);
+    rows.push({
+      index: ri + 1,
+      acrossStart: r3(acrossPos),
+      width: r3(rowWidths[ri]),
+      ripped: (rippedWidth !== null && ri === rowCount - 1),
+      pieces: pieces,
+      joints: joints
+    });
+    acrossPos += rowWidths[ri] + gap;
+  }
+
+  /* smallest joint offset between neighbouring rows (0 = joints line up) */
+  var minAdjacentOffset = null;
+  for (var a = 1; a < rows.length; a++) {
+    var ja = rows[a - 1].joints, jb = rows[a].joints;
+    for (var x = 0; x < ja.length; x++) {
+      for (var y = 0; y < jb.length; y++) {
+        var d2 = Math.abs(ja[x] - jb[y]);
+        if (minAdjacentOffset === null || d2 < minAdjacentOffset) minAdjacentOffset = r3(d2);
+      }
+    }
+  }
+  if (minAdjacentOffset !== null && minAdjacentOffset < EPS) {
+    warnings.push('Two neighbouring rows joint on the same joist. Change the stagger or the stock lengths.');
+  } else if (minAdjacentOffset !== null && minAdjacentOffset < staggerBays * joistSpacing - EPS) {
+    warnings.push('Closest joints in neighbouring rows are ' + minAdjacentOffset + ' ' + unit +
+      ' apart, less than the ' + r3(staggerBays * joistSpacing) + ' ' + unit + ' you asked for.');
+  }
+
+  /* ---------- 6. geometry in deck coordinates (x = deck length, y = deck width) ---------- */
+  function pt(run, across) {
+    return (direction === 'length') ? { x: r3(run), y: r3(across) } : { x: r3(across), y: r3(run) };
+  }
+  function rect(run, runLen, across, acrossLen) {
+    return (direction === 'length')
+      ? { x: r3(run), y: r3(across), w: r3(runLen), h: r3(acrossLen) }
+      : { x: r3(across), y: r3(run), w: r3(acrossLen), h: r3(runLen) };
+  }
+
+  for (var rr = 0; rr < rows.length; rr++) {
+    var row = rows[rr];
+    for (var pp = 0; pp < row.pieces.length; pp++) {
+      var pc = row.pieces[pp];
+      pc.rect = rect(pc.start, pc.length, row.acrossStart, row.width);
+    }
+    row.jointMarks = [];
+    for (var jj = 0; jj < row.joints.length; jj++) {
+      var jm = row.joints[jj];
+      var t = Math.max(runLength, acrossLength) / 260;
+      row.jointMarks.push(rect(jm - t / 2, t, row.acrossStart, row.width));
+    }
+  }
+
+  var joistLines = [];
+  for (var jl = 0; jl < joists.length; jl++) {
+    var p1 = pt(joists[jl], 0), p2 = pt(joists[jl], acrossLength);
+    joistLines.push({ x1: p1.x, y1: p1.y, x2: p2.x, y2: p2.y, pos: joists[jl] });
+  }
+
+  /* picture frame: mitred ring per course, drawn as four polygons */
+  var framePieces = [];
+  for (var c = 0; c < frameCourses; c++) {
+    var o  = c * (boardWidth + gap);
+    var bw = boardWidth;
+    var L = deckLength, W = deckWidth;
+    var oL = L - o, oW = W - o, iL = L - o - bw, iW = W - o - bw;
+    if (iL <= o + EPS || iW <= o + EPS) break;
+    framePieces.push(
+      { side: 'top',    course: c + 1, length: r3(L - 2 * o),
+        points: [[o, o], [oL, o], [iL, o + bw], [o + bw, o + bw]] },
+      { side: 'bottom', course: c + 1, length: r3(L - 2 * o),
+        points: [[o, oW], [oL, oW], [iL, iW], [o + bw, iW]] },
+      { side: 'left',   course: c + 1, length: r3(W - 2 * o),
+        points: [[o, o], [o + bw, o + bw], [o + bw, iW], [o, oW]] },
+      { side: 'right',  course: c + 1, length: r3(W - 2 * o),
+        points: [[oL, o], [iL, o + bw], [iL, iW], [oL, oW]] }
+    );
+  }
+
+  /* frame boards longer than stock get split evenly; they need blocking under the joint */
+  var frameCuts = [];
+  var frameSplit = false;
+  for (var fp = 0; fp < framePieces.length; fp++) {
+    var flen = framePieces[fp].length;
+    var n = Math.ceil(flen / maxStock - EPS);
+    if (n < 1) n = 1;
+    if (n > 1) frameSplit = true;
+    framePieces[fp].cuts = [];
+    for (var k = 0; k < n; k++) {
+      var seg = r3(flen / n);
+      frameCuts.push(seg);
+      framePieces[fp].cuts.push(seg);
+    }
+  }
+  if (frameSplit) {
+    warnings.push('A picture frame board is longer than your longest stock board, so it has to be joined. ' +
+      'Put the joint on a mitre or over solid blocking.');
+  }
+  if (frameCourses > 0) {
+    warnings.push('A picture frame needs blocking under the mitres and under every field board end. ' +
+      'That timber is not in the joist count below.');
+  }
+
+  /* ---------- 7. bearings, blocking and screws ---------- */
+  function onJoist(v) {
+    for (var i = 0; i < joists.length; i++) if (Math.abs(joists[i] - v) < 0.5 + EPS) return true;
+    return false;
+  }
+  var bearings = 0, blockingEnds = 0, fieldPieces = 0, buttJoints = 0, fieldLinear = 0;
+  var pieceLengths = [];
+  for (var rq = 0; rq < rows.length; rq++) {
+    var rw2 = rows[rq];
+    buttJoints += rw2.joints.length;
+    for (var pq = 0; pq < rw2.pieces.length; pq++) {
+      var p = rw2.pieces[pq];
+      fieldPieces++;
+      fieldLinear += p.length;
+      pieceLengths.push(p.length);
+      var b = 0;
+      for (var jz = 0; jz < joists.length; jz++) {
+        if (joists[jz] >= p.start - 0.5 && joists[jz] <= p.end + 0.5) b++;
+      }
+      if (!onJoist(p.start)) { b++; blockingEnds++; }
+      if (!onJoist(p.end))   { b++; blockingEnds++; }
+      bearings += b;
+    }
+  }
+  var frameBearings = 0;
+  for (var fc = 0; fc < frameCuts.length; fc++) {
+    frameBearings += Math.floor(frameCuts[fc] / joistSpacing) + 1;
+  }
+  bearings += frameBearings;
+  var screws = bearings * screwsPerBearing;
+
+  /* ---------- 8. buy list: 1D cutting stock, kerf aware ---------- */
+  var allCuts = pieceLengths.concat(frameCuts).sort(function (a, b) { return b - a; });
+  var tooLong = allCuts.filter(function (v) { return v > maxStock + EPS; });
+  if (tooLong.length) {
+    errors.push('A required piece of ' + r3(tooLong[0]) + ' ' + unit +
+      ' is longer than any stock board. Add a longer length.');
+    return fail();
+  }
+
+  var boards = [];
+  var pending = allCuts.slice();
+  while (pending.length) {
+    var piece = pending.shift();
+    /* try to drop it into an open board (best fit: least room left over) */
+    var bestIdx = -1, bestLeft = Infinity;
+    for (var bi = 0; bi < boards.length; bi++) {
+      var need = piece + (boards[bi].cuts.length ? sawKerf : 0);
+      var left = boards[bi].remaining - need;
+      if (left >= -EPS && left < bestLeft) { bestLeft = left; bestIdx = bi; }
+    }
+    if (bestIdx >= 0) {
+      boards[bestIdx].cuts.push(piece);
+      boards[bestIdx].remaining = r3(bestLeft);
+      continue;
+    }
+    /* open a new board: try each stock length, greedily fill it with what is
+       still pending, and keep the length that wastes the least */
+    var chosen = null, chosenLeft = Infinity;
+    for (var sq = 0; sq < stock.length; sq++) {
+      var L2 = stock[sq];
+      if (L2 < piece - EPS) continue;
+      var rem = L2 - piece;
+      for (var pz = 0; pz < pending.length; pz++) {
+        var need2 = pending[pz] + sawKerf;
+        if (need2 <= rem + EPS) rem -= need2;
+      }
+      if (rem < chosenLeft - EPS) { chosenLeft = rem; chosen = L2; }
+    }
+    if (chosen === null) { chosen = maxStock; }
+    boards.push({ stock: chosen, cuts: [piece], remaining: r3(chosen - piece) });
+  }
+
+  var byLength = {};
+  for (var bq = 0; bq < boards.length; bq++) {
+    byLength[boards[bq].stock] = (byLength[boards[bq].stock] || 0) + 1;
+    boards[bq].offcut = boards[bq].remaining;
+  }
+  var buyList = Object.keys(byLength).map(function (k) {
+    return { length: parseFloat(k), qty: byLength[k] };
+  }).sort(function (a, b) { return a.length - b.length; });
+
+  /* identical cutting patterns, grouped */
+  var patMap = {};
+  for (var bz = 0; bz < boards.length; bz++) {
+    var sorted = boards[bz].cuts.slice().sort(function (a, b) { return b - a; });
+    var key = boards[bz].stock + '|' + sorted.join(',');
+    if (!patMap[key]) patMap[key] = { stock: boards[bz].stock, cuts: sorted, offcut: boards[bz].offcut, qty: 0 };
+    patMap[key].qty++;
+  }
+  var patterns = Object.keys(patMap).map(function (k) { return patMap[k]; })
+    .sort(function (a, b) { return b.stock - a.stock || b.qty - a.qty; });
+
+  var totalPurchased = 0;
+  for (var tb = 0; tb < boards.length; tb++) totalPurchased += boards[tb].stock;
+  var frameLinear = 0;
+  for (var fl = 0; fl < frameCuts.length; fl++) frameLinear += frameCuts[fl];
+  var usedLinear = fieldLinear + frameLinear;
+  var kerfLoss = 0;
+  for (var kb = 0; kb < boards.length; kb++) kerfLoss += Math.max(0, boards[kb].cuts.length - 1) * sawKerf;
+  var offcutLinear = totalPurchased - usedLinear - kerfLoss;
+
+  /* ---------- 9. areas ---------- */
+  var deckArea, areaUnit, coverageArea;
+  var boardFace = 0;
+  for (var ca = 0; ca < rows.length; ca++) {
+    for (var cb = 0; cb < rows[ca].pieces.length; cb++) boardFace += rows[ca].pieces[cb].length * rows[ca].width;
+  }
+  var frameFace = 0;
+  for (var cf = 0; cf < framePieces.length; cf++) frameFace += framePieces[cf].length * boardWidth;
+  /* mitred corners overlap in that sum; subtract one board-width square per corner per course */
+  frameFace -= frameCourses * 4 * boardWidth * boardWidth * 0.5;
+  if (frameFace < 0) frameFace = 0;
+
+  if (unit === 'mm') { deckArea = r3(deckLength * deckWidth / 1e6); coverageArea = r3((boardFace + frameFace) / 1e6); areaUnit = 'm²'; }
+  else               { deckArea = r3(deckLength * deckWidth / 144);  coverageArea = r3((boardFace + frameFace) / 144);  areaUnit = 'sq ft'; }
+
+  /* ---------- 10. result ---------- */
+  return {
+    ok: true,
+    errors: errors,
+    warnings: warnings,
+    unit: unit,
+    input: {
+      deckLength: deckLength, deckWidth: deckWidth, boardWidth: boardWidth, gap: gap,
+      joistSpacing: joistSpacing, direction: direction, frameCourses: frameCourses,
+      stockLengths: stock, staggerBays: staggerBays, minPieceLength: r3(minPiece),
+      screwsPerBearing: screwsPerBearing, sawKerf: sawKerf
+    },
+    deck: {
+      length: deckLength, width: deckWidth,
+      runAxis: (direction === 'length') ? 'x' : 'y',
+      runLength: r3(runLength), acrossLength: r3(acrossLength),
+      area: deckArea, areaUnit: areaUnit
+    },
+    frame: {
+      enabled: frameCourses > 0, courses: frameCourses,
+      band: r3(band), inset: r3(inset),
+      pieces: framePieces, cuts: frameCuts, linear: r3(frameLinear)
+    },
+    field: {
+      runStart: r3(fieldRunStart), runEnd: r3(fieldRunEnd), runSpan: r3(fieldRunSpan),
+      acrossStart: r3(fieldAcrossStart), acrossSpan: r3(fieldAcrossSpan),
+      rowCount: rowCount, fullRows: fullRows,
+      rippedRowWidth: rippedWidth, residual: r3(residual),
+      suggestedGapNoRip: suggestedGapFull, suggestedGapWithRip: suggestedGap
+    },
+    joists: {
+      spacing: joistSpacing, count: joists.length, positions: joists,
+      axis: (direction === 'length') ? 'x' : 'y',
+      lines: joistLines, lastBay: lastBay
+    },
+    rows: rows,
+    stagger: {
+      bays: staggerBays, step: r3(staggerBays * joistSpacing),
+      patternLength: patternLength, maxFirstPiece: maxFirst,
+      minAdjacentOffset: minAdjacentOffset
+    },
+    purchase: {
+      buyList: buyList, patterns: patterns, boards: boards,
+      totalBoards: boards.length,
+      totalLinear: r3(totalPurchased),
+      usedLinear: r3(usedLinear),
+      kerfLoss: r3(kerfLoss),
+      offcutLinear: r3(offcutLinear),
+      wastePct: totalPurchased > 0 ? r3(100 * (totalPurchased - usedLinear) / totalPurchased) : 0
+    },
+    totals: {
+      fieldPieces: fieldPieces,
+      framePieces: frameCuts.length,
+      buttJoints: buttJoints,
+      rows: rowCount,
+      bearings: bearings,
+      blockingEnds: blockingEnds,
+      screws: screws,
+      coverageArea: coverageArea
+    }
+  };
+}
+
+/* allows the calculation to be required and tested outside a browser */
+if (typeof module === 'object' && module.exports) { module.exports = { planDeckLayout: planDeckLayout }; }
+
+/* ============================ UI ============================ */
+(function () {
+  if (typeof document === 'undefined') return;
+
+  var $ = function (s) { return document.querySelector(s); };
+
+  var DEFAULTS = {
+    mm: { dl: 6000, dw: 3600, bw: 140, gap: 5, js: 400, stock: '3600, 4200, 4800',
+          minp: 800, kerf: 3, stepSmall: 0.5, stepBig: 1 },
+    in: { dl: 240, dw: 144, bw: 5.5, gap: 0.25, js: 16, stock: '144, 192, 240',
+          minp: 32, kerf: 0.125, stepSmall: 0.0625, stepBig: 0.25 }
+  };
+
+  function fmt(v, unit) {
+    if (v === null || v === undefined || !isFinite(v)) return '—';
+    if (unit === 'mm') {
+      var m = Math.round(v * 10) / 10;
+      return (Math.abs(m - Math.round(m)) < 1e-9 ? Math.round(m) : m.toFixed(1)) + ' mm';
+    }
+    var sign = v < 0 ? '-' : '';
+    var a = Math.abs(v);
+    var t16 = Math.round(a * 16);
+    var ft = Math.floor(t16 / 192);
+    var rem = t16 - ft * 192;
+    var inch = Math.floor(rem / 16);
+    var n = rem - inch * 16, d = 16;
+    while (n > 0 && n % 2 === 0) { n /= 2; d /= 2; }
+    var s = '';
+    if (ft) s += ft + "' ";
+    s += inch;
+    if (n) s += '-' + n + '/' + d;
+    return sign + s + '"';
+  }
+  function esc(t) { var d = document.createElement('div'); d.textContent = String(t); return d.innerHTML; }
+
+  function applyUnitDefaults(u) {
+    var d = DEFAULTS[u];
+    $('#dl').value = d.dl; $('#dw').value = d.dw; $('#bw').value = d.bw;
+    $('#gap').value = d.gap; $('#js').value = d.js; $('#stock').value = d.stock;
+    $('#minp').value = d.minp; $('#kerf').value = d.kerf;
+    ['#bw', '#gap', '#kerf'].forEach(function (k) { $(k).step = d.stepSmall; });
+    ['#dl', '#dw', '#js', '#minp'].forEach(function (k) { $(k).step = d.stepBig; });
+  }
+
+  function readInput() {
+    return {
+      unit: $('#unit').value,
+      deckLength: $('#dl').value,
+      deckWidth: $('#dw').value,
+      boardWidth: $('#bw').value,
+      gap: $('#gap').value,
+      joistSpacing: $('#js').value,
+      direction: $('#dir').value,
+      stockLengths: $('#stock').value,
+      frameCourses: $('#frame').value,
+      staggerBays: $('#stag').value,
+      minPieceLength: $('#minp').value,
+      screwsPerBearing: $('#spb').value,
+      sawKerf: $('#kerf').value
+    };
+  }
+
+  function svgPlan(res) {
+    var L = res.deck.length, W = res.deck.width;
+    var M = Math.max(L, W) * 0.09;
+    var fs = Math.max(L, W) / 62;
+    var vertical = (res.input.direction === 'width');
+    var s = '<svg viewBox="' + (-M) + ' ' + (-M) + ' ' + (L + 2 * M) + ' ' + (W + 2 * M) +
+            '" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Deck board layout plan">';
+
+    /* joists first, under everything */
+    res.joists.lines.forEach(function (l) {
+      s += '<line class="joist" x1="' + l.x1 + '" y1="' + l.y1 + '" x2="' + l.x2 + '" y2="' + l.y2 + '"/>';
+    });
+
+    /* picture frame */
+    res.frame.pieces.forEach(function (p) {
+      s += '<polygon class="frameboard" points="' +
+           p.points.map(function (q) { return q[0] + ',' + q[1]; }).join(' ') + '"/>';
+    });
+
+    /* field boards */
+    res.rows.forEach(function (row) {
+      row.pieces.forEach(function (p) {
+        s += '<rect class="board' + (row.ripped ? ' ripped' : '') + '" x="' + p.rect.x + '" y="' + p.rect.y +
+             '" width="' + p.rect.w + '" height="' + p.rect.h + '"/>';
+      });
+      row.jointMarks.forEach(function (m) {
+        s += '<rect class="joint" x="' + m.x + '" y="' + m.y + '" width="' + m.w + '" height="' + m.h + '"/>';
+      });
+    });
+
+    /* piece length labels where there is room */
+    res.rows.forEach(function (row) {
+      row.pieces.forEach(function (p) {
+        var along = vertical ? p.rect.h : p.rect.w;
+        var acrossPx = vertical ? p.rect.w : p.rect.h;
+        if (along < fs * 7 || acrossPx < fs * 1.3) return;
+        var cx = p.rect.x + p.rect.w / 2, cy = p.rect.y + p.rect.h / 2;
+        var tr = vertical ? ' transform="rotate(-90 ' + cx + ' ' + cy + ')"' : '';
+        s += '<text class="blabel" x="' + cx + '" y="' + (cy + fs * 0.35) + '" text-anchor="middle" ' +
+             'style="font-size:' + fs + 'px"' + tr + '>' + esc(fmt(p.length, res.unit)) + '</text>';
+      });
+    });
+
+    /* deck outline */
+    s += '<rect class="deckedge" x="0" y="0" width="' + L + '" height="' + W + '"/>';
+
+    /* row numbers, just outside the start of the run */
+    res.rows.forEach(function (row) {
+      var c = row.acrossStart + row.width / 2;
+      var x = vertical ? c : -M * 0.3;
+      var y = vertical ? -M * 0.3 : c;
+      var tr = vertical ? ' transform="rotate(-90 ' + x + ' ' + y + ')"' : '';
+      if (res.rows.length > 40 && row.index % 2 === 0) return;
+      s += '<text class="rowlabel" x="' + x + '" y="' + (y + fs * 0.35) + '" text-anchor="middle" ' +
+           'style="font-size:' + (fs * 0.85) + 'px"' + tr + '>' + row.index + '</text>';
+    });
+
+    /* overall dimensions */
+    var dy = W + M * 0.6;
+    s += '<line class="dimline" x1="0" y1="' + dy + '" x2="' + L + '" y2="' + dy + '"/>';
+    s += '<text class="dimtext" x="' + (L / 2) + '" y="' + (dy - fs * 0.4) + '" text-anchor="middle" style="font-size:' + fs + 'px">' +
+         esc(fmt(L, res.unit)) + '</text>';
+    var dx = L + M * 0.6;
+    s += '<line class="dimline" x1="' + dx + '" y1="0" x2="' + dx + '" y2="' + W + '"/>';
+    s += '<text class="dimtext" x="' + dx + '" y="' + (W / 2) + '" text-anchor="middle" style="font-size:' + fs +
+         'px" transform="rotate(-90 ' + dx + ' ' + (W / 2) + ')" dy="' + (-fs * 0.4) + '">' + esc(fmt(W, res.unit)) + '</text>';
+
+    s += '</svg>';
+    return s;
+  }
+
+  function render(res) {
+    var out = $('#out');
+    if (!res.ok) {
+      out.innerHTML = '<div class="card"><div class="warn"><strong>Cannot plan this deck.</strong><ul style="margin:8px 0 0;padding-left:18px">' +
+        res.errors.map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul></div></div>';
+      return;
+    }
+    var u = res.unit;
+    var h = '<div class="card">';
+
+    res.warnings.forEach(function (w) { h += '<div class="warn">' + esc(w) + '</div>'; });
+
+    h += '<div class="stats">' +
+      '<div class="stat"><b>' + res.purchase.totalBoards + '</b><span>Boards to buy</span></div>' +
+      '<div class="stat"><b>' + res.totals.rows + '</b><span>Rows</span></div>' +
+      '<div class="stat"><b>' + res.totals.buttJoints + '</b><span>Butt joints</span></div>' +
+      '<div class="stat"><b>' + res.purchase.wastePct + '%</b><span>Waste</span></div>' +
+      '<div class="stat"><b>' + res.totals.screws + '</b><span>Screws</span></div>' +
+      '<div class="stat"><b>' + res.deck.area + '</b><span>' + res.deck.areaUnit + ' deck</span></div>' +
+      '</div>';
+
+    h += '<div class="note">Boards run parallel to the deck ' + res.input.direction +
+      ' over ' + res.joists.count + ' joists at ' + fmt(res.joists.spacing, u) + ' centres. ' +
+      'Field boarding covers ' + fmt(res.field.runSpan, u) + ' × ' + fmt(res.field.acrossSpan, u) + '. ' +
+      (res.field.rippedRowWidth !== null
+        ? 'Row ' + res.field.rowCount + ' rips down to ' + fmt(res.field.rippedRowWidth, u) + '. '
+        : (res.field.residual > 0
+            ? 'There is ' + fmt(res.field.residual, u) + ' left over across the field — take it up in the wall gap. '
+            : 'The boards land whole across the field. ')) +
+      (res.field.suggestedGapNoRip !== null && res.field.suggestedGapNoRip >= 0
+        ? 'A gap of ' + fmt(res.field.suggestedGapNoRip, u) + ' would give ' + res.field.fullRows + ' full-width rows with no rip.'
+        : '') +
+      '</div>';
+
+    h += '<button class="primary noprint" id="printBtn2" style="margin-bottom:16px">Print plan</button>';
+
+    /* plan */
+    h += '<div class="sheet"><h3>Plan view — ' + fmt(res.deck.length, u) + ' × ' + fmt(res.deck.width, u) + '</h3>';
+    h += svgPlan(res);
+    h += '<div class="legend">' +
+      '<span><i class="sw-board"></i>Field board</span>' +
+      (res.frame.enabled ? '<span><i class="sw-frame"></i>Picture frame</span>' : '') +
+      (res.field.rippedRowWidth !== null ? '<span><i class="sw-rip"></i>Ripped last row</span>' : '') +
+      '<span><i class="sw-joint"></i>Butt joint (on a joist)</span>' +
+      '<span><i class="sw-joist"></i>Joist centreline</span>' +
+      '</div></div>';
+
+    /* stagger check */
+    h += '<h3 style="font-size:.95rem;margin:22px 0 6px">Joint stagger</h3>';
+    if (res.totals.buttJoints === 0) {
+      h += '<p class="faq" style="margin:0;color:var(--muted);font-size:.92rem">No butt joints: every row is a single board over ' +
+        fmt(res.field.runSpan, u) + '.</p>';
+    } else {
+      h += '<p style="margin:0 0 10px;color:var(--muted);font-size:.92rem">Every joint sits on a joist centreline. ' +
+        'The pattern repeats every ' + res.stagger.patternLength + ' row' + (res.stagger.patternLength === 1 ? '' : 's') +
+        ', asked stagger ' + fmt(res.stagger.step, u) + ' (' + res.stagger.bays + ' joist bay' +
+        (res.stagger.bays === 1 ? '' : 's') + '). Closest joints in neighbouring rows: <strong>' +
+        fmt(res.stagger.minAdjacentOffset, u) + '</strong>.</p>';
+    }
+
+    /* row cut list */
+    h += '<h3 style="font-size:.95rem;margin:22px 0 6px">Row by row</h3><div class="scroll"><table class="tight"><thead><tr>' +
+      '<th>Row</th><th>Offset from edge</th><th>Board width</th><th>Pieces (in order)</th><th>Joints at</th></tr></thead><tbody>';
+    res.rows.forEach(function (row) {
+      h += '<tr><td>' + row.index + '</td><td class="mono">' + esc(fmt(row.acrossStart, u)) + '</td>' +
+        '<td class="mono">' + esc(fmt(row.width, u)) + (row.ripped ? ' <em>rip</em>' : '') + '</td>' +
+        '<td class="mono">' + row.pieces.map(function (p) { return esc(fmt(p.length, u)); }).join(' + ') + '</td>' +
+        '<td class="mono">' + (row.joints.length ? row.joints.map(function (j) { return esc(fmt(j, u)); }).join(', ') : '—') + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+
+    /* buy list */
+    h += '<h3 style="font-size:.95rem;margin:22px 0 6px">Buy list</h3><table class="tight"><thead><tr>' +
+      '<th>Board length</th><th>Quantity</th><th>Linear total</th></tr></thead><tbody>';
+    res.purchase.buyList.forEach(function (b) {
+      h += '<tr><td class="mono">' + esc(fmt(b.length, u)) + '</td><td>' + b.qty + '</td>' +
+        '<td class="mono">' + esc(fmt(b.length * b.qty, u)) + '</td></tr>';
+    });
+    h += '<tr><td><strong>Total</strong></td><td><strong>' + res.purchase.totalBoards + '</strong></td>' +
+      '<td class="mono"><strong>' + esc(fmt(res.purchase.totalLinear, u)) + '</strong></td></tr>';
+    h += '</tbody></table>';
+    h += '<p style="margin:8px 0 0;color:var(--muted);font-size:.88rem">Laid: ' + esc(fmt(res.purchase.usedLinear, u)) +
+      ' · lost to saw kerf: ' + esc(fmt(res.purchase.kerfLoss, u)) +
+      ' · offcut left over: ' + esc(fmt(res.purchase.offcutLinear, u)) +
+      ' · waste ' + res.purchase.wastePct + '%. Add your own contingency on top.</p>';
+
+    /* cutting patterns */
+    h += '<h3 style="font-size:.95rem;margin:22px 0 6px">How to cut each board</h3><div class="scroll"><table class="tight"><thead><tr>' +
+      '<th>Stock length</th><th>Qty</th><th>Cuts</th><th>Offcut</th></tr></thead><tbody>';
+    res.purchase.patterns.forEach(function (p) {
+      h += '<tr><td class="mono">' + esc(fmt(p.stock, u)) + '</td><td>' + p.qty + '</td>' +
+        '<td class="mono">' + p.cuts.map(function (c) { return esc(fmt(c, u)); }).join(' + ') + '</td>' +
+        '<td class="mono">' + esc(fmt(p.offcut, u)) + '</td></tr>';
+    });
+    h += '</tbody></table></div>';
+
+    /* fixings */
+    h += '<h3 style="font-size:.95rem;margin:22px 0 6px">Fixings</h3>' +
+      '<p style="margin:0;color:var(--muted);font-size:.92rem">' +
+      res.totals.bearings + ' bearing points × ' + res.input.screwsPerBearing + ' screws = <strong>' +
+      res.totals.screws + ' screws</strong>. That counts both halves of every butt joint separately, so a joint costs ' +
+      (res.input.screwsPerBearing * 2) + ' screws at that joist. ' +
+      (res.totals.blockingEnds > 0
+        ? res.totals.blockingEnds + ' board ends do not land on a joist and need blocking under them.'
+        : 'Every board end lands on a joist.') +
+      '</p>';
+
+    h += '</div>';
+    out.innerHTML = h;
+    var pb = document.getElementById('printBtn2');
+    if (pb) pb.onclick = function () { window.print(); };
+  }
+
+  function run() { render(planDeckLayout(readInput())); }
+
+  $('#unit').addEventListener('change', function () { applyUnitDefaults($('#unit').value); run(); });
+  $('#stockPreset').addEventListener('change', function (e) {
+    if (!e.target.value) return;
+    var parts = e.target.value.split('|');
+    if ($('#unit').value !== parts[0]) { $('#unit').value = parts[0]; applyUnitDefaults(parts[0]); }
+    $('#stock').value = parts[1];
+    e.target.value = '';
+    run();
+  });
+  $('#go').addEventListener('click', run);
+  $('#print').addEventListener('click', function () { window.print(); });
+  $('#reset').addEventListener('click', function () {
+    $('#unit').value = 'mm'; $('#dir').value = 'length'; $('#frame').value = '1';
+    $('#stag').value = 2; $('#spb').value = 2;
+    applyUnitDefaults('mm'); run();
+  });
+  ['#dl', '#dw', '#bw', '#gap', '#js', '#dir', '#stock', '#frame', '#stag', '#minp', '#spb', '#kerf']
+    .forEach(function (sel) { $(sel).addEventListener('change', run); });
+
+  run();
+})();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

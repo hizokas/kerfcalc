@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Box Joint &amp; Dovetail Layout Calculator — Printable 1:1 Marking Template</title>
+<meta name="description" content="Work out even pin and tail spacing for box joints and through dovetails, then print a full-size 1:1 marking template with a 100 mm scale check. Adjusts the tail width so the spacing divides exactly, gives the baseline depth and the mating board layout. mm or inches, no sign-up, runs offline in your browser.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+/* ---- additions specific to this tool (nothing above is modified) ---- */
+.ok{background:#eef6f1;border:1px solid #bcd9c9;color:#2f6b4f;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.ok{background:#16261e;border-color:#2f4a3b;color:#8fd0ae}}
+.tpl{margin:0 0 22px;break-inside:avoid;page-break-inside:avoid}
+.tpl h3{font-size:.95rem;margin:0 0 6px}
+.tpl svg{background:#fff}
+.tile{break-inside:avoid;page-break-inside:avoid;margin-bottom:8px}
+.tplnote{font-size:.8rem;color:var(--muted);margin:6px 0 14px;max-width:70ch}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin:0 0 12px}
+.legend i{display:inline-block;width:13px;height:13px;border:1px solid #444;
+  vertical-align:-2px;margin-right:5px;background:#fff}
+.legend i.waste{background:repeating-linear-gradient(45deg,#fff,#fff 2px,#aaa 2px,#aaa 3px)}
+.hint{font-size:.75rem;color:var(--muted);max-width:22ch}
+@media print{
+  @page{margin:8mm}
+  .tpl svg{width:auto!important;height:auto!important;max-width:none!important;
+    border:none!important;background:#fff!important;border-radius:0!important}
+  .tpl{page-break-inside:avoid;margin-bottom:10mm}
+  .ok{border:1px solid #999;color:#000;background:#fff}
+}
+/* === KERFCALC THEME v2 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Box Joint &amp; Dovetail Layout</h1>
+<p class="sub">Give it the board width and the tail width you want, and it works out how many tails and
+pins fit and what the real tail width has to be so the spacing divides exactly across the board — the
+arithmetic nobody wants to do at the bench. You get the position of every knife line from the reference
+edge, the baseline depth for both boards, and a full-size 1:1 template you can print, cut out and stick
+straight onto the work. Everything runs in your browser; it works with no connection.</p>
+
+<div class="card noprint">
+  <h2>Joint</h2>
+  <div class="row">
+    <div class="f"><label>Joint type</label>
+      <select id="type">
+        <option value="dovetail">Through dovetail</option>
+        <option value="box">Box joint (finger joint)</option>
+      </select></div>
+    <div class="f"><label>Units</label>
+      <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
+    <div class="f"><label>Board width</label><input type="number" id="bw" value="150" min="1" step="0.1"></div>
+    <div class="f"><label>Tail board thickness</label><input type="number" id="ta" value="18" min="1" step="0.1"></div>
+    <div class="f"><label>Pin board thickness</label><input type="number" id="tb" value="18" min="1" step="0.1"></div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <div class="f"><label id="lbl-tw">Tail width (wide face)</label><input type="number" id="tw" value="30" min="0.1" step="0.1"></div>
+    <div class="f dt-only"><label>Pin width (narrow)</label><input type="number" id="pw" value="8" min="0.1" step="0.1"></div>
+    <div class="f dt-only"><label>Dovetail angle</label>
+      <select id="ratio">
+        <option value="6">1:6 — softwood (9.5&deg;)</option>
+        <option value="7">1:7 — general (8.1&deg;)</option>
+        <option value="8" selected>1:8 — hardwood (7.1&deg;)</option>
+        <option value="5">1:5 — soft/rustic (11.3&deg;)</option>
+      </select></div>
+    <div class="f"><label id="lbl-half">Half-pin at each end</label>
+      <label style="font-size:.9rem"><input type="checkbox" id="half" checked style="width:auto;margin-right:6px">Yes</label>
+      <span class="hint" id="hint-half">Standard for dovetails: the joint starts and ends with a half pin.</span></div>
+    <div class="f"><label>Mating board reference</label>
+      <label style="font-size:.9rem"><input type="checkbox" id="mirror" style="width:auto;margin-right:6px">Mirror it</label>
+      <span class="hint">Tick only if you measure the second board from the opposite edge.</span></div>
+  </div>
+  <div class="row" style="margin-top:14px">
+    <div class="f"><label>Paper for the 1:1 template</label>
+      <select id="paper">
+        <option value="210">A4 portrait — 210 mm wide</option>
+        <option value="297">A4 landscape — 297 mm wide</option>
+        <option value="216">Letter portrait — 8.5 in wide</option>
+        <option value="279">Letter landscape — 11 in wide</option>
+      </select>
+      <span class="hint">Wider layouts are split into tiles you tape together.</span></div>
+  </div>
+  <div class="actions">
+    <button id="ex-dt">Dovetail example</button>
+    <button id="ex-bx">Box joint example</button>
+    <button class="primary" id="go">Calculate layout</button>
+  </div>
+</div>
+
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+
+  <h3>How do I know my printer hasn't shrunk the template?</h3>
+  <p>Every printout carries a 100 mm control ruler next to the drawing. Print it, put a steel rule on
+  that bar, and it must read exactly 100 mm. If it reads 97 mm your printer is scaling — turn off
+  "fit to page" / "shrink oversized pages" and set the scale to 100 %, then print again. Do not use a
+  template that fails this check; a 3 % error over a 150 mm board is 4.5 mm of accumulated drift.</p>
+
+  <h3>Why is the tail width not the number I typed?</h3>
+  <p>Because a whole number of tails almost never lands exactly on your board width. You give a target,
+  the tool picks the count that comes closest and then adjusts the tail width so the last half pin ends
+  precisely on the far edge. The pin width is held at what you asked for — pins are sized by your chisel
+  and by how the joint should look, tails are the elastic part. The summary tells you how far the actual
+  width drifted from your target.</p>
+
+  <h3>Do I still need to transfer the tails to the pin board?</h3>
+  <p>Yes. Cut the tails first, then scribe them onto the pin board with a knife. The pin board layout
+  here is a check and a guide for chopping, not a substitute for scribing: it assumes your tail saw cuts
+  are perfectly on the line, and they will not be. Use the printed pin layout to see where the waste is
+  and to set the socket depth, then trust the scribe marks for the actual cut.</p>
+
+  <h3>What this tool does not do</h3>
+  <p>It handles through dovetails and through box joints only — no half-blind, no secret mitred, no
+  sliding dovetails. It adds no fit allowance: the geometry is nominal, and the shaving of fit is yours.
+  It knows nothing about your saw kerf, so on a router-table or table-saw box joint jig you cannot cut an
+  arbitrary finger width — a jig with a fixed key can only produce multiples of the key, so use the
+  calculated width to choose your cutter and board width, not to reset the jig. It also assumes the board
+  is exactly the width you typed and the ends are square; plane and shoot the stock first, then measure,
+  then print.</p>
+</div>
+
+
+
+
+
+
+
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./compound-miter-calculator.html" style="color:var(--accent)">Compound Miter Angle Calculator</a> <span style="color:var(--muted)">— Saw miter and bevel settings for crown and sloped work, with the formulas shown.</span></li><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser. No data is uploaded, stored or tracked.
+  Print the scale check, verify it with a rule, and mark from one reference edge on both boards.
+</footer>
+</div>
+
+<script>
+/* === PURE CALCULATION — begin ===============================================
+ *
+ * computeJointLayout(input) -> result
+ *
+ * No DOM, no globals, no I/O. Deterministic. Never throws: bad input comes back
+ * as { ok:false, errors:[...] }.
+ *
+ * INPUT (plain object)
+ *   unit                'mm' | 'in'      unit of every length below (default 'mm')
+ *   jointType           'dovetail' | 'box'
+ *   boardWidth          number > 0       width of the board across the joint
+ *   tailBoardThickness  number > 0       thickness of board A (the one carrying the tails)
+ *   pinBoardThickness   number > 0       thickness of board B (the one carrying the pins)
+ *   tailWidth           number > 0       TARGET tail width (dovetail) or finger width (box)
+ *                                        measured on the wide face
+ *   pinWidth            number > 0       narrow pin width, dovetail only
+ *   angleRatio          number >= 1      dovetail slope 1:n (6 softwood, 8 hardwood)
+ *   halfPinEnds         boolean          dovetail: half pin at both ends.
+ *                                        box: force an odd segment count so both ends
+ *                                        of board A are fingers (symmetric layout)
+ *   mirrorMating        boolean          mirror board B's layout (measure it from the
+ *                                        opposite edge)
+ *
+ * OUTPUT — every length is in MILLIMETRES, whatever the input unit.
+ *   ok            boolean
+ *   errors[]      strings, fatal
+ *   warnings[]    strings, non fatal
+ *   unit, toMM, fromMM
+ *   jointType, halfPinEnds, mirrorMating
+ *   boardWidth, tailBoardThickness, pinBoardThickness
+ *   angleRatio, angleDeg, slopeOffset   lateral flare per side over the joint depth
+ *   segmentCount, tailCount, pinCount
+ *   pitch                                one tail + one pin, on the wide face
+ *   requestedTailWidth, tailWidth        target vs actual, on the wide face
+ *   tailWidthNarrow                      tail width at the baseline / narrow face
+ *   pinWidth, pinWidthWide               pin narrow width and its wide-face width
+ *   tailBoard { role, view, viewDepth, baselineDepth, segments[] }
+ *   pinBoard  { role, view, viewDepth, baselineDepth, segments[] }
+ *   check     { tipSum, baseSum, contiguous, complementary, maxError, ok }
+ *
+ * A segment is a quadrilateral spanning the joint depth:
+ *   { kind, tipStart, tipEnd, baseStart, baseEnd, keep }
+ *   tip*  = on the WIDE reference face (end of the tail board / outside of the pin board)
+ *   base* = on the NARROW face (tail board baseline / inside of the pin board)
+ *   keep  = true if that segment is material left on THAT board, false if it is waste
+ * ---------------------------------------------------------------------------- */
+function computeJointLayout(input) {
+  var inp = input || {};
+  var errors = [];
+  var warnings = [];
+
+  var unit = inp.unit === 'in' ? 'in' : 'mm';
+  var toMM = unit === 'in' ? 25.4 : 1;
+  var jointType = inp.jointType === 'box' ? 'box' : 'dovetail';
+  var halfPinEnds = inp.halfPinEnds !== false;
+  var mirrorMating = inp.mirrorMating === true;
+
+  function fail() {
+    return {
+      ok: false, errors: errors, warnings: warnings,
+      unit: unit, toMM: toMM, fromMM: 1 / toMM,
+      jointType: jointType, halfPinEnds: halfPinEnds, mirrorMating: mirrorMating
+    };
+  }
+
+  // --- read and validate the numbers -----------------------------------------
+  function read(v, name) {
+    var x = (typeof v === 'number') ? v : parseFloat(v);
+    if (!isFinite(x)) { errors.push(name + ': enter a number.'); return NaN; }
+    if (x <= 0) { errors.push(name + ' must be greater than zero.'); return NaN; }
+    return x;
+  }
+
+  var W  = read(inp.boardWidth, 'Board width');
+  var tA = read(inp.tailBoardThickness, 'Tail board thickness');
+  var tB = read(inp.pinBoardThickness, 'Pin board thickness');
+  var targetTail = read(inp.tailWidth, jointType === 'box' ? 'Finger width' : 'Tail width');
+  var P = 0, ratio = 0;
+
+  if (jointType === 'dovetail') {
+    P = read(inp.pinWidth, 'Pin width');
+    ratio = (typeof inp.angleRatio === 'number') ? inp.angleRatio : parseFloat(inp.angleRatio);
+    if (!isFinite(ratio) || ratio < 1) {
+      errors.push('Dovetail ratio must be 1 or more (1:6 and 1:8 are the usual choices).');
+      ratio = NaN;
+    }
+  }
+  if (errors.length) return fail();
+
+  // convert to millimetres, then sanity-check the magnitudes
+  W *= toMM; tA *= toMM; tB *= toMM; targetTail *= toMM; P *= toMM;
+
+  if (W > 3000) errors.push('Board width over 3000 mm (118 in) — check the unit selector.');
+  if (tA > 200 || tB > 200) errors.push('A board thickness over 200 mm (8 in) is not a dovetail — check the unit selector.');
+  if (targetTail > W) errors.push('The target ' + (jointType === 'box' ? 'finger' : 'tail') + ' width is wider than the board.');
+  if (jointType === 'dovetail' && P >= W) errors.push('The pin width is wider than the board.');
+  if (errors.length) return fail();
+
+  var slopeOffset = jointType === 'dovetail' ? tB / ratio : 0; // lateral flare per side
+  var angleDeg = jointType === 'dovetail' ? Math.atan(1 / ratio) * 180 / Math.PI : 0;
+
+  var segments = [];
+  var n = 0, pitch = 0, tailW = 0;
+  var EPS = 1e-9;
+
+  function push(kind, tipStart, tipEnd, keepOnA) {
+    // Boundaries that sit on a board edge never move; interior ones flare.
+    var atLeft = Math.abs(tipStart) < EPS;
+    var atRight = Math.abs(tipEnd - W) < EPS;
+    var dir = keepOnA ? 1 : -1; // tails get narrower toward the baseline, pins wider
+    segments.push({
+      kind: kind,
+      tipStart: tipStart,
+      tipEnd: tipEnd,
+      baseStart: atLeft ? 0 : tipStart + dir * slopeOffset,
+      baseEnd: atRight ? W : tipEnd - dir * slopeOffset,
+      keep: keepOnA
+    });
+  }
+
+  if (jointType === 'box') {
+    // -------- box joint: equal segments, no flare ----------------------------
+    var raw = W / targetTail;
+    if (halfPinEnds) {
+      // odd count => board A starts and ends with a finger (symmetric joint)
+      n = 2 * Math.round((raw - 1) / 2) + 1;
+      if (n < 3) n = 3;
+    } else {
+      n = Math.round(raw);
+      if (n < 2) n = 2;
+    }
+    pitch = W / n;
+    tailW = pitch;
+    for (var i = 0; i < n; i++) {
+      var keepA = (i % 2 === 0);
+      push(keepA ? 'finger' : 'socket', i * pitch, (i + 1) * pitch, keepA);
+    }
+  } else {
+    // -------- through dovetail ----------------------------------------------
+    if (halfPinEnds) {
+      // W = n*(tail + pin): two half pins at the ends add up to one full pin.
+      var pitchTarget = targetTail + P;
+      n = Math.round(W / pitchTarget);
+      if (n < 1) { n = 1; warnings.push('The board only takes a single tail at that size.'); }
+      pitch = W / n;
+      tailW = pitch - P;
+      if (tailW <= 0) {
+        errors.push('A pin width of ' + (P / toMM).toFixed(2) + ' ' + unit +
+          ' leaves no room for a tail on a ' + (W / toMM).toFixed(2) + ' ' + unit +
+          ' board. Use a narrower pin or a wider target tail.');
+        return fail();
+      }
+      push('half pin', 0, P / 2, false);
+      for (var k = 0; k < n; k++) {
+        var ts = P / 2 + k * pitch;
+        push('tail', ts, ts + tailW, true);
+        if (k < n - 1) push('pin', ts + tailW, ts + tailW + P, false);
+      }
+      push('half pin', W - P / 2, W, false);
+    } else {
+      // tails at both edges: W = n*tail + (n-1)*pin
+      var pitchTarget2 = targetTail + P;
+      n = Math.round((W + P) / pitchTarget2);
+      if (n < 1) { n = 1; warnings.push('The board only takes a single tail at that size.'); }
+      pitch = (W + P) / n;
+      tailW = (W - (n - 1) * P) / n;
+      if (tailW <= 0) {
+        errors.push('A pin width of ' + (P / toMM).toFixed(2) + ' ' + unit +
+          ' leaves no room for a tail on a ' + (W / toMM).toFixed(2) + ' ' + unit +
+          ' board. Use a narrower pin or a wider target tail.');
+        return fail();
+      }
+      for (var j = 0; j < n; j++) {
+        var ts2 = j * (tailW + P);
+        push('tail', ts2, ts2 + tailW, true);
+        if (j < n - 1) push('pin', ts2 + tailW, ts2 + tailW + P, false);
+      }
+    }
+
+    // The tail must survive the flare on both sides, or there is nothing left of it.
+    var narrowest = Infinity;
+    for (var s = 0; s < segments.length; s++) {
+      if (segments[s].keep) {
+        narrowest = Math.min(narrowest, segments[s].baseEnd - segments[s].baseStart);
+      }
+    }
+    if (narrowest <= 0) {
+      errors.push('At 1:' + ratio + ' over a ' + (tB / toMM).toFixed(2) + ' ' + unit +
+        ' pin board the tails flare away to nothing at the baseline. ' +
+        'Use a wider tail, a shallower angle (1:8), or a thinner pin board.');
+      return fail();
+    }
+    if (narrowest < 3) {
+      warnings.push('The tails are only ' + (narrowest / toMM).toFixed(2) + ' ' + unit +
+        ' wide at the baseline — very fragile short grain. Consider a wider tail or a 1:8 angle.');
+    }
+  }
+
+  // --- counts, drift warnings -------------------------------------------------
+  var tailCount = 0, pinCount = 0;
+  for (var c = 0; c < segments.length; c++) {
+    if (segments[c].keep) tailCount++; else pinCount++;
+  }
+
+  var drift = tailW - targetTail;
+  if (Math.abs(drift) > 0.25 * targetTail) {
+    warnings.push('The actual ' + (jointType === 'box' ? 'finger' : 'tail') + ' width (' +
+      (tailW / toMM).toFixed(2) + ' ' + unit + ') is more than 25 % away from your target (' +
+      (targetTail / toMM).toFixed(2) + ' ' + unit + '). Only whole tails fit a board, so a target ' +
+      'close to a divisor of the width gives a smaller adjustment.');
+  }
+  if (jointType === 'dovetail' && ratio < 5) {
+    warnings.push('A slope steeper than 1:5 leaves very weak short grain at the tail corners.');
+  }
+  if (jointType === 'dovetail' && ratio > 10) {
+    warnings.push('A slope shallower than 1:10 barely resists pull-out; 1:6 to 1:8 is the working range.');
+  }
+
+  // --- the two boards ---------------------------------------------------------
+  function copy(seg, keep) {
+    return {
+      kind: seg.kind, tipStart: seg.tipStart, tipEnd: seg.tipEnd,
+      baseStart: seg.baseStart, baseEnd: seg.baseEnd, keep: keep
+    };
+  }
+  function reflect(list) {
+    var out = [];
+    for (var i2 = list.length - 1; i2 >= 0; i2--) {
+      var s2 = list[i2];
+      out.push({
+        kind: s2.kind,
+        tipStart: W - s2.tipEnd, tipEnd: W - s2.tipStart,
+        baseStart: W - s2.baseEnd, baseEnd: W - s2.baseStart,
+        keep: s2.keep
+      });
+    }
+    return out;
+  }
+
+  var aSegs = segments.map(function (s3) { return copy(s3, s3.keep); });
+  var bSegs = segments.map(function (s4) { return copy(s4, !s4.keep); });
+  if (mirrorMating) bSegs = reflect(bSegs);
+
+  // Board A is always marked on the face: the joint runs from the end of the
+  // board back to the baseline, which sits one pin-board thickness in.
+  // Board B: on a box joint it is the same kind of face view, baseline one
+  // tail-board thickness in. On a dovetail the pin taper runs through the
+  // thickness, so board B is marked on the END GRAIN — that view is exactly
+  // the pin board's own thickness deep, and the socket depth (tA) is gauged
+  // separately on both faces.
+  var tailBoard = {
+    role: 'Tail board (board A)',
+    view: 'face',
+    viewDepth: tB,
+    baselineDepth: tB,
+    segments: aSegs
+  };
+  var pinBoard = {
+    role: jointType === 'box' ? 'Mating board (board B)' : 'Pin board (board B)',
+    view: jointType === 'box' ? 'face' : 'endgrain',
+    viewDepth: jointType === 'box' ? tA : tB,
+    baselineDepth: tA,
+    segments: bSegs
+  };
+
+  // --- self-check: the layout must tile the board width exactly and the two
+  //     boards must be exact complements of each other -------------------------
+  var tipSum = 0, baseSum = 0, contiguous = true, complementary = true;
+  for (var q = 0; q < segments.length; q++) {
+    tipSum += segments[q].tipEnd - segments[q].tipStart;
+    baseSum += segments[q].baseEnd - segments[q].baseStart;
+    if (q > 0 && Math.abs(segments[q].tipStart - segments[q - 1].tipEnd) > 1e-7) contiguous = false;
+    if (q > 0 && Math.abs(segments[q].baseStart - segments[q - 1].baseEnd) > 1e-7) contiguous = false;
+    if (aSegs[q].keep === bSegs[mirrorMating ? segments.length - 1 - q : q].keep) complementary = false;
+  }
+  var maxError = Math.max(Math.abs(tipSum - W), Math.abs(baseSum - W));
+  var check = {
+    tipSum: tipSum, baseSum: baseSum,
+    contiguous: contiguous, complementary: complementary,
+    maxError: maxError,
+    ok: contiguous && complementary && maxError < 1e-6
+  };
+  if (!check.ok) errors.push('Internal geometry check failed — do not cut from this layout.');
+
+  return {
+    ok: errors.length === 0,
+    errors: errors,
+    warnings: warnings,
+    unit: unit, toMM: toMM, fromMM: 1 / toMM,
+    jointType: jointType, halfPinEnds: halfPinEnds, mirrorMating: mirrorMating,
+    boardWidth: W, tailBoardThickness: tA, pinBoardThickness: tB,
+    angleRatio: jointType === 'dovetail' ? ratio : 0,
+    angleDeg: angleDeg,
+    slopeOffset: slopeOffset,
+    segmentCount: segments.length,
+    tailCount: tailCount, pinCount: pinCount,
+    pitch: pitch,
+    requestedTailWidth: targetTail,
+    tailWidth: tailW,
+    tailWidthNarrow: jointType === 'dovetail' ? tailW - 2 * slopeOffset : tailW,
+    pinWidth: jointType === 'dovetail' ? P : pitch,
+    pinWidthWide: jointType === 'dovetail' ? P + 2 * slopeOffset : pitch,
+    tailBoard: tailBoard,
+    pinBoard: pinBoard,
+    check: check
+  };
+}
+/* === PURE CALCULATION — end ================================================= */
+
+
+/* ---------- formatting ---------- */
+function fmt(mm, unit) {
+  if (unit === 'in') {
+    var v = mm / 25.4;
+    return v.toFixed(3).replace(/0+$/, '').replace(/\.$/, '') + '"';
+  }
+  return (Math.round(mm * 100) / 100).toString() + ' mm';
+}
+/** Nearest 1/32 in, reduced — what a rule is actually graduated in. */
+function frac(mm) {
+  var v = mm / 25.4;
+  var neg = v < 0; v = Math.abs(v);
+  var whole = Math.floor(v);
+  var n = Math.round((v - whole) * 32), d = 32;
+  if (n === 32) { whole += 1; n = 0; }
+  var s;
+  if (n === 0) { s = whole + '"'; }
+  else {
+    while (n % 2 === 0) { n /= 2; d /= 2; }
+    s = whole ? whole + '-' + n + '/' + d + '"' : n + '/' + d + '"';
+  }
+  return (neg ? '-' : '') + s;
+}
+function label(mm, unit) { return unit === 'in' ? fmt(mm, unit) + ' (' + frac(mm) + ')' : fmt(mm, unit); }
+/** Short label for the drawing itself — no room for both forms. */
+function tick(mm, unit) { return unit === 'in' ? (mm / 25.4).toFixed(2) : (Math.round(mm * 10) / 10).toString(); }
+function r(x) { return Math.round(x * 1000) / 1000; }
+
+/* ---------- SVG: everything below is drawn at 1 user unit = 1 mm ---------- */
+var uid = 0;
+
+/**
+ * Splits a drawing that is wider than the paper into tiles with an overlap
+ * strip, so a 1:1 template stays 1:1 instead of being shrunk to fit.
+ */
+function tileRanges(totalW, printableW, overlap) {
+  if (totalW <= printableW + 0.01) return [{ x0: 0, w: totalW }];
+  var step = printableW - overlap;
+  var count = Math.ceil((totalW - overlap) / step);
+  var out = [];
+  for (var i = 0; i < count; i++) {
+    var x0 = i * step;
+    out.push({ x0: x0, w: Math.min(printableW, totalW - x0) });
+  }
+  return out;
+}
+
+function rulerSVG(unit) {
+  var M = 10, y = 22, h = (unit === 'in' ? 46 : 30);
+  var W = 100 + 2 * M + 14, H = h + 8;
+  var s = '<svg xmlns="http://www.w3.org/2000/svg" width="' + W + 'mm" height="' + H + 'mm" ' +
+    'viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMid meet" role="img" ' +
+    'aria-label="Printer scale check ruler">';
+  s += '<rect x="0" y="0" width="' + W + '" height="' + H + '" fill="#fff"/>';
+  s += '<text x="' + M + '" y="7" font-family="ui-monospace,monospace" font-size="3.2" fill="#111">' +
+    'PRINT SCALE CHECK — this bar must measure exactly 100 mm</text>';
+  s += '<line x1="' + M + '" y1="' + y + '" x2="' + (M + 100) + '" y2="' + y + '" stroke="#111" stroke-width="0.4"/>';
+  for (var mm = 0; mm <= 100; mm++) {
+    var len = (mm % 10 === 0) ? 8 : (mm % 5 === 0) ? 5 : 2.5;
+    s += '<line x1="' + (M + mm) + '" y1="' + y + '" x2="' + (M + mm) + '" y2="' + (y - len) + '" stroke="#111" stroke-width="' + (mm % 10 === 0 ? 0.4 : 0.25) + '"/>';
+    if (mm % 10 === 0) {
+      s += '<text x="' + (M + mm) + '" y="' + (y - 9.5) + '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="3" fill="#111">' + mm + '</text>';
+    }
+  }
+  s += '<text x="' + (M + 102) + '" y="' + (y + 0.6) + '" font-family="ui-monospace,monospace" font-size="3" fill="#111">mm</text>';
+  if (unit === 'in') {
+    var y2 = y + 18, IN = 25.4;
+    s += '<line x1="' + M + '" y1="' + y2 + '" x2="' + (M + 4 * IN) + '" y2="' + y2 + '" stroke="#111" stroke-width="0.4"/>';
+    for (var e = 0; e <= 32; e++) {
+      var x = M + e * IN / 8;
+      var l2 = (e % 8 === 0) ? 8 : (e % 4 === 0) ? 5 : 2.5;
+      s += '<line x1="' + r(x) + '" y1="' + y2 + '" x2="' + r(x) + '" y2="' + r(y2 - l2) + '" stroke="#111" stroke-width="' + (e % 8 === 0 ? 0.4 : 0.25) + '"/>';
+      if (e % 8 === 0) s += '<text x="' + r(x) + '" y="' + (y2 - 9.5) + '" text-anchor="middle" font-family="ui-monospace,monospace" font-size="3" fill="#111">' + (e / 8) + '</text>';
+    }
+    s += '<text x="' + r(M + 4 * IN + 2) + '" y="' + (y2 + 0.6) + '" font-family="ui-monospace,monospace" font-size="3" fill="#111">in</text>';
+  }
+  s += '</svg>';
+  return s;
+}
+
+/**
+ * Builds the 1:1 marking template for one board, tiled to the paper width.
+ * board = res.tailBoard or res.pinBoard
+ */
+function templateSVG(res, board, printableW) {
+  var unit = res.unit;
+  var M = 10;                    // paper margin around the drawing, mm
+  var W = res.boardWidth;
+  var titleH = 11;
+  var tickH = 20;
+  var jointH = board.viewDepth;
+  var isFace = board.view === 'face';
+  var bodyH = isFace ? 16 : 12;
+  var totalW = W + 2 * M;
+  var totalH = M + titleH + tickH + jointH + bodyH + M;
+  var y0 = M + titleH + tickH;   // wide reference face: end of board / outside face
+  var y1 = y0 + jointH;          // narrow face: baseline / inside face
+
+  var id = 'hatch' + (++uid);
+  var body = '';
+
+  body += '<defs><pattern id="' + id + '" width="2.6" height="2.6" patternUnits="userSpaceOnUse" ' +
+    'patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="2.6" stroke="#9a9a9a" stroke-width="0.55"/></pattern></defs>';
+  body += '<rect x="0" y="0" width="' + totalW + '" height="' + totalH + '" fill="#fff"/>';
+
+  var title = board.role + ' — ' + (res.jointType === 'box' ? 'box joint' : 'through dovetail') +
+    ' — 1:1, ' + fmt(W, unit) + ' wide' +
+    (board.view === 'endgrain' ? ' — END GRAIN view' : ' — outside face');
+  body += '<text x="' + M + '" y="' + (M + 6) + '" font-family="ui-monospace,monospace" font-size="3.4" fill="#111">' + esc(title) + '</text>';
+
+  // board body below the baseline (face view only)
+  if (isFace) {
+    body += '<rect x="' + M + '" y="' + r(y1) + '" width="' + W + '" height="' + bodyH + '" fill="#f2f2f2" stroke="none"/>';
+  }
+
+  // segments
+  var i, s;
+  for (i = 0; i < board.segments.length; i++) {
+    s = board.segments[i];
+    var pts = r(M + s.tipStart) + ',' + r(y0) + ' ' + r(M + s.tipEnd) + ',' + r(y0) + ' ' +
+      r(M + s.baseEnd) + ',' + r(y1) + ' ' + r(M + s.baseStart) + ',' + r(y1);
+    body += '<polygon points="' + pts + '" fill="' + (s.keep ? '#ffffff' : 'url(#' + id + ')') +
+      '" stroke="#111" stroke-width="0.35"/>';
+    if (!s.keep) {
+      // waste: the traditional X, so you cannot saw the wrong side of the line
+      var cx = (s.tipStart + s.tipEnd + s.baseStart + s.baseEnd) / 4 + M;
+      var narrow = Math.min(s.tipEnd - s.tipStart, s.baseEnd - s.baseStart);
+      var rad = Math.min(narrow, jointH) * 0.28;
+      if (rad > 0.9) {
+        var cy = (y0 + y1) / 2;
+        body += '<path d="M' + r(cx - rad) + ' ' + r(cy - rad) + 'L' + r(cx + rad) + ' ' + r(cy + rad) +
+          'M' + r(cx + rad) + ' ' + r(cy - rad) + 'L' + r(cx - rad) + ' ' + r(cy + rad) +
+          '" stroke="#8a8a8a" stroke-width="0.4" fill="none"/>';
+      }
+    }
+  }
+
+  // the two reference lines, drawn heavy so they survive a cheap printer
+  body += '<line x1="' + M + '" y1="' + r(y0) + '" x2="' + r(M + W) + '" y2="' + r(y0) + '" stroke="#111" stroke-width="0.6"/>';
+  body += '<line x1="' + M + '" y1="' + r(y1) + '" x2="' + r(M + W) + '" y2="' + r(y1) + '" stroke="#111" stroke-width="0.6"/>';
+  body += '<line x1="' + M + '" y1="' + r(y0) + '" x2="' + M + '" y2="' + r(y1 + bodyH) + '" stroke="#111" stroke-width="0.6"/>';
+  body += '<line x1="' + r(M + W) + '" y1="' + r(y0) + '" x2="' + r(M + W) + '" y2="' + r(y1 + bodyH) + '" stroke="#111" stroke-width="0.6"/>';
+
+  // ticks and dimensions on the wide face
+  var bounds = [];
+  for (i = 0; i < board.segments.length; i++) bounds.push(board.segments[i].tipStart);
+  bounds.push(W);
+  // Labels alternate between two rows so close boundaries stay readable.
+  var lastOnRow = [-1e9, -1e9];
+  for (i = 0; i < bounds.length; i++) {
+    var bx = M + bounds[i];
+    var row = i % 2;
+    var last = i === bounds.length - 1;
+    var wanted = (bounds[i] - lastOnRow[row] > 9) || last || i === 0;
+    var tipY = wanted ? (row ? y0 - 10.2 : y0 - 6.4) : y0 - 4.5;
+    body += '<line x1="' + r(bx) + '" y1="' + r(tipY) + '" x2="' + r(bx) + '" y2="' + r(y0) +
+      '" stroke="#111" stroke-width="0.35"/>';
+    if (wanted) {
+      var anchor = i === 0 ? 'start' : (last ? 'end' : 'middle');
+      body += '<text x="' + r(bx) + '" y="' + r(tipY - 1.2) + '" text-anchor="' + anchor +
+        '" font-family="ui-monospace,monospace" font-size="2.7" fill="#111">' + tick(bounds[i], unit) + '</text>';
+      lastOnRow[row] = bounds[i];
+    }
+  }
+
+  // reference edge marker and the depth annotation
+  body += '<polygon points="' + M + ',' + r(y1 + bodyH) + ' ' + (M + 7) + ',' + r(y1 + bodyH) + ' ' +
+    M + ',' + r(y1 + bodyH - 7) + '" fill="#111"/>';
+  body += '<text x="' + (M + 9) + '" y="' + r(y1 + bodyH - 1.2) + '" font-family="ui-monospace,monospace" font-size="3" fill="#111">' +
+    'REFERENCE EDGE — all positions measured from here</text>';
+
+  var depthNote = board.view === 'endgrain'
+    ? 'This strip is the pin board thickness (' + fmt(board.viewDepth, unit) + '). Socket depth on both faces: ' + fmt(board.baselineDepth, unit) + '.'
+    : 'Baseline / gauge line: ' + fmt(board.baselineDepth, unit) + ' from the end.';
+  body += '<text x="' + M + '" y="' + r(y0 - 15.5) + '" font-family="ui-monospace,monospace" font-size="2.9" fill="#444">' + esc(depthNote) + '</text>';
+
+  // assemble the tiles
+  var tiles = tileRanges(totalW, printableW, 12);
+  var html = '';
+  for (var t = 0; t < tiles.length; t++) {
+    var tl = tiles[t];
+    var extra = '';
+    if (tiles.length > 1) {
+      var jx = tl.x0 + tl.w;
+      if (t < tiles.length - 1) {
+        extra += '<line x1="' + r(jx - 12) + '" y1="0" x2="' + r(jx - 12) + '" y2="' + totalH +
+          '" stroke="#c00" stroke-width="0.3" stroke-dasharray="2 2"/>';
+        extra += '<text x="' + r(jx - 13) + '" y="' + (totalH - 2) + '" text-anchor="end" ' +
+          'font-family="ui-monospace,monospace" font-size="2.8" fill="#c00">overlap — line up sheet ' + (t + 2) + ' here</text>';
+      }
+      extra += '<text x="' + r(tl.x0 + 2) + '" y="' + (totalH - 2) + '" font-family="ui-monospace,monospace" ' +
+        'font-size="2.8" fill="#c00">sheet ' + (t + 1) + ' of ' + tiles.length + '</text>';
+    }
+    html += '<div class="tile"><svg xmlns="http://www.w3.org/2000/svg" width="' + r(tl.w) + 'mm" height="' + r(totalH) + 'mm" ' +
+      'viewBox="' + r(tl.x0) + ' 0 ' + r(tl.w) + ' ' + r(totalH) + '" preserveAspectRatio="xMidYMid meet" ' +
+      'role="img" aria-label="' + esc(title) + '">' + body + extra + '</svg></div>';
+  }
+  return { html: html, tiles: tiles.length };
+}
+
+/* ---------- tables ---------- */
+function markTable(res, board) {
+  var unit = res.unit, u = function (v) { return label(v, unit); };
+  var wideName = board.view === 'endgrain' ? 'Outside face' : 'At the end (tip)';
+  var narrowName = board.view === 'endgrain' ? 'Inside face' : 'At the baseline';
+  var h = '<table><thead><tr><th>#</th><th>Feature</th><th>' + wideName + ' — from</th><th>to</th>' +
+    '<th>width</th><th>' + narrowName + ' — from</th><th>to</th><th>width</th></tr></thead><tbody>';
+  for (var i = 0; i < board.segments.length; i++) {
+    var s = board.segments[i];
+    var what = s.keep ? s.kind : s.kind + ' (waste)';
+    h += '<tr><td>' + (i + 1) + '</td><td>' + esc(what) + '</td>' +
+      '<td>' + u(s.tipStart) + '</td><td>' + u(s.tipEnd) + '</td><td>' + u(s.tipEnd - s.tipStart) + '</td>' +
+      '<td>' + u(s.baseStart) + '</td><td>' + u(s.baseEnd) + '</td><td>' + u(s.baseEnd - s.baseStart) + '</td></tr>';
+  }
+  h += '</tbody></table>';
+  return h;
+}
+
+/* ---------- UI ---------- */
+var $ = function (sel) { return document.querySelector(sel); };
+function esc(t) { var d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
+
+function syncType() {
+  var dt = $('#type').value === 'dovetail';
+  var nodes = document.querySelectorAll('.dt-only');
+  for (var i = 0; i < nodes.length; i++) nodes[i].style.display = dt ? '' : 'none';
+  $('#lbl-tw').textContent = dt ? 'Tail width (wide face)' : 'Finger width';
+  $('#lbl-half').textContent = dt ? 'Half-pin at each end' : 'Symmetric ends';
+  $('#hint-half').textContent = dt
+    ? 'Standard for dovetails: the joint starts and ends with a half pin.'
+    : 'Forces an odd finger count so both ends of board A are fingers and the two boards are identical.';
+}
+
+function readInputs() {
+  return {
+    unit: $('#unit').value,
+    jointType: $('#type').value,
+    boardWidth: $('#bw').value,
+    tailBoardThickness: $('#ta').value,
+    pinBoardThickness: $('#tb').value,
+    tailWidth: $('#tw').value,
+    pinWidth: $('#pw').value,
+    angleRatio: $('#ratio').value,
+    halfPinEnds: $('#half').checked,
+    mirrorMating: $('#mirror').checked
+  };
+}
+
+function run() {
+  var out = $('#out');
+  var res = computeJointLayout(readInputs());
+  var unit = res.unit;
+
+  if (!res.ok) {
+    var msg = '<div class="card"><div class="warn"><strong>The layout cannot be worked out:</strong><ul style="margin:6px 0 0;padding-left:18px">';
+    for (var e = 0; e < res.errors.length; e++) msg += '<li>' + esc(res.errors[e]) + '</li>';
+    out.innerHTML = msg + '</ul></div></div>';
+    return;
+  }
+
+  var printableW = parseFloat($('#paper').value) - 16; // 8 mm printer margin each side
+  var isBox = res.jointType === 'box';
+  var word = isBox ? 'finger' : 'tail';
+  var html = '<div class="card">';
+
+  for (var w = 0; w < res.warnings.length; w++) {
+    html += '<div class="warn">' + esc(res.warnings[w]) + '</div>';
+  }
+
+  html += '<div class="stats">' +
+    '<div class="stat"><b>' + res.tailCount + '</b><span>' + (isBox ? 'Fingers on A' : 'Tails') + '</span></div>' +
+    '<div class="stat"><b>' + res.pinCount + '</b><span>' + (isBox ? 'Sockets on A' : 'Pins incl. half') + '</span></div>' +
+    '<div class="stat"><b>' + fmt(res.tailWidth, unit) + '</b><span>Actual ' + word + ' width</span></div>' +
+    '<div class="stat"><b>' + fmt(res.pitch, unit) + '</b><span>Pitch (repeat)</span></div>' +
+    (isBox ? '' :
+      '<div class="stat"><b>' + fmt(res.tailWidthNarrow, unit) + '</b><span>Tail at baseline</span></div>' +
+      '<div class="stat"><b>' + res.angleDeg.toFixed(1) + '&deg;</b><span>1:' + res.angleRatio + ' slope</span></div>') +
+    '</div>';
+
+  var drift = res.tailWidth - res.requestedTailWidth;
+  html += '<p style="margin:0 0 12px;font-size:.93rem">' +
+    'You asked for a ' + word + ' width of <b>' + label(res.requestedTailWidth, unit) + '</b>. ' +
+    'Across a ' + label(res.boardWidth, unit) + ' board the closest whole count is <b>' + res.tailCount +
+    ' ' + word + (res.tailCount === 1 ? '' : 's') + '</b>, which makes the real ' + word + ' width <b>' +
+    label(res.tailWidth, unit) + '</b> (' + (drift >= 0 ? '+' : '') + fmt(drift, unit) + ' on your target). ' +
+    'Every ' + word + ' is identical and the last one lands exactly on the far edge.' +
+    (isBox ? '' : ' At the baseline each tail narrows to <b>' + label(res.tailWidthNarrow, unit) +
+      '</b> and each full pin opens to <b>' + label(res.pinWidthWide, unit) + '</b>.') +
+    '</p>';
+
+  html += '<div style="margin:0 0 14px;font-size:.93rem">' +
+    '<b>Cut depths.</b> Tail board baseline: <b>' + label(res.tailBoard.baselineDepth, unit) +
+    '</b> from the end (= pin board thickness). ' +
+    (isBox ? 'Mating board baseline' : 'Pin board socket depth') + ': <b>' +
+    label(res.pinBoard.baselineDepth, unit) + '</b> (= tail board thickness). ' +
+    'Gauge those lines on both faces before you saw.</div>';
+
+  html += '<button class="primary noprint" onclick="window.print()">Print template &amp; cut list</button>';
+  html += '</div>';
+
+  // --- the printable part ---
+  html += '<div class="card">';
+  html += '<h2 class="noprint">1:1 template</h2>';
+  html += '<div class="legend noprint"><span><i></i>keep — this is your tail/pin</span>' +
+    '<span><i class="waste"></i>waste — saw and chop this out</span></div>';
+
+  html += '<div class="tpl"><h3 class="noprint">Print scale check</h3>' + rulerSVG(unit) +
+    '<p class="tplnote">Measure this bar on the paper before you use anything else on the page. ' +
+    'It must be exactly 100 mm. If it is not, print again at 100 % scale with page fitting off.</p></div>';
+
+  var a = templateSVG(res, res.tailBoard, printableW);
+  var b = templateSVG(res, res.pinBoard, printableW);
+
+  html += '<div class="tpl"><h3>' + esc(res.tailBoard.role) + '</h3>' + a.html +
+    '<p class="tplnote">Face view, seen from the <b>outside</b> of the box. Hatched areas are waste. ' +
+    'The heavy line at the bottom of the joint is the baseline — gauge it at ' +
+    fmt(res.tailBoard.baselineDepth, unit) + ' on both faces and on the edges.' +
+    (a.tiles > 1 ? ' Printed across ' + a.tiles + ' sheets: butt them on the dashed overlap line and tape the back.' : '') +
+    '</p></div>';
+
+  html += '<div class="tpl"><h3>' + esc(res.pinBoard.role) + '</h3>' + b.html +
+    '<p class="tplnote">' +
+    (res.pinBoard.view === 'endgrain'
+      ? 'End grain view: the strip is the full thickness of the pin board, outside face at the top. ' +
+        'Pins are white, sockets hatched. Chop the sockets ' + fmt(res.pinBoard.baselineDepth, unit) + ' deep from both faces.'
+      : 'Face view, seen from the outside. Hatched areas are waste; baseline at ' +
+        fmt(res.pinBoard.baselineDepth, unit) + '.') +
+    (res.mirrorMating ? ' <b>Mirrored</b>: measured from the opposite edge to board A.'
+      : ' Measured from the <b>same</b> reference edge as board A.') +
+    (b.tiles > 1 ? ' Printed across ' + b.tiles + ' sheets.' : '') +
+    '</p></div>';
+
+  html += '<h2>' + esc(res.tailBoard.role) + ' — marking positions</h2>' + markTable(res, res.tailBoard);
+  html += '<h2 style="margin-top:18px">' + esc(res.pinBoard.role) + ' — marking positions</h2>' + markTable(res, res.pinBoard);
+
+  html += '<div class="ok" style="margin-top:16px">Symmetry check: the two layouts are exact complements — ' +
+    'every ' + word + ' on board A sits over a socket on board B. Both add up to ' +
+    fmt(res.check.tipSum, unit) + ' on the wide face and ' + fmt(res.check.baseSum, unit) +
+    ' on the narrow face, against a board width of ' + fmt(res.boardWidth, unit) +
+    ' (worst closing error ' + res.check.maxError.toExponential(1) + ' mm).</div>';
+
+  html += '</div>';
+
+  out.innerHTML = html;
+  out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+$('#type').onchange = function () { syncType(); run(); };
+$('#unit').onchange = function () {
+  // convert the entered values so the switch does not silently change the joint
+  var toIn = $('#unit').value === 'in';
+  var ids = ['#bw', '#ta', '#tb', '#tw', '#pw'];
+  for (var i = 0; i < ids.length; i++) {
+    var el = $(ids[i]), v = parseFloat(el.value);
+    if (!isFinite(v)) continue;
+    el.value = toIn ? (v / 25.4).toFixed(3) : (v * 25.4).toFixed(1);
+    el.step = toIn ? '0.001' : '0.1';
+  }
+  run();
+};
+$('#go').onclick = run;
+$('#paper').onchange = run;
+$('#ex-dt').onclick = function () {
+  $('#type').value = 'dovetail'; $('#unit').value = 'mm';
+  $('#bw').value = 150; $('#ta').value = 18; $('#tb').value = 18;
+  $('#tw').value = 30; $('#pw').value = 8; $('#ratio').value = '8';
+  $('#half').checked = true; $('#mirror').checked = false;
+  syncType(); run();
+};
+$('#ex-bx').onclick = function () {
+  $('#type').value = 'box'; $('#unit').value = 'mm';
+  $('#bw').value = 150; $('#ta').value = 12; $('#tb').value = 12;
+  $('#tw').value = 12; $('#half').checked = true; $('#mirror').checked = false;
+  syncType(); run();
+};
+
+syncType();
+run();
+</script>
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>
