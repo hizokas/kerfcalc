@@ -441,6 +441,8 @@ footer{margin-top:60px}
 
 
 
+
+
 <h1>Linear Cut Optimizer</h1>
 <p class="sub">Work out how to cut a list of lengths from bar, tube, skirting, moulding or any other stock sold in fixed lengths, using as few sticks as possible. The saw kerf is taken off at every cut, you can have more than one stock length available at the same time, and you get a diagram and a cut list with measured positions. Everything runs in your browser — nothing is uploaded, no sign-up.</p>
 
@@ -502,6 +504,7 @@ footer{margin-top:60px}
   <h3>What it does not do</h3>
   <p>It does not know about mitres. A 45° mitre on both ends adds material at the long point, so enter the <em>long-point</em> length of each piece yourself; the same goes for coped ends and scribes. It does not sequence your cuts for grain, colour or profile matching, does not pair left- and right-hand parts, and assumes every stick is straight, square-ended and defect-free. It has no idea what your material costs, so “least material” means least length, not least money — if your 6&nbsp;m bars cost less per metre, compare the totals by hand. And it will not stop you cutting a bent extrusion into six useless pieces: check the diagram against the actual stick before the blade goes down.</p>
 </div>
+
 
 
 
@@ -1544,6 +1547,7 @@ fillPresets();
 loadDefaults();
 run();
 </script>
+
 
 
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>

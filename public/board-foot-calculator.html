@@ -75,138 +75,6 @@ svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line
 h3{font-size:.95rem}
 .faq h3{margin:16px 0 4px}
 .faq p{margin:0;color:var(--muted);font-size:.92rem}
-/* === KERFCALC THEME v2 === */
-@import url('');
-:root{
-  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
-  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
-  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
-  --radius:14px;
-}
-@media (prefers-color-scheme:dark){
-  :root{
-    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
-    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
-    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
-  }
-}
-html{-webkit-text-size-adjust:100%}
-body{
-  background:var(--bg); color:var(--ink);
-  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
-  letter-spacing:-.005em;
-}
-.wrap{max-width:1020px;padding:0 22px 90px}
-
-/* ---- bandeau de marque ---- */
-.masthead{
-  display:flex;align-items:center;justify-content:space-between;gap:16px;
-  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
-}
-.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
-.brand svg{display:block}
-.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
-.brand span{color:var(--muted);font-weight:400}
-.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
-.masthead nav a:hover{color:var(--accent)}
-
-h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
-.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
-h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
-h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
-
-.card{
-  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
-  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
-}
-
-/* ---- cartes de la page d'accueil ---- */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
-.tool{
-  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
-  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
-}
-.tool:hover{
-  transform:translateY(-2px);border-color:var(--accent);
-  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
-  background:var(--surface);
-}
-.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
-.tool span{font-size:.885rem;line-height:1.5}
-
-/* ---- formulaires ---- */
-.row{gap:16px 18px}
-.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
-input,select{
-  border-radius:9px;padding:9px 11px;font-size:.95rem;
-  border:1px solid var(--line);background:var(--bg);color:var(--ink);
-  transition:border-color .14s ease, box-shadow .14s ease;
-}
-input:hover,select:hover{border-color:var(--muted)}
-input:focus,select:focus{
-  outline:none;border-color:var(--accent);
-  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
-}
-input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
-
-button{
-  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
-  border:1px solid var(--line);background:var(--surface);color:var(--ink);
-  transition:border-color .14s ease, background .14s ease, transform .1s ease;
-}
-button:hover{border-color:var(--accent);background:var(--accent-soft)}
-button:active{transform:translateY(1px)}
-.primary{
-  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
-  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
-}
-.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
-
-/* ---- tuiles de résultat ---- */
-.stats{gap:12px;margin-bottom:20px}
-.stat{
-  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
-  padding:13px 17px;min-width:118px;
-}
-.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
-  font-variant-numeric:tabular-nums}
-.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-
-/* ---- tableaux ---- */
-table{font-size:.91rem;border-collapse:collapse;width:100%}
-th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
-  padding:9px 10px;border-bottom:1px solid var(--line)}
-td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
-tbody tr:hover{background:var(--accent-soft)}
-
-/* ---- schémas ---- */
-svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
-.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
-.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  letter-spacing:-.02em}
-
-.warn{
-  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
-  border-radius:11px;padding:13px 16px;font-size:.9rem;
-}
-@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
-
-.faq p{font-size:.925rem;line-height:1.62}
-footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
-  border-top:1px solid var(--line)}
-
-@media (max-width:640px){
-  h1{font-size:1.68rem}
-  .wrap{padding:0 16px 70px}
-  .card{padding:17px}
-  .stat b{font-size:1.4rem}
-}
-@media print{
-  .masthead,.noprint{display:none!important}
-  .card{box-shadow:none;border:1px solid #ddd}
-  body{background:#fff}
-}
-
 /* === KERFCALC THEME v3 === */
 @import url('');
 :root{
@@ -412,17 +280,6 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-
-
-
-
-
-
-
-
-
-
-
 <h1>Board Foot Calculator</h1>
 <p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
 
@@ -434,7 +291,7 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"></div>
+<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
@@ -448,12 +305,6 @@ footer{margin-top:60px}
   <h3>What this does not do</h3>
   <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
 </div>
-
-
-
-
-
-
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li></ul></aside>
 <footer>
@@ -570,6 +421,12 @@ return SPEC;
 
   /* ---- construction du formulaire ---------------------------------------- */
   function buildForm() {
+    // Le formulaire est désormais écrit en dur dans le HTML par la fabrique,
+    // pour que les robots qui n'exécutent pas le JavaScript le voient aussi.
+    // S'il est déjà là, on ne le reconstruit pas : on se contente de l'animer.
+    var host = $('#form');
+    if (host && host.querySelector('input, select')) return;
+
     var groups = {};
     SPEC.fields.forEach(function (f) {
       var g = f.group || 'Inputs';
@@ -723,8 +580,6 @@ return SPEC;
 })();
 
 </script>
-
-
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
 </body>
 </html>

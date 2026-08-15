@@ -36,6 +36,12 @@
 
   /* ---- construction du formulaire ---------------------------------------- */
   function buildForm() {
+    // Le formulaire est désormais écrit en dur dans le HTML par la fabrique,
+    // pour que les robots qui n'exécutent pas le JavaScript le voient aussi.
+    // S'il est déjà là, on ne le reconstruit pas : on se contente de l'animer.
+    var host = $('#form');
+    if (host && host.querySelector('input, select')) return;
+
     var groups = {};
     SPEC.fields.forEach(function (f) {
       var g = f.group || 'Inputs';

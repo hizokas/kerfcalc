@@ -50,7 +50,7 @@ TEMPLATE = """<!DOCTYPE html>
   </div>
 </div>
 
-<div id="form"></div>
+<div id="form">{form_html}</div>
 <div id="out"></div>
 
 <div class="card faq noprint">
@@ -81,6 +81,72 @@ DEFAULT_DISCLAIMER = ("These tools are planning aids, not engineering. Structura
                       "Check every result against the real material before you cut.")
 
 
+def render_form_html(fields):
+    """Écrit le formulaire en HTML statique.
+
+    Pourquoi : les robots qui n'exécutent pas le JavaScript ne voyaient
+    qu'une page sans champs. Google sait exécuter le JS, mais s'en passer
+    est toujours plus sûr — et ça aligne les outils de la fabrique sur ceux
+    écrits à la main. Le runtime détecte ce HTML et se contente de l'animer.
+    """
+    def esc(t):
+        return (str(t).replace("&", "&amp;").replace("<", "&lt;")
+                .replace(">", "&gt;").replace('"', "&quot;"))
+
+    groups = []
+    for f in fields:
+        g = f.get("group", "Inputs")
+        if not groups or groups[-1][0] != g:
+            groups.append((g, []))
+        groups[-1][1].append(f)
+
+    out = []
+    for gname, gfields in groups:
+        out.append('<div class="card noprint"><h2>%s</h2><div class="row">' % esc(gname))
+        for f in gfields:
+            fid = esc(f["id"])
+            out.append('<div class="f"><label for="%s">%s%s</label>' % (
+                fid, esc(f["label"]),
+                ' <span class="u"></span>' if f.get("unit") == "length" else ""))
+            t = f.get("type", "number")
+            if t == "select":
+                opts = "".join(
+                    '<option value="%s"%s>%s</option>' % (
+                        esc(o["value"]), " selected" if o["value"] == f.get("value") else "",
+                        esc(o["label"]))
+                    for o in f.get("options", []))
+                out.append('<select id="%s">%s</select>' % (fid, opts))
+            elif t == "check":
+                out.append('<input type="checkbox" id="%s"%s>' % (
+                    fid, " checked" if f.get("value") else ""))
+            else:
+                out.append('<input type="number" id="%s" value="%s" step="%s"%s>' % (
+                    fid, esc(f.get("value", "")), esc(f.get("step", "any")),
+                    ' min="%s"' % esc(f["min"]) if "min" in f else ""))
+            if f.get("hint"):
+                out.append('<span style="font-size:.74rem;color:var(--muted)">%s</span>'
+                           % esc(f["hint"]))
+            out.append("</div>")
+        out.append("</div></div>")
+    return "".join(out)
+
+
+def extract_fields(js_source):
+    """Fait évaluer la spec par node pour récupérer la définition des champs."""
+    import json, subprocess, tempfile
+    with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False) as fh:
+        fh.write(js_source)
+        path = fh.name
+    try:
+        res = subprocess.run(["node", os.path.join(HERE, "extract_fields.js"), path],
+                             capture_output=True, text=True)
+        if res.returncode:
+            raise RuntimeError(res.stderr[:300])
+        return json.loads(res.stdout)
+    finally:
+        os.unlink(path)
+
+
 def build(spec_path):
     """Charge une spec Python, en extrait le JS et les métadonnées, écrit le HTML."""
     name = os.path.basename(spec_path)[:-3]
@@ -88,6 +154,8 @@ def build(spec_path):
     mod = importlib.util.module_from_spec(mod_spec)
     mod_spec.loader.exec_module(mod)
     S = mod.SPEC
+
+    form_html = render_form_html(extract_fields(S["js"]))
 
     notes_html = "\n  ".join(
         f"<h3>{q}</h3>\n  <p>{a}</p>" for q, a in S["notes"])
@@ -103,6 +171,7 @@ def build(spec_path):
         "{style}": STYLE,
         "{extra_css}": EXTRA_CSS,
         "{spec_js}": S["js"],
+        "{form_html}": form_html,
         "{framework}": FRAMEWORK,
         "{disclaimer}": S.get("disclaimer", DEFAULT_DISCLAIMER),
     }
