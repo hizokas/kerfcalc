@@ -1,6 +1,8 @@
 # Configuration de déploiement Cloudflare.
 # Tout ce qui est dans public/ est servi tel quel. Aucun code serveur.
-name = "getkerfcalc"
+# IMPORTANT : le nom doit correspondre au Worker existant, celui qui porte
+# le domaine getkerfcalc.com. Sinon Cloudflare crée un second Worker vide.
+name = "noisy-mud-e82c"
 compatibility_date = "2026-08-15"
 
 [assets]
