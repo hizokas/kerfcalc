@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Ceiling Grid Calculator — Tiles, Main Runners, Cross Tees and Balanced Borders</title>
+<meta name="description" content="Full tile count, border widths balanced on both sides, main runner and cross tee lengths, hanger positions and perimeter trim for a suspended ceiling.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Suspended Ceiling Grid Calculator</h1>
+<p class="sub">Start a ceiling grid from one corner and you finish with a full tile on one wall and a 60 mm sliver on the other. This centres the grid so both borders match, then counts every component you have to order.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Room</h2><div class="row"><div class="f"><label for="roomL">Room length <span class="u"></span></label><input type="number" id="roomL" value="6000" step="any" min="0"></div><div class="f"><label for="roomW">Room width <span class="u"></span></label><input type="number" id="roomW" value="4500" step="any" min="0"></div></div></div><div class="card noprint"><h2>Grid</h2><div class="row"><div class="f"><label for="tileL">Tile length <span class="u"></span></label><input type="number" id="tileL" value="1200" step="any" min="0"></div><div class="f"><label for="tileW">Tile width <span class="u"></span></label><input type="number" id="tileW" value="600" step="any" min="0"></div><div class="f"><label for="runner">Main runner spacing <span class="u"></span></label><input type="number" id="runner" value="1200" step="any" min="0"></div><div class="f"><label for="hanger">Hanger spacing along runners <span class="u"></span></label><input type="number" id="hanger" value="1200" step="any" min="0"></div><div class="f"><label for="minBorder">Minimum acceptable border <span class="u"></span></label><input type="number" id="minBorder" value="200" step="any" min="0"></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Why borders are centred</h3>
+  <p>A ceiling is seen whole, from below, with the eye running to the edges. Unequal borders read as a mistake from the doorway. Centring costs nothing and takes one extra calculation.</p>
+  <h3>When to shift the grid off centre</h3>
+  <p>If centring leaves borders narrower than about a third of a tile, drop one tile from the run and re-centre. Two 300 mm borders look intentional; two 40 mm ones look like a cutting error.</p>
+  <h3>Hangers</h3>
+  <p>Main runners are normally supported at regular intervals along their length and near each end. The spacing depends on the system and the load above — set it from your manufacturer, not from a calculator.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It lays out a rectangular ceiling. Bulkheads, columns, light fittings and air terminals all displace tiles and are counted separately.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./tile-layout-planner.html" style="color:var(--accent)">Tile Layout Planner</a> <span style="color:var(--muted)">— Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span></li><li style="margin:4px 0"><a href="./concrete-volume-calculator.html" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="./gravel-volume-calculator.html" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,79 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'roomL', label:'Room length', value:6000, unit:'length', group:'Room', min:0},
+    {id:'roomW', label:'Room width', value:4500, unit:'length', group:'Room', min:0},
+    {id:'tileL', label:'Tile length', value:1200, unit:'length', group:'Grid', min:0},
+    {id:'tileW', label:'Tile width', value:600, unit:'length', group:'Grid', min:0},
+    {id:'runner', label:'Main runner spacing', value:1200, unit:'length', group:'Grid', min:0},
+    {id:'hanger', label:'Hanger spacing along runners', value:1200, unit:'length', group:'Grid', min:0},
+    {id:'minBorder', label:'Minimum acceptable border', value:200, unit:'length', group:'Grid', min:0}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var L=i.roomL, Wd=i.roomW, tl=i.tileL, tw=i.tileW;
+    if (!(L>0 && Wd>0)) return {ok:false, errors:['Room dimensions must be greater than zero.']};
+    if (!(tl>0 && tw>0)) return {ok:false, errors:['Tile dimensions must be greater than zero.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    function centre(span, tile, minB) {
+      var n = Math.floor(span/tile);
+      var border = (span - n*tile)/2;
+      var adjusted = false;
+      if (border > 0.5 && border < minB && n >= 1) { n -= 1; border = (span - n*tile)/2; adjusted = true; }
+      return {full:n, border:border, adjusted:adjusted};
+    }
+    var aL = centre(L, tl, i.minBorder);
+    var aW = centre(Wd, tw, i.minBorder);
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var fullTiles = aL.full*aW.full;
+    var borderTilesL = (aL.border>0.5 ? 2*aW.full : 0);
+    var borderTilesW = (aW.border>0.5 ? 2*aL.full : 0);
+    var corners = (aL.border>0.5 && aW.border>0.5) ? 4 : 0;
+    var totalTiles = fullTiles + borderTilesL + borderTilesW + corners;
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+    var runnerRows = i.runner>0 ? Math.floor(Wd/i.runner)+1 : 0;
+    var runnerLen = runnerRows*L;
+    var crossTees = runnerRows>0 ? (runnerRows-1>=0 ? Math.max(0,(runnerRows))*Math.max(0,Math.floor(L/tw)) : 0) : 0;
+    var hangers = (i.hanger>0 && runnerRows>0) ? runnerRows*(Math.floor(L/i.hanger)+1) : 0;
+    var perimeter = 2*(L+Wd);
+
+    var warn=[];
+    if (aL.adjusted || aW.adjusted) warn.push('One row was dropped so the borders stay above '+WCfmt(i.minBorder,0)+'. Borders are now '+WCfmt(aL.border,0)+' and '+WCfmt(aW.border,0)+'.');
+
+    return {ok:true, aL:aL, aW:aW, totalTiles:totalTiles, fullTiles:fullTiles, L:L, Wd:Wd, tl:tl, tw:tw,
+      warnings: warn,
+      stats:[
+        {value: String(totalTiles), label:'Tiles in total'},
+        {value: String(fullTiles), label:'Full tiles'},
+        {value: WCfmt(aL.border,0)+' / '+WCfmt(aW.border,0), label:'Border widths'},
+        {value: WCfmt(runnerLen/1000,1), label:'m of main runner'}
+      ],
+      tables:[{title:'Take-off', head:['Item','Quantity'], rows:[
+        ['Room', WCfmt(L,0)+' × '+WCfmt(Wd,0)],
+        ['Tile size', WCfmt(tl,0)+' × '+WCfmt(tw,0)],
+        ['Full tiles', String(fullTiles)+'  ('+aL.full+' × '+aW.full+')'],
+        ['Border along the length', WCfmt(aL.border,1)+' each end'],
+        ['Border along the width', WCfmt(aW.border,1)+' each side'],
+        ['Cut border tiles', String(borderTilesL+borderTilesW+corners)],
+        ['Tiles to order', String(totalTiles)],
+        ['Main runners', String(runnerRows)+' rows, '+WCfmt(runnerLen/1000,2)+' m'],
+        ['Cross tees', String(crossTees)],
+        ['Hangers', String(hangers)],
+        ['Perimeter trim', WCfmt(perimeter/1000,2)+' m']
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Set out from the centre of the room in both directions so the border tiles match on opposite walls.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=620,H=420,m=34,s=SVG.open(W,H);
+    var sc=Math.min((W-2*m)/r.L,(H-2*m-24)/r.Wd);
+    var x0=m,y0=m+16,rw=r.L*sc,rh=r.Wd*sc;
+    s+=SVG.rect(x0,y0,rw,rh,'ghost');
+    var bx=r.aL.border*sc, by=r.aW.border*sc, tw=r.tl*sc, th=r.tw*sc;
+    for(var a=0;a<r.aL.full;a++) for(var b=0;b<r.aW.full;b++)
+      s+=SVG.rect(x0+bx+a*tw+0.5, y0+by+b*th+0.5, tw-1, th-1, 'part');
+    s+=SVG.text(W/2,20, r.totalTiles+' tiles  ·  borders '+WCfmt(r.aL.border,0)+' and '+WCfmt(r.aW.border,0), 13);
+    s+=SVG.text(W/2,H-8, WCfmt(r.L,0)+' × '+WCfmt(r.Wd,0)+'  ·  tile '+WCfmt(r.tl,0)+' × '+WCfmt(r.tw,0), 12);
+    return s+SVG.close();
   }
 };
 

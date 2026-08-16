@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Squaring Calculator — Diagonal Check, 3-4-5 Method and Out-of-Square</title>
+<meta name="description" content="Check whether a frame, slab or opening is square by comparing diagonals, see how far out it is, and get 3-4-5 triangle numbers scaled to your job.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Squaring &amp; Diagonal Calculator</h1>
+<p class="sub">Two diagonals that differ by 8 mm on a 3 metre frame means the corner is off by about a degree — enough to see. Enter your sides, get the diagonal it should measure, and if you have measured both, exactly how far out you are and which way.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Frame</h2><div class="row"><div class="f"><label for="a">Side A <span class="u"></span></label><input type="number" id="a" value="3000" step="any" min="0"></div><div class="f"><label for="b">Side B <span class="u"></span></label><input type="number" id="b" value="2000" step="any" min="0"></div></div></div><div class="card noprint"><h2>Check</h2><div class="row"><div class="f"><label for="d1">Measured diagonal 1 <span class="u"></span></label><input type="number" id="d1" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 if you have not measured yet</span></div><div class="f"><label for="d2">Measured diagonal 2 <span class="u"></span></label><input type="number" id="d2" value="0" step="any" min="0"></div></div></div><div class="card noprint"><h2>3-4-5</h2><div class="row"><div class="f"><label for="mult">3-4-5 scale</label><input type="number" id="mult" value="100" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">100 gives 300 : 400 : 500</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Why diagonals prove square</h3>
+  <p>A rectangle is the only quadrilateral with equal sides and equal diagonals. Sides alone do not prove it: a parallelogram can have four correct sides and still lean. Equal diagonals are the proof.</p>
+  <h3>How to correct it</h3>
+  <p>Push the corner at the end of the longer diagonal towards the shorter one. Half the difference is roughly how far the corner moves — so an 8 mm difference means nudging about 4 mm.</p>
+  <h3>The 3-4-5 method</h3>
+  <p>Any triangle with sides in the ratio 3:4:5 has a right angle. It works at any scale, and bigger is more accurate — measuring 300:400:500 is far more forgiving than 30:40:50.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It checks a rectangle in one plane. Winding — a frame twisted out of flat — is a separate problem and needs winding sticks, not a tape.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./rafter-calculator.html" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,69 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'a', label:'Side A', value:3000, unit:'length', group:'Frame', min:0},
+    {id:'b', label:'Side B', value:2000, unit:'length', group:'Frame', min:0},
+    {id:'d1', label:'Measured diagonal 1', value:0, unit:'length', group:'Check', min:0,
+     hint:'Leave 0 if you have not measured yet'},
+    {id:'d2', label:'Measured diagonal 2', value:0, unit:'length', group:'Check', min:0},
+    {id:'mult', label:'3-4-5 scale', value:100, group:'3-4-5', min:1,
+     hint:'100 gives 300 : 400 : 500'}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var a=i.a, b=i.b;
+    if (!(a>0 && b>0)) return {ok:false, errors:['Both sides must be greater than zero.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    var target = Math.sqrt(a*a + b*b);
+    var rows = [
+      ['Side A', WCfmt(a,1)],
+      ['Side B', WCfmt(b,1)],
+      ['Diagonal when square', WCfmt(target,2)],
+      ['3-4-5 triangle', WCfmt(3*i.mult,0)+' : '+WCfmt(4*i.mult,0)+' : '+WCfmt(5*i.mult,0)]
+    ];
+
+    var diff=null, err=null, angle=null, warn=[];
+    if (i.d1>0 && i.d2>0) {
+      diff = Math.abs(i.d1-i.d2);
+      err = diff/2;
+      // Ecart angulaire approche : la difference de diagonales sur un rectangle
+      var mean=(i.d1+i.d2)/2;
+      angle = Math.asin(Math.min(1, diff/(2*Math.max(a,b))))*180/Math.PI;
+      rows.push(['Diagonal 1 measured', WCfmt(i.d1,1)]);
+      rows.push(['Diagonal 2 measured', WCfmt(i.d2,1)]);
+      rows.push(['Difference', WCfmt(diff,2)]);
+      rows.push(['Move the corner about', WCfmt(err,2)]);
+      rows.push(['Out of square by roughly', WCfmt(angle,3)+String.fromCharCode(176)]);
+      if (diff < 1) warn.push('Under 1 of difference — that is square for any practical purpose.');
+      else warn.push('Push the corner at the end of the LONGER diagonal ('+(i.d1>i.d2?'diagonal 1':'diagonal 2')+') towards the shorter one, about '+WCfmt(err,1)+'.');
+    }
 
     var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
+      {value: WCfmt(target,1), label:'Diagonal when square'},
+      {value: WCfmt(3*i.mult,0)+':'+WCfmt(4*i.mult,0)+':'+WCfmt(5*i.mult,0), label:'3-4-5 numbers'}
     ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    if (diff !== null) {
+      stats.push({value: WCfmt(diff,1), label:'Difference measured'});
+      stats.push({value: WCfmt(angle,2)+String.fromCharCode(176), label:'Out of square'});
+    }
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
-      ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+    return {ok:true, a:a, b:b, target:target, diff:diff, warnings:warn, stats:stats,
+      tables:[{title:'Working', head:['Item','Value'], rows:rows}],
+      note:'Measure both diagonals from the same reference points, corner to corner. If they match, it is square.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=560,H=330,m=60,s=SVG.open(W,H);
+    var sc=Math.min((W-2*m)/r.a,(H-110)/r.b);
+    var x=m,y=60,bw=r.a*sc,bh=r.b*sc;
+    s+=SVG.rect(x,y,bw,bh,'part');
+    s+=SVG.line(x,y,x+bw,y+bh,' class="dim" stroke-dasharray="6 5"');
+    s+=SVG.line(x+bw,y,x,y+bh,' class="dim" stroke-dasharray="6 5"');
+    s+=SVG.text(x+bw/2,y-12,'A '+WCfmt(r.a,0),12);
+    s+=SVG.text(x-26,y+bh/2,'B',12);
+    s+=SVG.text(x+bw/2,y+bh/2-6,'diagonal',11);
+    s+=SVG.text(x+bw/2,y+bh/2+14,WCfmt(r.target,1),13);
+    s+=SVG.text(W/2,H-16, r.diff!==null ? 'measured difference '+WCfmt(r.diff,1) : 'both diagonals must match', 12);
+    return s+SVG.close();
   }
 };
 

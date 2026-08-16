@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Hopper Angle Calculator — Miter and Bevel for Splayed Boxes and Tapered Legs</title>
+<meta name="description" content="Saw miter and blade bevel for boxes with sloping sides, planters, hoppers and splayed legs, at any splay angle and any number of sides.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Splayed Side &amp; Hopper Angle Calculator</h1>
+<p class="sub">Tilt the sides of a box outwards and both saw settings change at once. A four-sided planter with 10 degrees of splay is not cut at 45 degrees — it needs 44.4 miter and 9.85 bevel, and guessing gets you gaps.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Box</h2><div class="row"><div class="f"><label for="sides">Number of sides</label><input type="number" id="sides" value="4" step="1" min="3"></div><div class="f"><label for="splay">Splay from vertical (degrees)</label><input type="number" id="splay" value="10" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">0 gives an ordinary square box</span></div></div></div><div class="card noprint"><h2>Sizes</h2><div class="row"><div class="f"><label for="height">Height of the sides <span class="u"></span></label><input type="number" id="height" value="200" step="any" min="0"></div><div class="f"><label for="bottomW">Width at the bottom <span class="u"></span></label><input type="number" id="bottomW" value="300" step="any" min="0"></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Why both settings change</h3>
+  <p>Once a side leans, the joint line is no longer square to the table, so the miter closes slightly and the blade has to tilt. The two effects are linked: more splay means less miter and more bevel.</p>
+  <h3>The formulas</h3>
+  <p>With S the splay from vertical and N the number of sides: miter equals atan(cos(S) times tan(180/N)), and bevel equals asin(sin(S) times cos(180/N)). Both are shown in the results so you can check them.</p>
+  <h3>Measuring splay</h3>
+  <p>Splay is measured from vertical, not from the table. A side leaning out by 10 degrees from plumb has a splay of 10. Getting this backwards gives you a box that tapers the wrong way.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It gives the two saw settings. It does not size the pieces — splayed sides are trapezoids whose top and bottom widths depend on the height, and that is a separate layout.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./box-joint-layout.html" style="color:var(--accent)">Box Joint &amp; Dovetail Layout</a> <span style="color:var(--muted)">— Even pin and tail spacing that actually divides, plus a 1:1 printable marking template.</span></li><li style="margin:4px 0"><a href="./compound-miter-calculator.html" style="color:var(--accent)">Compound Miter Angle Calculator</a> <span style="color:var(--muted)">— Saw miter and bevel settings for crown and sloped work, with the formulas shown.</span></li><li style="margin:4px 0"><a href="./polygon-miter-calculator.html" style="color:var(--accent)">Polygon Miter Angle Calculator</a> <span style="color:var(--muted)">— Miter angles and side lengths for hexagons, octagons and any polygon, from any known dimension.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,62 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'sides', label:'Number of sides', value:4, group:'Box', min:3, step:1},
+    {id:'splay', label:'Splay from vertical (degrees)', value:10, group:'Box', min:0,
+     hint:'0 gives an ordinary square box'},
+    {id:'height', label:'Height of the sides', value:200, unit:'length', group:'Sizes', min:0},
+    {id:'bottomW', label:'Width at the bottom', value:300, unit:'length', group:'Sizes', min:0}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var n=Math.round(i.sides), S=i.splay;
+    if (!(n>=3)) return {ok:false, errors:['A box needs at least 3 sides.']};
+    if (!(S>=0 && S<90)) return {ok:false, errors:['Splay must be between 0 and 90 degrees.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    var d2r=Math.PI/180, r2d=180/Math.PI;
+    var half=(180/n)*d2r, Sr=S*d2r;
+    var miter=Math.atan(Math.cos(Sr)*Math.tan(half))*r2d;
+    var bevel=Math.asin(Math.sin(Sr)*Math.cos(half))*r2d;
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var lean = i.height*Math.tan(Sr);
+    var topW = i.bottomW + 2*lean;
+    var sideLen = i.height/Math.cos(Sr);
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+    var warn=[];
+    if (S > 30) warn.push('Above 30 degrees of splay the bevel gets extreme and many saws cannot reach it. Check the machine before cutting.');
+
+    return {ok:true, n:n, S:S, miter:miter, bevel:bevel, topW:topW, sideLen:sideLen, bottomW:i.bottomW,
+      warnings: warn,
+      stats:[
+        {value: WCfmt(miter,3)+String.fromCharCode(176), label:'Miter angle'},
+        {value: WCfmt(bevel,3)+String.fromCharCode(176), label:'Blade bevel'},
+        {value: WCfmt(S,1)+String.fromCharCode(176), label:'Splay'},
+        {value: String(n), label:'Sides'}
+      ],
+      tables:[{title:'Saw settings and sizes', head:['Item','Value','Where it comes from'], rows:[
+        ['Miter', WCfmt(miter,4)+String.fromCharCode(176), 'atan(cos('+WCfmt(S,1)+') × tan('+WCfmt(180/n,2)+'))'],
+        ['Bevel', WCfmt(bevel,4)+String.fromCharCode(176), 'asin(sin('+WCfmt(S,1)+') × cos('+WCfmt(180/n,2)+'))'],
+        ['Miter if the box were upright', WCfmt(180/n,3)+String.fromCharCode(176), '180 / '+n],
+        ['Width at the bottom', WCfmt(i.bottomW,1), 'given'],
+        ['Width at the top', WCfmt(topW,2), 'bottom + 2 × height × tan(splay)'],
+        ['Height', WCfmt(i.height,1), 'given'],
+        ['Length along the sloping side', WCfmt(sideLen,2), 'height / cos(splay)'],
+        ['Lean per side', WCfmt(lean,2), 'height × tan(splay)']
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Cut a test corner in scrap and offer up two pieces before touching good stock. The numbers are right; the orientation on the saw is what catches people out.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=560,H=300,s=SVG.open(W,H);
+    var sc=Math.min(320/Math.max(r.topW,1), 150/Math.max(i.height,1));
+    var cx=W/2, base=H-80, hh=i.height*sc, bw=r.bottomW*sc, tw=r.topW*sc;
+    s+=SVG.poly([[cx-bw/2,base],[cx+bw/2,base],[cx+tw/2,base-hh],[cx-tw/2,base-hh]],'part');
+    s+=SVG.line(cx-tw/2,base-hh-16,cx-tw/2,base+16,' class="dim" stroke-dasharray="4 4"');
+    s+=SVG.line(cx-bw/2,base,cx-bw/2,base-hh-16,' class="dim" stroke-dasharray="4 4"');
+    s+=SVG.text(cx,base+24,'bottom '+WCfmt(r.bottomW,0),12);
+    s+=SVG.text(cx,base-hh-14,'top '+WCfmt(r.topW,0),12);
+    s+=SVG.text(cx,30,'miter '+WCfmt(r.miter,2)+String.fromCharCode(176)+'   bevel '+WCfmt(r.bevel,2)+String.fromCharCode(176),15);
+    s+=SVG.text(cx,H-14,r.n+' sides at '+WCfmt(r.S,1)+String.fromCharCode(176)+' of splay',12);
+    return s+SVG.close();
   }
 };
 

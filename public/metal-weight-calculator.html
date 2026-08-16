@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Metal Weight Calculator — Bar, Tube, Sheet and Angle in Steel, Aluminium, Brass</title>
+<meta name="description" content="Weight of round bar, square bar, tube, sheet, plate and angle in steel, stainless, aluminium, brass and copper, with total weight and price.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Metal Weight Calculator</h1>
+<p class="sub">Before you order it, before you lift it, before you work out what the trailer can carry. Choose the shape and the metal, enter the dimensions, and get the weight per metre, the total, and the cost if you know the rate.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Section</h2><div class="row"><div class="f"><label for="shape">Shape</label><select id="shape"><option value="round" selected>Round bar</option><option value="square">Square bar</option><option value="flat">Flat bar / plate</option><option value="tube">Round tube</option><option value="sqtube">Square tube</option><option value="sheet">Sheet</option></select></div><div class="f"><label for="metal">Metal</label><select id="metal"><option value="steel" selected>Mild steel (7850)</option><option value="stainless">Stainless (8000)</option><option value="alu">Aluminium (2700)</option><option value="brass">Brass (8500)</option><option value="copper">Copper (8960)</option><option value="castiron">Cast iron (7200)</option><option value="lead">Lead (11340)</option></select></div></div></div><div class="card noprint"><h2>Dimensions</h2><div class="row"><div class="f"><label for="d1">Diameter / width <span class="u"></span></label><input type="number" id="d1" value="25" step="any" min="0"></div><div class="f"><label for="d2">Height / second side <span class="u"></span></label><input type="number" id="d2" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Flat bar, square tube, sheet</span></div><div class="f"><label for="wall">Wall thickness <span class="u"></span></label><input type="number" id="wall" value="2" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Tubes only</span></div><div class="f"><label for="len">Length <span class="u"></span></label><input type="number" id="len" value="1000" step="any" min="0"></div><div class="f"><label for="qty">How many pieces</label><input type="number" id="qty" value="1" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="price">Price per kg</label><input type="number" id="price" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">0 to skip</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Where the densities come from</h3>
+  <p>These are standard handbook densities in kg per cubic metre: mild steel 7850, stainless 8000, aluminium 2700, brass 8500, copper 8960, cast iron 7200, lead 11340. Alloys vary by a percent or two, which is well inside the tolerance of the stock itself.</p>
+  <h3>Tube weight is the difference of two cylinders</h3>
+  <p>A tube weighs the same as the solid bar of its outside diameter minus the bar of its bore. Which is why doubling the wall thickness of a thin tube nearly doubles its weight, but barely changes the outside size.</p>
+  <h3>Why the merchant weight differs</h3>
+  <p>Rolling tolerances, mill scale and paint all add a little. Structural sections are also sold to nominal sizes that are not quite the real ones. Expect a couple of percent either way.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It weighs geometry. It does not check whether a section is strong enough, which depends on span, load and how it is fixed.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./board-foot-calculator.html" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,100 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'shape', label:'Shape', type:'select', value:'round', group:'Section', options:[
+      {value:'round', label:'Round bar'},
+      {value:'square', label:'Square bar'},
+      {value:'flat', label:'Flat bar / plate'},
+      {value:'tube', label:'Round tube'},
+      {value:'sqtube', label:'Square tube'},
+      {value:'sheet', label:'Sheet'}]},
+    {id:'metal', label:'Metal', type:'select', value:'steel', group:'Section', options:[
+      {value:'steel', label:'Mild steel (7850)'},
+      {value:'stainless', label:'Stainless (8000)'},
+      {value:'alu', label:'Aluminium (2700)'},
+      {value:'brass', label:'Brass (8500)'},
+      {value:'copper', label:'Copper (8960)'},
+      {value:'castiron', label:'Cast iron (7200)'},
+      {value:'lead', label:'Lead (11340)'}]},
+    {id:'d1', label:'Diameter / width', value:25, unit:'length', group:'Dimensions', min:0},
+    {id:'d2', label:'Height / second side', value:25, unit:'length', group:'Dimensions', min:0,
+     hint:'Flat bar, square tube, sheet'},
+    {id:'wall', label:'Wall thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes only'},
+    {id:'len', label:'Length', value:1000, unit:'length', group:'Dimensions', min:0},
+    {id:'qty', label:'How many pieces', value:1, group:'Dimensions', min:1, step:1},
+    {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'0 to skip'}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var DENS = {steel:7850, stainless:8000, alu:2700, brass:8500, copper:8960, castiron:7200, lead:11340};
+    var rho = DENS[i.metal];
+    var k = i.unit === 'in' ? 0.0254 : 0.001;
+    var d1=i.d1*k, d2=i.d2*k, wall=i.wall*k, L=i.len*k;
+    if (!(L>0)) return {ok:false, errors:['Length must be greater than zero.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    var area, label;
+    if (i.shape==='round')      { if(!(d1>0)) return {ok:false,errors:['Diameter must be greater than zero.']};
+                                  area=Math.PI*d1*d1/4; label='Round bar Ø'+WCfmt(i.d1,1); }
+    else if (i.shape==='square'){ if(!(d1>0)) return {ok:false,errors:['Side must be greater than zero.']};
+                                  area=d1*d1; label='Square bar '+WCfmt(i.d1,1); }
+    else if (i.shape==='flat' || i.shape==='sheet') {
+                                  if(!(d1>0 && d2>0)) return {ok:false,errors:['Both dimensions must be greater than zero.']};
+                                  area=d1*d2; label=(i.shape==='sheet'?'Sheet ':'Flat bar ')+WCfmt(i.d1,1)+' × '+WCfmt(i.d2,1); }
+    else if (i.shape==='tube')  { if(!(d1>0)) return {ok:false,errors:['Outside diameter must be greater than zero.']};
+                                  if(!(wall>0)) return {ok:false,errors:['Wall thickness must be greater than zero.']};
+                                  if(2*wall>=d1) return {ok:false,errors:['The wall is thicker than the radius — that is solid bar.']};
+                                  var bore=d1-2*wall; area=Math.PI*(d1*d1-bore*bore)/4;
+                                  label='Tube Ø'+WCfmt(i.d1,1)+' × '+WCfmt(i.wall,1)+' wall'; }
+    else                        { if(!(d1>0 && d2>0)) return {ok:false,errors:['Both sides must be greater than zero.']};
+                                  if(!(wall>0)) return {ok:false,errors:['Wall thickness must be greater than zero.']};
+                                  if(2*wall>=Math.min(d1,d2)) return {ok:false,errors:['The wall is too thick for that section.']};
+                                  area=d1*d2-(d1-2*wall)*(d2-2*wall);
+                                  label='Square tube '+WCfmt(i.d1,1)+' × '+WCfmt(i.d2,1)+' × '+WCfmt(i.wall,1); }
+
+    var kgPerM = area*rho;
+    var each = kgPerM*L;
+    var n = Math.max(1, Math.round(i.qty));
+    var total = each*n;
+    var cost = i.price>0 ? total*i.price : null;
 
     var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
+      {value: WCfmt(each,3), label:'kg each'},
+      {value: WCfmt(total,2), label:'kg total'},
+      {value: WCfmt(kgPerM,3), label:'kg per metre'},
+      {value: String(n), label:'Pieces'}
     ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    if (cost !== null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
+    return {ok:true, each:each, total:total, kgPerM:kgPerM, label:label, area:area, rho:rho,
       stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+      tables:[{title:'Working', head:['Item','Value'], rows:[
+        ['Section', label],
+        ['Metal', i.metal+' at '+WCfmt(rho,0)+' kg/m3'],
+        ['Cross-section area', WCfmt(area*1e6,2)+' mm2'],
+        ['Weight per metre', WCfmt(kgPerM,4)+' kg/m'],
+        ['Length each', WCfmt(L,3)+' m'],
+        ['Weight each', WCfmt(each,4)+' kg'],
+        ['Pieces', String(n)],
+        ['Total weight', WCfmt(total,3)+' kg  ('+WCfmt(total*2.20462,1)+' lb)'],
+        ['Cost', cost !== null ? WCfmt(cost,2) : '—']
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Densities are standard handbook figures. Real stock varies a percent or two with alloy, rolling tolerance and finish.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=520,H=250,cx=W/2,cy=120,s=SVG.open(W,H);
+    if (i.shape==='round'){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="62" class="part"/>'; }
+    else if (i.shape==='tube'){ s+='<circle cx="'+cx+'" cy="'+cy+'" r="62" class="part"/>';
+      var br=62*Math.max(0.1,(i.d1-2*i.wall)/Math.max(i.d1,1));
+      s+='<circle cx="'+cx+'" cy="'+cy+'" r="'+br+'" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>'; }
+    else if (i.shape==='sqtube'){ s+=SVG.rect(cx-62,cy-52,124,104,'part');
+      var w=62*Math.max(0.1,(i.d1-2*i.wall)/Math.max(i.d1,1));
+      s+='<rect x="'+(cx-w)+'" y="'+(cy-w*0.84)+'" width="'+(2*w)+'" height="'+(2*w*0.84)+'" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>'; }
+    else if (i.shape==='square'){ s+=SVG.rect(cx-55,cy-55,110,110,'part'); }
+    else { s+=SVG.rect(cx-95,cy-32,190,64,'part'); }
+    s+=SVG.text(cx,cy+4,WCfmt(r.kgPerM,2)+' kg/m',13);
+    s+=SVG.text(cx,26,r.label,13);
+    s+=SVG.text(cx,H-16,WCfmt(r.total,2)+' kg in total',12);
+    return s+SVG.close();
   }
 };
 

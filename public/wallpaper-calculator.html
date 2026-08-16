@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Wallpaper Calculator — Rolls Needed Including Pattern Repeat and Drop Match</title>
+<meta name="description" content="How many rolls of wallpaper you need once the pattern repeat and drop match are accounted for, with usable drops per roll and waste per drop.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Wallpaper Calculator With Pattern Repeat</h1>
+<p class="sub">Most wallpaper calculators divide the wall area by the roll area and get it wrong. The pattern repeat is what decides it: with a 64 cm repeat on a 2.4 m wall you lose most of a drop every time, and that is the difference between four rolls and six.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Room</h2><div class="row"><div class="f"><label for="perimeter">Total wall length <span class="u"></span></label><input type="number" id="perimeter" value="16000" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Add up the walls you are papering</span></div><div class="f"><label for="height">Wall height <span class="u"></span></label><input type="number" id="height" value="2400" step="any" min="0"></div><div class="f"><label for="doors">Doors to deduct</label><input type="number" id="doors" value="1" step="1" min="0"></div><div class="f"><label for="windows">Windows to deduct</label><input type="number" id="windows" value="2" step="1" min="0"></div></div></div><div class="card noprint"><h2>Paper</h2><div class="row"><div class="f"><label for="rollW">Roll width <span class="u"></span></label><input type="number" id="rollW" value="530" step="any" min="0"></div><div class="f"><label for="rollL">Roll length <span class="u"></span></label><input type="number" id="rollL" value="10050" step="any" min="0"></div><div class="f"><label for="repeat">Pattern repeat <span class="u"></span></label><input type="number" id="repeat" value="640" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">0 for a plain paper</span></div><div class="f"><label for="match">Match type</label><select id="match"><option value="free">Free match / plain</option><option value="straight" selected>Straight match</option><option value="offset">Offset (drop) match</option></select></div><div class="f"><label for="trim">Trim allowance per drop <span class="u"></span></label><input type="number" id="trim" value="100" step="any" min="0"></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Why the repeat changes everything</h3>
+  <p>Each drop has to start at the same point in the pattern, so you cut to the next whole repeat above the wall height. A 2400 wall with a 640 repeat means cutting drops of 2560 — 160 wasted on every single drop.</p>
+  <h3>Straight match and offset match</h3>
+  <p>A straight match lines up across the seam at the same height. An offset or drop match shifts by half a repeat each drop, which means you alternate between two starting points — it wastes less overall, because the offcut of one drop starts the next.</p>
+  <h3>Always buy from one batch</h3>
+  <p>Rolls printed in different batches differ slightly in colour, and the seam between them is visible on a wall. Buy the extra roll now; matching a batch later is usually impossible.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It counts drops on plain walls. Alcoves, chimney breasts, stairwells and papering around windows all change the count, and stairwells in particular waste far more than the arithmetic suggests.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./tile-layout-planner.html" style="color:var(--accent)">Tile Layout Planner</a> <span style="color:var(--muted)">— Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span></li><li style="margin:4px 0"><a href="./concrete-volume-calculator.html" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="./gravel-volume-calculator.html" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,99 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'perimeter', label:'Total wall length', value:16000, unit:'length', group:'Room', min:0,
+     hint:'Add up the walls you are papering'},
+    {id:'height', label:'Wall height', value:2400, unit:'length', group:'Room', min:0},
+    {id:'doors', label:'Doors to deduct', value:1, group:'Room', min:0, step:1},
+    {id:'windows', label:'Windows to deduct', value:2, group:'Room', min:0, step:1},
+    {id:'rollW', label:'Roll width', value:530, unit:'length', group:'Paper', min:0},
+    {id:'rollL', label:'Roll length', value:10050, unit:'length', group:'Paper', min:0},
+    {id:'repeat', label:'Pattern repeat', value:640, unit:'length', group:'Paper', min:0,
+     hint:'0 for a plain paper'},
+    {id:'match', label:'Match type', type:'select', value:'straight', group:'Paper', options:[
+      {value:'free', label:'Free match / plain'},
+      {value:'straight', label:'Straight match'},
+      {value:'offset', label:'Offset (drop) match'}]},
+    {id:'trim', label:'Trim allowance per drop', value:100, unit:'length', group:'Paper', min:0}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var P=i.perimeter, Hh=i.height;
+    if (!(P>0 && Hh>0)) return {ok:false, errors:['Wall length and height must be greater than zero.']};
+    if (!(i.rollW>0 && i.rollL>0)) return {ok:false, errors:['Roll width and length must be greater than zero.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    // Deduction : une porte ~0.9 m de large, une fenetre ~1.2 m
+    var deduct = Math.max(0,i.doors)*900 + Math.max(0,i.windows)*1200;
+    var netP = Math.max(0, P - deduct);
+    var drops = Math.ceil(netP/i.rollW);
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var cutLength;
+    if (i.repeat > 0 && i.match !== 'free') {
+      var needed = Hh + i.trim;
+      cutLength = Math.ceil(needed/i.repeat)*i.repeat;
+    } else {
+      cutLength = Hh + i.trim;
+    }
+    var wastePerDrop = cutLength - Hh;
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+    var dropsPerRoll = Math.floor(i.rollL/cutLength);
+    if (dropsPerRoll < 1) return {ok:false, errors:['A single drop is longer than a whole roll. Check the roll length and the repeat.']};
+
+    var rolls = Math.ceil(drops/dropsPerRoll);
+    // Un raccord saute recupere en moyenne une demi-repetition par tambour
+    if (i.match === 'offset' && i.repeat > 0) {
+      var effective = Math.floor((i.rollL + i.repeat/2)/cutLength);
+      if (effective > dropsPerRoll) rolls = Math.ceil(drops/effective);
+    }
+
+    var totalWaste = drops*wastePerDrop;
+    var warn=[];
+    if (wastePerDrop > i.repeat*0.6) warn.push('You lose '+WCfmt(wastePerDrop,0)+' on every drop — most of a repeat. A paper with a smaller repeat would use noticeably less.');
+    if (rolls > 0) warn.push('Buy all rolls from the same batch number. Different batches differ in colour and the seam shows.');
+
+    return {ok:true, drops:drops, cutLength:cutLength, dropsPerRoll:dropsPerRoll, rolls:rolls,
+      wastePerDrop:wastePerDrop, netP:netP, Hh:Hh,
+      warnings: warn,
+      stats:[
+        {value: String(rolls), label:'Rolls to buy'},
+        {value: String(drops), label:'Drops needed'},
+        {value: WCfmt(cutLength,0), label:'Cut length per drop'},
+        {value: String(dropsPerRoll), label:'Drops per roll'}
+      ],
+      tables:[{title:'Working', head:['Item','Value'], rows:[
+        ['Wall length', WCfmt(P,0)],
+        ['Deducted for openings', WCfmt(deduct,0)+'  ('+i.doors+' door(s), '+i.windows+' window(s))'],
+        ['Length to paper', WCfmt(netP,0)],
+        ['Roll width', WCfmt(i.rollW,0)],
+        ['Drops needed', String(drops)],
+        ['Wall height', WCfmt(Hh,0)],
+        ['Pattern repeat', i.repeat>0 ? WCfmt(i.repeat,0) : 'plain'],
+        ['Cut length per drop', WCfmt(cutLength,0)],
+        ['Wasted per drop', WCfmt(wastePerDrop,0)],
+        ['Total waste', WCfmt(totalWaste/1000,2)+' m of paper'],
+        ['Drops per roll', String(dropsPerRoll)],
+        ['Rolls to buy', String(rolls)]
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Cut length is rounded up to the next whole pattern repeat so every drop starts at the same point in the design.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=600,H=300,m=45,s=SVG.open(W,H);
+    var n=Math.min(r.drops,9);
+    var dw=(W-2*m)/n, top=60, hh=170;
+    for(var k=0;k<n;k++){
+      var x=m+k*dw;
+      s+=SVG.rect(x+1,top,dw-3,hh,'part');
+      if (i.repeat>0){
+        var reps=Math.max(1,Math.round(r.Hh/i.repeat));
+        for(var q=1;q<=reps;q++){
+          var yy=top+hh*q/(reps+ (r.wastePerDrop/Math.max(1,r.Hh)));
+          if (yy<top+hh) s+=SVG.line(x+2,yy,x+dw-3,yy,' class="dim"');
+        }
+      }
+    }
+    s+=SVG.text(W/2,30,r.drops+' drops  ·  '+r.rolls+' rolls  ·  cut '+WCfmt(r.cutLength,0)+' each',13);
+    s+=SVG.text(W/2,H-16,'waste '+WCfmt(r.wastePerDrop,0)+' per drop from the '+WCfmt(i.repeat,0)+' repeat',12);
+    return s+SVG.close();
   }
 };
 

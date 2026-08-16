@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Pipe Offset Calculator — Travel, Run and Rolling Offsets for Any Fitting Angle</title>
+<meta name="description" content="Travel and run for pipe offsets at 45, 30, 22.5 or any angle, including rolling offsets, with fitting take-off subtracted to give the real cut length.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Pipe Offset Calculator</h1>
+<p class="sub">Two fittings, one obstruction, and a piece of pipe that has to land exactly. Give the offset and the fitting angle and this returns the travel, the run, and the length to actually cut once the take-off of both fittings is removed.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Offset</h2><div class="row"><div class="f"><label for="kind">Type of offset</label><select id="kind"><option value="simple" selected>Simple offset (one plane)</option><option value="rolling">Rolling offset (two planes)</option></select></div><div class="f"><label for="offset">Offset <span class="u"></span></label><input type="number" id="offset" value="300" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Simple offset: the sideways shift</span></div><div class="f"><label for="vert">Vertical shift <span class="u"></span></label><input type="number" id="vert" value="300" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Rolling only</span></div><div class="f"><label for="horiz">Horizontal shift <span class="u"></span></label><input type="number" id="horiz" value="200" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Rolling only</span></div></div></div><div class="card noprint"><h2>Fittings</h2><div class="row"><div class="f"><label for="angle">Fitting angle (degrees)</label><select id="angle"><option value="45" selected>45°</option><option value="30">30°</option><option value="22.5">22.5°</option><option value="60">60°</option><option value="11.25">11.25°</option></select></div><div class="f"><label for="takeoff">Take-off per fitting <span class="u"></span></label><input type="number" id="takeoff" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Centre of fitting to end of socket</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Travel, run and offset</h3>
+  <p>Offset is how far the line shifts sideways. Travel is the length of the sloping pipe, centre to centre. Run is how far along the original direction you consume doing it. Travel equals offset divided by the sine of the angle — for 45 degrees that is offset times 1.414.</p>
+  <h3>Why the take-off matters</h3>
+  <p>Travel is centre to centre of the fittings. The pipe you cut is shorter by the take-off of each fitting — the distance from the fitting centre to the end of the socket. Forget it and every offset comes out long by an inch or more.</p>
+  <h3>Rolling offsets</h3>
+  <p>When the obstruction moves the line both sideways and up, the true offset is the diagonal of those two: the square root of the sum of their squares. The roll angle tells you how far round the vertical the whole offset is rotated.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It is pure geometry. It does not size pipe, check fall on drainage, or know which fittings your system allows.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./rafter-calculator.html" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,79 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'kind', label:'Type of offset', type:'select', value:'simple', group:'Offset', options:[
+      {value:'simple', label:'Simple offset (one plane)'},
+      {value:'rolling', label:'Rolling offset (two planes)'}]},
+    {id:'offset', label:'Offset', value:300, unit:'length', group:'Offset', min:0,
+     hint:'Simple offset: the sideways shift'},
+    {id:'vert', label:'Vertical shift', value:300, unit:'length', group:'Offset', min:0, hint:'Rolling only'},
+    {id:'horiz', label:'Horizontal shift', value:200, unit:'length', group:'Offset', min:0, hint:'Rolling only'},
+    {id:'angle', label:'Fitting angle (degrees)', type:'select', value:'45', group:'Fittings', options:[
+      {value:'45', label:'45°'}, {value:'30', label:'30°'},
+      {value:'22.5', label:'22.5°'}, {value:'60', label:'60°'},
+      {value:'11.25', label:'11.25°'}]},
+    {id:'takeoff', label:'Take-off per fitting', value:25, unit:'length', group:'Fittings', min:0,
+     hint:'Centre of fitting to end of socket'}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var A = parseFloat(i.angle);
+    if (!(A > 0 && A < 90)) return {ok:false, errors:['The fitting angle must be between 0 and 90 degrees.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    var offset, roll = null;
+    if (i.kind === 'rolling') {
+      if (!(i.vert > 0 || i.horiz > 0))
+        return {ok:false, errors:['A rolling offset needs a vertical or horizontal shift greater than zero.']};
+      offset = Math.sqrt(i.vert*i.vert + i.horiz*i.horiz);
+      roll = Math.atan2(i.horiz, i.vert) * 180/Math.PI;
+    } else {
+      if (!(i.offset > 0)) return {ok:false, errors:['The offset must be greater than zero.']};
+      offset = i.offset;
+    }
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var rad = A*Math.PI/180;
+    var travel = offset/Math.sin(rad);
+    var run = offset/Math.tan(rad);
+    var cut = travel - 2*Math.max(0, i.takeoff);
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+    var warn = [];
+    if (cut <= 0) warn.push('The take-off of the two fittings is longer than the travel — at this offset the fittings meet. Use a shallower angle.');
+
+    return {ok:true, offset:offset, travel:travel, run:run, cut:cut, roll:roll, A:A,
+      warnings: warn,
+      stats:[
+        {value: WCfmt(travel,1), label:'Travel (centre to centre)'},
+        {value: WCfmt(cut,1), label:'Cut length'},
+        {value: WCfmt(run,1), label:'Run consumed'},
+        {value: WCfmt(offset,1), label:'True offset'}
+      ],
+      tables:[{title:'Working', head:['Item','Value','Where it comes from'], rows:[
+        ['Fitting angle', WCfmt(A,2)+String.fromCharCode(176), 'chosen'],
+        ['True offset', WCfmt(offset,2), i.kind==='rolling' ? 'sqrt('+WCfmt(i.vert,0)+'² + '+WCfmt(i.horiz,0)+'²)' : 'given'],
+        ['Roll angle', roll !== null ? WCfmt(roll,2)+String.fromCharCode(176) : '—', roll !== null ? 'atan(horizontal / vertical)' : 'simple offset'],
+        ['Travel', WCfmt(travel,2), 'offset / sin('+WCfmt(A,1)+')'],
+        ['Run', WCfmt(run,2), 'offset / tan('+WCfmt(A,1)+')'],
+        ['Take-off, both fittings', WCfmt(2*i.takeoff,2), '2 × '+WCfmt(i.takeoff,1)],
+        ['Length to cut', WCfmt(cut,2), 'travel − both take-offs']
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Travel is centre to centre of the two fittings. Cut length is what you saw, after removing the take-off at each end. Check the take-off against your actual fittings — it varies by material and manufacturer.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=620,H=280,m=60,s=SVG.open(W,H);
+    var sc = Math.min((W-2*m)/(r.run*2 + 40), (H-120)/Math.max(r.offset,1));
+    if (!isFinite(sc) || sc<=0) sc = 0.3;
+    var y1 = 90, y2 = y1 + r.offset*sc, xa = m, xb = m + 90, xc = xb + r.run*sc, xd = xc + 90;
+    s += SVG.line(xa,y1,xb,y1,' stroke-width="4"');
+    s += SVG.line(xb,y1,xc,y2,' stroke-width="4"');
+    s += SVG.line(xc,y2,xd,y2,' stroke-width="4"');
+    s += SVG.line(xb,y1,xb,y2,' class="dim" stroke-dasharray="4 4"');
+    s += SVG.line(xb,y2,xc,y2,' class="dim" stroke-dasharray="4 4"');
+    s += SVG.text((xb+xc)/2, (y1+y2)/2 - 12, 'travel '+WCfmt(r.travel,0), 13);
+    s += SVG.text(xb-32, (y1+y2)/2, 'offset', 11);
+    s += SVG.text((xb+xc)/2, y2+20, 'run '+WCfmt(r.run,0), 11);
+    s += SVG.text(W/2, 30, WCfmt(r.A,1)+String.fromCharCode(176)+' offset  ·  cut '+WCfmt(r.cut,1), 14);
+    s += SVG.text(W/2, H-16, r.roll !== null ? 'rolling · roll angle '+WCfmt(r.roll,1)+String.fromCharCode(176) : 'simple offset, one plane', 12);
+    return s+SVG.close();
   }
 };
 

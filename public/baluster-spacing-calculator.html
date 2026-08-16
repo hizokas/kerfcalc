@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Baluster Spacing Calculator — Even Gaps That Divide Exactly</title>
+<meta name="description" content="Work out how many balusters fit a run and the exact even gap between them, so the last space is not a stubby offcut. Includes the centre-to-centre setting out.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Baluster &amp; Spindle Spacing Calculator</h1>
+<p class="sub">Set spindles at a round number and the last gap ends up wrong for the life of the balustrade. This works the other way round: it finds the smallest count whose gap stays under your limit, then divides the run exactly.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Run</h2><div class="row"><div class="f"><label for="run">Clear run between posts <span class="u"></span></label><input type="number" id="run" value="2400" step="any" min="0"></div><div class="f"><label for="width">Baluster width <span class="u"></span></label><input type="number" id="width" value="32" step="any" min="0"></div><div class="f"><label for="maxGap">Maximum gap allowed <span class="u"></span></label><input type="number" id="maxGap" value="99" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">Set this from the rules that apply to your job</span></div><div class="f"><label for="ends">Gap at each end too</label><input type="checkbox" id="ends" checked><span style="font-size:.74rem;color:var(--muted)">Unticked: a baluster sits hard against each post</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Why you work backwards from the gap</h3>
+  <p>The gap is what people see and what usually has a maximum. So you fix the maximum, find the smallest number of spindles that respects it, and let the actual gap land wherever it lands — evenly.</p>
+  <h3>Gaps and safety limits</h3>
+  <p>Balustrade gap limits vary by country and by where the balustrade is. Set the maximum yourself from whatever applies to your job — this tool does not know your local rules and does not pretend to.</p>
+  <h3>Setting out on site</h3>
+  <p>Mark centres, not gaps. Measuring gap to gap accumulates error and the last spindle ends up visibly off. Every centre in the table is measured from the same end.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It lays out a straight run between two posts. Curved runs, rake sections and transitions each need their own setting out.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./rafter-calculator.html" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,76 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'run', label:'Clear run between posts', value:2400, unit:'length', group:'Run', min:0},
+    {id:'width', label:'Baluster width', value:32, unit:'length', group:'Run', min:0},
+    {id:'maxGap', label:'Maximum gap allowed', value:99, unit:'length', group:'Run', min:1,
+     hint:'Set this from the rules that apply to your job'},
+    {id:'ends', label:'Gap at each end too', type:'check', value:true, group:'Run',
+     hint:'Unticked: a baluster sits hard against each post'}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var L = i.run, w = i.width, g = i.maxGap;
+    if (!(L > 0)) return {ok:false, errors:['The run must be greater than zero.']};
+    if (!(w > 0)) return {ok:false, errors:['Baluster width must be greater than zero.']};
+    if (!(g > 0)) return {ok:false, errors:['The maximum gap must be greater than zero.']};
+    if (w + g > L) return {ok:false, errors:['One baluster plus one gap is wider than the whole run.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    // Avec n balustres et un jeu a chaque bout : n+1 intervalles.
+    // Sans jeu aux bouts : n-1 intervalles entre les balustres.
+    var n, gaps, gap;
+    for (n = 1; n < 10000; n++) {
+      gaps = i.ends ? (n + 1) : (n - 1);
+      if (gaps <= 0) continue;
+      gap = (L - n*w) / gaps;
+      if (gap <= g) break;
+    }
+    if (gap <= 0) return {ok:false, errors:['No arrangement fits — the balusters alone are wider than the run.']};
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var pitch = w + gap;
+    var centres = [];
+    for (var k = 0; k < n; k++) {
+      var start = i.ends ? gap : 0;
+      centres.push(start + k*pitch + w/2);
+    }
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
-      ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+    var warn = [];
+    if (gap < w*0.4) warn.push('The gap ('+WCfmt(gap,1)+') is much narrower than the balusters. Visually heavy — worth checking against a sample.');
+
+    return {ok:true, n:n, gap:gap, pitch:pitch, centres:centres, L:L, w:w,
+      warnings: warn,
+      stats:[
+        {value: String(n), label:'Balusters'},
+        {value: WCfmt(gap,2), label:'Actual gap'},
+        {value: WCfmt(pitch,2), label:'Centre to centre'},
+        {value: String(gaps), label:'Spaces'}
+      ],
+      tables:[
+        {title:'Check', head:['Item','Value'], rows:[
+          ['Clear run', WCfmt(L,1)],
+          ['Balusters', String(n)+' at '+WCfmt(w,1)+' wide'],
+          ['Spaces', String(gaps)],
+          ['Actual gap', WCfmt(gap,3)+'  (limit '+WCfmt(g,1)+')'],
+          ['Centre to centre', WCfmt(pitch,3)],
+          ['Total check', WCfmt(n*w + gaps*gap,2)+' should equal '+WCfmt(L,2)]
+        ]},
+        {title:'Centres from the left post', head:['#','Centre'],
+         rows: centres.map(function(c,k){ return [String(k+1), WCfmt(c,1)]; })}
+      ],
+      note:'Mark every centre from the same end. Measuring spindle to spindle lets small errors pile up, and the last gap always pays for it.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=760,H=190,m=30,s=SVG.open(W,H);
+    var sc=(W-2*m)/r.L, y=45, h=100, bw=Math.max(3, r.w*sc);
+    s+=SVG.rect(m-10,y-12,10,h+24,'part');
+    s+=SVG.rect(m+r.L*sc,y-12,10,h+24,'part');
+    r.centres.forEach(function(c,k){
+      s+=SVG.rect(m + c*sc - bw/2, y, bw, h, 'part');
+    });
+    s+=SVG.line(m,y+h+22,m+r.L*sc,y+h+22,' class="dim"');
+    s+=SVG.text(W/2, y+h+40, r.n+' balusters  ·  gap '+WCfmt(r.gap,1)+'  ·  run '+WCfmt(r.L,0), 12);
+    s+=SVG.text(W/2, 26, 'centre to centre '+WCfmt(r.pitch,1), 12);
+    return s+SVG.close();
   }
 };
 

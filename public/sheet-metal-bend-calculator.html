@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Bend Allowance Calculator — Flat Pattern Length, Setback and Bend Deduction</title>
+<meta name="description" content="Bend allowance, bend deduction, setback and the total flat blank length for any material thickness, bend radius, angle and K-factor.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Sheet Metal Bend Allowance Calculator</h1>
+<p class="sub">Metal stretches on the outside of a bend and compresses on the inside, so the flat blank is never the sum of the finished legs. Enter your thickness, radius, angle and K-factor and get the blank length to cut.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Material</h2><div class="row"><div class="f"><label for="t">Material thickness <span class="u"></span></label><input type="number" id="t" value="2" step="any" min="0"></div><div class="f"><label for="r">Inside bend radius <span class="u"></span></label><input type="number" id="r" value="3" step="any" min="0"></div><div class="f"><label for="k">K-factor</label><input type="number" id="k" value="0.42" step="any" min="0.01"><span style="font-size:.74rem;color:var(--muted)">0.33 tight, 0.42 typical, up to 0.5</span></div></div></div><div class="card noprint"><h2>Bend</h2><div class="row"><div class="f"><label for="angle">Bend angle (degrees)</label><input type="number" id="angle" value="90" step="any" min="0.1"><span style="font-size:.74rem;color:var(--muted)">The angle turned through, not the included angle</span></div><div class="f"><label for="legA">Finished leg A <span class="u"></span></label><input type="number" id="legA" value="50" step="any" min="0"></div><div class="f"><label for="legB">Finished leg B <span class="u"></span></label><input type="number" id="legB" value="50" step="any" min="0"></div><div class="f"><label for="bends">Number of identical bends</label><input type="number" id="bends" value="1" step="1" min="1"></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>What the K-factor is</h3>
+  <p>Somewhere inside the bend there is a layer that neither stretches nor compresses — the neutral axis. The K-factor says where it sits, as a fraction of the thickness from the inside face. Around 0.33 for tight bends and soft material, up to about 0.5 for large radii; the reliable figure is the one you measure on your own press.</p>
+  <h3>Allowance, deduction, setback</h3>
+  <p>Bend allowance is the length of material inside the bend itself. Bend deduction is how much shorter the blank is than the two outside legs added together. Setback is the distance from the bend line to the outside corner. Different shops work from different ones — all three are given.</p>
+  <h3>Why your first part is always wrong</h3>
+  <p>Published K-factors are starting points. Bend one test piece, measure the finished legs, and back-calculate your real K-factor. Then it is right forever on that machine and that material.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It does not predict springback, cracking on tight radii, or the minimum radius your material tolerates. Those depend on alloy, temper and grain direction.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./board-foot-calculator.html" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,72 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'t', label:'Material thickness', value:2, unit:'length', group:'Material', min:0},
+    {id:'r', label:'Inside bend radius', value:3, unit:'length', group:'Material', min:0},
+    {id:'k', label:'K-factor', value:0.42, group:'Material', min:0.01,
+     hint:'0.33 tight, 0.42 typical, up to 0.5'},
+    {id:'angle', label:'Bend angle (degrees)', value:90, group:'Bend', min:0.1,
+     hint:'The angle turned through, not the included angle'},
+    {id:'legA', label:'Finished leg A', value:50, unit:'length', group:'Bend', min:0},
+    {id:'legB', label:'Finished leg B', value:50, unit:'length', group:'Bend', min:0},
+    {id:'bends', label:'Number of identical bends', value:1, group:'Bend', min:1, step:1}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var t=i.t, R=i.r, K=i.k, A=i.angle;
+    if (!(t>0)) return {ok:false, errors:['Thickness must be greater than zero.']};
+    if (!(R>=0)) return {ok:false, errors:['Bend radius cannot be negative.']};
+    if (!(A>0 && A<180)) return {ok:false, errors:['The bend angle must be between 0 and 180 degrees.']};
+    if (!(K>0 && K<=0.5)) return {ok:false, errors:['The K-factor must be between 0 and 0.5.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    var rad = A*Math.PI/180;
+    var BA = rad*(R + K*t);                       // developpe de la zone pliee
+    var setback = (R + t)*Math.tan(rad/2);        // du trait de pliage au coin exterieur
+    var OSSB = setback;
+    var BD = 2*OSSB - BA;                         // deduction de pliage
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var n = Math.max(1, Math.round(i.bends));
+    var flat = i.legA + i.legB - BD;              // longueur du flan pour un pli
+    var flatN = (i.legA + i.legB) - n*BD;         // approximation pour n plis identiques
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+    var warn=[];
+    if (R < t) warn.push('The inside radius is smaller than the material thickness. Many alloys crack there — check what yours tolerates.');
+    if (flat <= 0) warn.push('The legs are too short for this bend — the deduction is bigger than the part.');
+
+    return {ok:true, BA:BA, BD:BD, setback:setback, flat:flat, t:t, R:R, A:A, legA:i.legA, legB:i.legB,
+      warnings: warn,
+      stats:[
+        {value: WCfmt(flat,2), label:'Flat blank length'},
+        {value: WCfmt(BA,3), label:'Bend allowance'},
+        {value: WCfmt(BD,3), label:'Bend deduction'},
+        {value: WCfmt(setback,3), label:'Setback'}
+      ],
+      tables:[{title:'Working', head:['Item','Value','Formula'], rows:[
+        ['Thickness', WCfmt(t,2), 'given'],
+        ['Inside radius', WCfmt(R,2), 'given'],
+        ['K-factor', WCfmt(K,3), 'given'],
+        ['Bend angle', WCfmt(A,2)+String.fromCharCode(176), 'given'],
+        ['Bend allowance', WCfmt(BA,4), 'angle(rad) × (R + K × t)'],
+        ['Setback / OSSB', WCfmt(setback,4), '(R + t) × tan(angle / 2)'],
+        ['Bend deduction', WCfmt(BD,4), '2 × setback − bend allowance'],
+        ['Flat blank, one bend', WCfmt(flat,3), 'leg A + leg B − deduction'],
+        ['Flat blank, '+n+' bends', WCfmt(flatN,3), 'legs − '+n+' × deduction']
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Bend one test piece and measure it. Adjust the K-factor until the calculated blank matches reality on your machine, then it is right for good.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=560,H=280,s=SVG.open(W,H);
+    var cx=200, cy=170, L=140;
+    var a=r.A*Math.PI/180;
+    var x2=cx+L*Math.cos(-a), y2=cy+L*Math.sin(-a);
+    s+=SVG.line(cx,cy,cx+L,cy,' stroke-width="6"');
+    s+=SVG.line(cx,cy,x2,y2,' stroke-width="6"');
+    s+='<path d="M '+(cx+46)+' '+cy+' A 46 46 0 0 0 '+(cx+46*Math.cos(-a))+' '+(cy+46*Math.sin(-a))+'" fill="none" stroke="var(--muted)" stroke-width="1.2"/>';
+    s+=SVG.text(cx+72,cy-14,WCfmt(r.A,1)+String.fromCharCode(176),13);
+    s+=SVG.text(cx+L/2,cy+22,'leg '+WCfmt(r.legA,0),11);
+    s+=SVG.text(W/2,30,'flat blank '+WCfmt(r.flat,2),14);
+    s+=SVG.text(W/2,H-16,'t '+WCfmt(r.t,1)+'  ·  R '+WCfmt(r.R,1)+'  ·  allowance '+WCfmt(r.BA,2)+'  ·  deduction '+WCfmt(r.BD,2),11);
+    return s+SVG.close();
   }
 };
 

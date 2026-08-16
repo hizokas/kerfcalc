@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Board Foot Calculator — Lumber Volume, Waste and Cost</title>
-<meta name="description" content="Work out board feet for any number of boards, add a waste allowance, and get the cost. Handles quarter (4/4, 8/4) thickness and metric sizes.">
+<title>Grout Calculator — Kilograms of Grout and Adhesive for Any Tile Size</title>
+<meta name="description" content="Grout volume and weight from tile size, joint width and joint depth, plus tile adhesive by trowel notch, with bags to buy.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -280,8 +280,8 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-<h1>Board Foot Calculator</h1>
-<p class="sub">Board feet for a whole cutting list, not just one board. Enter your sizes, add a realistic waste allowance, and you get the volume, the cost, and what to actually ask for at the yard.</p>
+<h1>Grout &amp; Adhesive Calculator</h1>
+<p class="sub">Grout is sold in bags and used by the joint. Small tiles with wide joints can need five times the grout of large-format tiles in the same room, which is why one bag is never the answer. Enter your tile and joint and get the real figure.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -291,22 +291,22 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Board size</h2><div class="row"><div class="f"><label for="thick">Thickness <span class="u"></span></label><input type="number" id="thick" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">25 mm ≈ 4/4</span></div><div class="f"><label for="width">Width <span class="u"></span></label><input type="number" id="width" value="150" step="any" min="0"></div><div class="f"><label for="length">Length <span class="u"></span></label><input type="number" id="length" value="2400" step="any" min="0"></div><div class="f"><label for="qty">How many boards</label><input type="number" id="qty" value="10" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="15" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">15-25% for rough stock</span></div><div class="f"><label for="price">Price per board foot</label><input type="number" id="price" value="6.5" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Leave 0 to skip cost</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Area</h2><div class="row"><div class="f"><label for="area">Area to tile (m2)</label><input type="number" id="area" value="20" step="any" min="0"></div></div></div><div class="card noprint"><h2>Tile</h2><div class="row"><div class="f"><label for="tileL">Tile length <span class="u"></span></label><input type="number" id="tileL" value="600" step="any" min="0"></div><div class="f"><label for="tileW">Tile width <span class="u"></span></label><input type="number" id="tileW" value="300" step="any" min="0"></div><div class="f"><label for="joint">Joint width <span class="u"></span></label><input type="number" id="joint" value="3" step="any" min="0"></div><div class="f"><label for="depth">Joint depth <span class="u"></span></label><input type="number" id="depth" value="10" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Usually the tile thickness</span></div></div></div><div class="card noprint"><h2>Adhesive</h2><div class="row"><div class="f"><label for="notch">Trowel notch</label><select id="notch"><option value="6">6 mm notch</option><option value="8">8 mm notch</option><option value="10" selected>10 mm notch</option><option value="12">12 mm notch</option></select></div><div class="f"><label for="butter">Back-buttering large tiles</label><input type="checkbox" id="butter"></div></div></div><div class="card noprint"><h2>Ordering</h2><div class="row"><div class="f"><label for="grNext">Grout bag size (kg)</label><input type="number" id="grNext" value="5" step="any" min="0.5"></div><div class="f"><label for="adBag">Adhesive bag size (kg)</label><input type="number" id="adBag" value="20" step="any" min="1"></div><div class="f"><label for="waste">Waste allowance (%)</label><input type="number" id="waste" value="10" step="any" min="0"></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>What is a board foot?</h3>
-  <p>One board foot is 144 cubic inches — a piece 12 in × 12 in × 1 in. It is a volume, not an area, so a thicker board of the same face size costs more.</p>
-  <h3>Why the waste allowance matters</h3>
-  <p>Rough lumber is not the size on the tag. Between planing, jointing, defects and end checks, 15-25% is normal for rough stock and 10% for surfaced boards. Buying the exact number always comes up short.</p>
-  <h3>Quarters explained</h3>
-  <p>4/4 is one inch, 8/4 is two inches, 12/4 is three. It refers to rough thickness before surfacing, so 4/4 dressed usually lands around 3/4 in.</p>
+  <h3>Where the volume comes from</h3>
+  <p>Per square metre, the joints form a grid. The grout volume is the joint width times the joint depth times the total joint length, and the joint length depends entirely on tile size — which is why small tiles drink grout.</p>
+  <h3>Joint depth is usually the tile thickness</h3>
+  <p>Grout normally fills the full depth of the tile. If you are grouting over an uneven bed or the adhesive has squeezed up into the joints, the effective depth is less and you will use less.</p>
+  <h3>Adhesive by notch</h3>
+  <p>Trowel notch size sets the bed thickness, roughly: 6 mm notch about 3 kg per square metre, 10 mm about 5, 12 mm about 6.5. Back-buttering large tiles roughly doubles it. Manufacturer figures beat these.</p>
   <h3>What this does not do</h3>
-  <p>It does not grade lumber or account for the specific defect pattern of your boards. Sight every board at the yard.</p>
+  <p>It does not choose a grout or adhesive for your situation. Wet areas, underfloor heating, movement joints and porous tiles all change the specification.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./cut-list-optimizer.html" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="./linear-cut-optimizer.html" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="./sheet-metal-bend-calculator.html" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./tile-layout-planner.html" style="color:var(--accent)">Tile Layout Planner</a> <span style="color:var(--muted)">— Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span></li><li style="margin:4px 0"><a href="./concrete-volume-calculator.html" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="./gravel-volume-calculator.html" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li></ul></aside>
 <footer>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -318,64 +318,76 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'thick', label:'Thickness', value:25, unit:'length', group:'Board size', min:0, hint:'25 mm ≈ 4/4'},
-    {id:'width', label:'Width', value:150, unit:'length', group:'Board size', min:0},
-    {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
-    {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'area', label:'Area to tile (m2)', value:20, group:'Area', min:0},
+    {id:'tileL', label:'Tile length', value:600, unit:'length', group:'Tile', min:0},
+    {id:'tileW', label:'Tile width', value:300, unit:'length', group:'Tile', min:0},
+    {id:'joint', label:'Joint width', value:3, unit:'length', group:'Tile', min:0},
+    {id:'depth', label:'Joint depth', value:10, unit:'length', group:'Tile', min:0,
+     hint:'Usually the tile thickness'},
+    {id:'notch', label:'Trowel notch', type:'select', value:'10', group:'Adhesive', options:[
+      {value:'6', label:'6 mm notch'},
+      {value:'8', label:'8 mm notch'},
+      {value:'10', label:'10 mm notch'},
+      {value:'12', label:'12 mm notch'}]},
+    {id:'butter', label:'Back-buttering large tiles', type:'check', value:false, group:'Adhesive'},
+    {id:'grNext', label:'Grout bag size (kg)', value:5, group:'Ordering', min:0.5},
+    {id:'adBag', label:'Adhesive bag size (kg)', value:20, group:'Ordering', min:1},
+    {id:'waste', label:'Waste allowance (%)', value:10, group:'Ordering', min:0}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var errs = [];
-    if (!(t>0 && w>0 && l>0)) errs.push('Thickness, width and length all need to be greater than zero.');
-    if (!(i.qty>0)) errs.push('You need at least one board.');
-    if (errs.length) return {ok:false, errors:errs};
+    var k = i.unit === 'in' ? 25.4 : 1;
+    var tl=i.tileL*k, tw=i.tileW*k, j=i.joint*k, d=i.depth*k;   // en mm
+    if (!(i.area>0)) return {ok:false, errors:['The area must be greater than zero.']};
+    if (!(tl>0 && tw>0)) return {ok:false, errors:['Tile dimensions must be greater than zero.']};
+    if (!(j>0)) return {ok:false, errors:['Joint width must be greater than zero.']};
 
-    var bfEach = (t*w*l)/144;
-    var bfTotal = bfEach*i.qty;
-    var bfWithWaste = bfTotal*(1+Math.max(0,i.waste)/100);
-    var m3 = bfTotal*0.0023597;
-    var cost = i.price>0 ? bfWithWaste*i.price : null;
-    var quarters = Math.round(t*4);
+    // Volume de joint par m2 : (L+W)/(L x W) x largeur x profondeur, en mm3 par mm2
+    var perM2mm3 = ((tl+tw)/(tl*tw))*j*d*1e6;      // mm3 par m2
+    var litresPerM2 = perM2mm3/1e6;                 // 1 litre = 1e6 mm3
+    var grKgPerM2 = litresPerM2*1.6;                // densite du coulis ~1.6 kg/l
+    var grTotal = grKgPerM2*i.area*(1+Math.max(0,i.waste)/100);
+    var grBags = Math.ceil(grTotal/Math.max(0.5,i.grNext));
 
-    var stats = [
-      {value: WCfmt(bfEach,2), label:'Board feet each'},
-      {value: WCfmt(bfTotal,1), label:'Board feet total'},
-      {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
-    ];
-    if (cost!==null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
-    stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
+    var NOTCH={'6':3,'8':4,'10':5,'12':6.5};
+    var adPerM2 = NOTCH[i.notch]*(i.butter?1.9:1);
+    var adTotal = adPerM2*i.area*(1+Math.max(0,i.waste)/100);
+    var adBags = Math.ceil(adTotal/Math.max(1,i.adBag));
 
-    return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,
-      stats: stats,
-      tables: [{title:'Breakdown', head:['Item','Value'], rows:[
-        ['Nominal thickness', quarters+'/4 (' + WCfmt(t,2) + ' in)'],
-        ['Face size', WCfmt(w,2)+' in × '+WCfmt(l,2)+' in'],
-        ['Boards', String(i.qty)],
-        ['Board feet before waste', WCfmt(bfTotal,2)],
-        ['Waste allowance', WCfmt(i.waste,0)+'%'],
-        ['Board feet to order', WCfmt(bfWithWaste,2)],
-        ['Volume', WCfmt(m3,4)+' m³ / '+WCfmt(bfTotal*0.0833,2)+' ft³']
+    var warn=[];
+    if (grKgPerM2 > 2) warn.push('At '+WCfmt(grKgPerM2,2)+' kg per m2 this is a grout-hungry combination — small tiles with wide joints. Worth double-checking the joint width.');
+
+    return {ok:true, grKgPerM2:grKgPerM2, grTotal:grTotal, grBags:grBags,
+      adPerM2:adPerM2, adTotal:adTotal, adBags:adBags, area:i.area,
+      warnings: warn,
+      stats:[
+        {value: WCfmt(grTotal,1), label:'kg of grout'},
+        {value: String(grBags), label:'Grout bags'},
+        {value: WCfmt(adTotal,0), label:'kg of adhesive'},
+        {value: String(adBags), label:'Adhesive bags'}
+      ],
+      tables:[{title:'Working', head:['Item','Value'], rows:[
+        ['Area', WCfmt(i.area,2)+' m2'],
+        ['Tile', WCfmt(i.tileL,0)+' × '+WCfmt(i.tileW,0)],
+        ['Joint', WCfmt(i.joint,1)+' wide × '+WCfmt(i.depth,1)+' deep'],
+        ['Grout per m2', WCfmt(grKgPerM2,3)+' kg  ('+WCfmt(litresPerM2,3)+' litres)'],
+        ['Grout total incl. waste', WCfmt(grTotal,2)+' kg'],
+        ['Bags of '+WCfmt(i.grNext,1)+' kg', String(grBags)],
+        ['Adhesive per m2', WCfmt(adPerM2,1)+' kg  ('+i.notch+' mm notch'+(i.butter?', back-buttered':'')+')'],
+        ['Adhesive total incl. waste', WCfmt(adTotal,1)+' kg'],
+        ['Bags of '+WCfmt(i.adBag,0)+' kg', String(adBags)]
       ]}],
-      note:'One board foot = 144 cubic inches. Yards usually price rough stock by the board foot and surfaced stock by the linear foot — check which you are being quoted.'
+      note:'Grout volume comes from the geometry of your joints. Adhesive figures are typical coverages by notch size — the bag always beats a calculator.'
     };
   },
   diagram: function (r, i) {
-    var W = 600, H = 200, m = 40;
-    var k = i.unit === 'in' ? 1 : 1/25.4;
-    var t = i.thick*k, w = i.width*k, l = i.length*k;
-    var sc = Math.min((W-2*m)/l, (H-2*m)/(w+t*2));
-    var bw = l*sc, bh = w*sc, dep = Math.min(t*sc*3, 26);
-    var x = m, y = H/2 - bh/2;
-    var s = SVG.open(W, H);
-    s += SVG.poly([[x,y],[x+dep,y-dep],[x+bw+dep,y-dep],[x+bw,y]], 'part');
-    s += SVG.poly([[x+bw,y],[x+bw+dep,y-dep],[x+bw+dep,y+bh-dep],[x+bw,y+bh]], 'part');
-    s += SVG.rect(x, y, bw, bh, 'part');
-    s += SVG.text(x+bw/2, y+bh/2+4, WCfmt(l,0)+' × '+WCfmt(w,0)+' × '+WCfmt(t,2)+' in', 13);
-    s += SVG.text(x+bw/2, H-12, WCfmt(r.bfEach,2)+' board feet per board · '+i.qty+' boards', 12);
-    return s + SVG.close();
+    var W=560,H=280,m=45,s=SVG.open(W,H);
+    var cols=5, rows=3, gw=(W-2*m)/cols, gh=140/rows;
+    var jw=Math.max(2, Math.min(10, i.joint*1.6));
+    for(var a=0;a<cols;a++) for(var b=0;b<rows;b++)
+      s+=SVG.rect(m+a*gw+jw/2, 70+b*gh+jw/2, gw-jw, gh-jw, 'part');
+    s+=SVG.text(W/2,34, WCfmt(r.grKgPerM2,2)+' kg of grout per m2', 14);
+    s+=SVG.text(W/2,H-16, WCfmt(r.grTotal,1)+' kg total  ·  '+r.grBags+' bags  ·  adhesive '+WCfmt(r.adTotal,0)+' kg', 12);
+    return s+SVG.close();
   }
 };
 
