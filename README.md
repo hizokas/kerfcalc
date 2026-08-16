@@ -42,3 +42,4 @@ Le push déclenche le déploiement Cloudflare automatiquement.
 - ~25 août 2026 : `site:getkerfcalc.com` doit renvoyer des pages
 - mi-septembre : premières impressions dans la Search Console
 - 10 octobre : décision (80 % indexé, 1 000 impressions, 100 clics)
+
