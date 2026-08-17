@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wood Movement Calculator - Seasonal Expansion by Species and Cut</title>
+<meta name="description" content="How much a board will shrink and swell across its width between seasons, from USDA Forest Products Laboratory dimensional change coefficients for 130 species, flatsawn or quartersawn.">
+<style>
+:root{
+  --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
+  --line:#e3e2dd; --accent:#8a5a2b; --accent-soft:#f5ede4;
+  --good:#2f6b4f; --warn:#9a4a1e;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#16161a;--surface:#1e1e23;--ink:#eceae5;--muted:#a3a099;
+        --line:#33333a;--accent:#d0a072;--accent-soft:#2a2118;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 72px}
+h1{font-size:1.65rem;margin:0 0 6px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:0 0 26px;max-width:62ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:18px;margin-bottom:18px}
+h2{font-size:1rem;margin:0 0 14px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:14px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:.78rem;color:var(--muted)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);
+  border-radius:7px;padding:8px 10px;font:inherit;font-size:.94rem}
+input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+input[type=number]{width:104px}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th{text-align:left;font-weight:600;font-size:.75rem;text-transform:uppercase;
+  letter-spacing:.05em;color:var(--muted);padding:6px 8px;border-bottom:1px solid var(--line)}
+td{padding:5px 8px;border-bottom:1px solid var(--line)}
+td input{width:100%;min-width:60px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);padding:9px 15px}
+button:hover{border-color:var(--accent)}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:600;padding:11px 22px}
+.primary:hover{filter:brightness(1.08)}
+.icon{padding:4px 9px;color:var(--muted)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.stat{background:var(--accent-soft);border:1px solid var(--line);border-radius:9px;
+  padding:10px 15px;min-width:110px}
+.stat b{display:block;font-size:1.4rem;line-height:1.2}
+.stat span{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.sheet{margin-bottom:26px;break-inside:avoid}
+.sheet h3{font-size:.95rem;margin:0 0 8px}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.warn{background:#fdf3ec;border:1px solid #e8c9ae;color:#7a3a12;
+  padding:11px 14px;border-radius:8px;font-size:.9rem;margin-bottom:14px}
+@media (prefers-color-scheme:dark){.warn{background:#2c1d12;border-color:#5c3c22;color:#e8b98e}}
+.hidden{display:none}
+footer{color:var(--muted);font-size:.84rem;margin-top:36px;border-top:1px solid var(--line);padding-top:18px}
+.faq h3{font-size:.95rem;margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+@media print{
+  body{background:#fff}
+  .noprint{display:none!important}
+  .card{border:none;padding:0}
+  .sheet{page-break-inside:avoid}
+}
+
+.plabel{font-size:11px;fill:var(--ink);font-family:ui-monospace,monospace}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+.ghost{fill:none;stroke:var(--line);stroke-width:1}
+.dim{stroke:var(--muted);stroke-width:.8}
+svg{width:100%;height:auto;background:var(--surface);border:1px solid var(--line);border-radius:8px}
+h3{font-size:.95rem}
+.faq h3{margin:16px 0 4px}
+.faq p{margin:0;color:var(--muted);font-size:.92rem}
+/* === KERFCALC THEME v3 === */
+@import url('');
+:root{
+  --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
+  --line:#e7e2d9; --accent:#a8622a; --accent-soft:#fbf1e7; --accent-ink:#8a4e1f;
+  --shadow:0 1px 2px rgba(27,26,23,.05), 0 8px 24px -12px rgba(27,26,23,.14);
+  --radius:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#14140f; --surface:#1c1c18; --ink:#f0ece4; --muted:#a09a8e;
+    --line:#2e2e28; --accent:#e0a06a; --accent-soft:#2a2018; --accent-ink:#f0c79b;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px -12px rgba(0,0,0,.6);
+  }
+}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16.5px/1.62 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Inter,Roboto,sans-serif;
+  letter-spacing:-.005em;
+}
+.wrap{max-width:1020px;padding:0 22px 90px}
+
+/* ---- bandeau de marque ---- */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:18px 0 22px;margin-bottom:26px;border-bottom:1px solid var(--line);
+}
+.brand{display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink)}
+.brand svg{display:block}
+.brand b{font-size:1.06rem;font-weight:650;letter-spacing:-.02em}
+.brand span{color:var(--muted);font-weight:400}
+.masthead nav a{color:var(--muted);text-decoration:none;font-size:.88rem}
+.masthead nav a:hover{color:var(--accent)}
+
+h1{font-size:2.15rem;line-height:1.12;letter-spacing:-.035em;font-weight:680;margin:0 0 10px}
+.sub{font-size:1.06rem;line-height:1.6;color:var(--muted);max-width:65ch;margin:0 0 30px}
+h2{font-size:.74rem;font-weight:640;letter-spacing:.11em;text-transform:uppercase;color:var(--muted);margin:0 0 15px}
+h3{font-size:.98rem;font-weight:620;letter-spacing:-.01em}
+
+.card{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px;margin-bottom:18px;box-shadow:var(--shadow);
+}
+
+/* ---- cartes de la page d'accueil ---- */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:14px}
+.tool{
+  padding:19px 19px 21px;border-radius:var(--radius);box-shadow:var(--shadow);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.tool:hover{
+  transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 2px 4px rgba(27,26,23,.06), 0 16px 32px -16px rgba(168,98,42,.4);
+  background:var(--surface);
+}
+.tool strong{font-size:1.02rem;font-weight:620;letter-spacing:-.015em;margin-bottom:2px}
+.tool span{font-size:.885rem;line-height:1.5}
+
+/* ---- formulaires ---- */
+.row{gap:16px 18px}
+.f label{font-size:.79rem;font-weight:520;color:var(--muted);letter-spacing:.005em}
+input,select{
+  border-radius:9px;padding:9px 11px;font-size:.95rem;
+  border:1px solid var(--line);background:var(--bg);color:var(--ink);
+  transition:border-color .14s ease, box-shadow .14s ease;
+}
+input:hover,select:hover{border-color:var(--muted)}
+input:focus,select:focus{
+  outline:none;border-color:var(--accent);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+input[type=checkbox]{width:17px;height:17px;accent-color:var(--accent)}
+
+button{
+  border-radius:9px;padding:9px 15px;font-size:.92rem;font-weight:520;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  transition:border-color .14s ease, background .14s ease, transform .1s ease;
+}
+button:hover{border-color:var(--accent);background:var(--accent-soft)}
+button:active{transform:translateY(1px)}
+.primary{
+  background:var(--accent);border-color:var(--accent);color:#fff;font-weight:580;
+  padding:11px 22px;box-shadow:0 1px 2px rgba(0,0,0,.08);
+}
+.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+
+/* ---- tuiles de résultat ---- */
+.stats{gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--accent-soft);border:1px solid var(--line);border-radius:12px;
+  padding:13px 17px;min-width:118px;
+}
+.stat b{font-size:1.62rem;font-weight:640;letter-spacing:-.03em;line-height:1.15;
+  font-variant-numeric:tabular-nums}
+.stat span{font-size:.7rem;font-weight:560;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* ---- tableaux ---- */
+table{font-size:.91rem;border-collapse:collapse;width:100%}
+th{font-size:.69rem;font-weight:620;letter-spacing:.09em;color:var(--muted);
+  padding:9px 10px;border-bottom:1px solid var(--line)}
+td{padding:8px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr:hover{background:var(--accent-soft)}
+
+/* ---- schémas ---- */
+svg{border-radius:11px;border:1px solid var(--line);background:var(--surface)}
+.part{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+.plabel{fill:var(--ink);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  letter-spacing:-.02em}
+
+.warn{
+  background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent-ink);
+  border-radius:11px;padding:13px 16px;font-size:.9rem;
+}
+@media (prefers-color-scheme:dark){.warn{color:var(--accent-ink)}}
+
+.faq p{font-size:.925rem;line-height:1.62}
+footer{font-size:.845rem;color:var(--muted);margin-top:44px;padding-top:20px;
+  border-top:1px solid var(--line)}
+
+@media (max-width:640px){
+  h1{font-size:1.68rem}
+  .wrap{padding:0 16px 70px}
+  .card{padding:17px}
+  .stat b{font-size:1.4rem}
+}
+
+/* ---- fond papier millimetre : c'est un site de tracage, ca se voit ---- */
+body{
+  background-color:var(--bg);
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 55%, transparent) 1px, transparent 1px),
+    radial-gradient(1200px 520px at 78% -8%, color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%);
+  background-size:28px 28px, 28px 28px, 100% 100%;
+  background-attachment:fixed, fixed, fixed;
+}
+
+/* ---- bandeau collant ---- */
+.masthead{
+  position:sticky;top:0;z-index:50;margin-bottom:30px;
+  padding:14px 0 13px;
+  background:color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter:saturate(1.6) blur(12px);
+  -webkit-backdrop-filter:saturate(1.6) blur(12px);
+}
+.masthead .brand b{font-size:1.08rem}
+.brand svg{color:var(--accent)}
+.mnav{display:flex;align-items:center;gap:20px}
+.mnav a{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500}
+.mnav a:hover{color:var(--ink)}
+.mnav .cta{
+  color:#fff;background:var(--accent);border:1px solid var(--accent);
+  padding:7px 15px;border-radius:9px;font-weight:560;
+}
+.mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
+@media (max-width:700px){.mnav a:not(.cta){display:none}}
+
+/* ---- profondeur sur les cartes ---- */
+.card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
+.tool::before,.shot::before{
+  content:"";position:absolute;inset:0 0 auto 0;height:2px;
+  background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,transparent));
+  opacity:0;transition:opacity .2s ease;
+}
+.tool:hover::before{opacity:1}
+.tool{transition:transform .18s cubic-bezier(.2,.7,.3,1),box-shadow .18s ease,border-color .18s ease}
+.tool:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 55%,var(--line));
+  box-shadow:0 2px 4px rgba(27,26,23,.05),0 18px 38px -18px color-mix(in srgb,var(--accent) 65%,transparent)}
+
+/* ---- apparition au defilement ---- */
+.reveal{opacity:0;transform:translateY(14px)}
+.reveal.in{opacity:1;transform:none;transition:opacity .55s ease,transform .55s cubic-bezier(.2,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.reveal.in{opacity:1;transform:none;transition:none}
+  .tool:hover{transform:none}
+}
+
+/* ---- trace anime du plan dans le heros ---- */
+@keyframes drawin{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+.herowrap .figsvg{animation:drawin .7s cubic-bezier(.2,.7,.3,1) both}
+
+/* ---- pied de page ---- */
+footer{margin-top:60px}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:26px;margin-bottom:22px}
+.footgrid h5{margin:0 0 9px;font-size:.72rem;font-weight:620;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--muted)}
+.footgrid a{display:block;color:var(--muted);text-decoration:none;font-size:.88rem;padding:2px 0}
+.footgrid a:hover{color:var(--accent)}
+.footnote{font-size:.82rem;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (max-width:700px){.footgrid{grid-template-columns:1fr 1fr}}
+
+@media print{
+  .masthead,.noprint{display:none!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  body{background:#fff}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
+
+
+<h1>Wood Movement Calculator</h1>
+<p class="sub">A 300 mm flatsawn oak panel can move 5 mm between a damp summer and a heated winter. Glue it solid and it splits. This works out the real figure for your species, your cut and your workshop, using the dimensional change coefficients published by the USDA Forest Products Laboratory.</p>
+
+<div class="card noprint">
+  <h2>Units</h2>
+  <div class="row">
+    <div class="f"><label for="unit">Working in</label>
+      <select id="unit"><option value="mm">Millimetres</option><option value="in">Inches</option></select></div>
+  </div>
+</div>
+
+<div id="form"><div class="card noprint"><h2>The board</h2><div class="row"><div class="f"><label for="species">Species</label><select id="species"><option value="0">Hardwood - Alder, red</option><option value="1">Hardwood - Apple</option><option value="2">Hardwood - Ash, black</option><option value="3">Hardwood - Ash, green</option><option value="4">Hardwood - Ash, Oregon</option><option value="5">Hardwood - Ash, pumpkin</option><option value="6">Hardwood - Ash, white</option><option value="7">Hardwood - Aspen, quaking</option><option value="8">Hardwood - Basswood, American</option><option value="9">Hardwood - Beech, American</option><option value="10">Hardwood - Birch, paper</option><option value="11">Hardwood - Birch, river</option><option value="12">Hardwood - Birch, sweet</option><option value="13">Hardwood - Birch, yellow</option><option value="14">Hardwood - Buckeye, yellow</option><option value="15">Hardwood - Butternut</option><option value="16">Hardwood - Catalpa, northern</option><option value="17">Hardwood - Cherry, black</option><option value="18">Hardwood - Chestnut, American</option><option value="19">Hardwood - Cottonwood, black</option><option value="20">Hardwood - Cottonwood, eastern</option><option value="21">Hardwood - Elm, American</option><option value="22">Hardwood - Elm, cedar</option><option value="23">Hardwood - Elm, rock</option><option value="24">Hardwood - Elm, slippery</option><option value="25">Hardwood - Elm, winged</option><option value="26">Hardwood - Hackberry</option><option value="27">Hardwood - Hickory, pecan</option><option value="28">Hardwood - Hickory, true</option><option value="29">Hardwood - Holly, American</option><option value="30">Hardwood - Honeylocust</option><option value="31">Hardwood - Locust, black</option><option value="32">Hardwood - Madrone, Pacific</option><option value="33">Hardwood - Magnolia, cucumbertree</option><option value="34">Hardwood - Magnolia, southern</option><option value="35">Hardwood - Magnolia, sweetbay</option><option value="36">Hardwood - Maple, bigleaf</option><option value="37">Hardwood - Maple, black</option><option value="38">Hardwood - Maple, red</option><option value="39">Hardwood - Maple, silver</option><option value="40">Hardwood - Maple, sugar (hard maple)</option><option value="41">Hardwood - Oak, black</option><option value="42">Hardwood - Oak, California red</option><option value="43">Hardwood - Oak, live</option><option value="44">Hardwood - Oak, Oregon white</option><option value="45">Hardwood - Oak, overcup</option><option value="46" selected>Hardwood - Oak, red (commercial)</option><option value="47">Hardwood - Oak, water / laurel / willow</option><option value="48">Hardwood - Oak, white (commercial)</option><option value="49">Hardwood - Persimmon, common</option><option value="50">Hardwood - Sassafras</option><option value="51">Hardwood - Sweetgum</option><option value="52">Hardwood - Sycamore, American</option><option value="53">Hardwood - Tanoak</option><option value="54">Hardwood - Tupelo, black</option><option value="55">Hardwood - Tupelo, water</option><option value="56">Hardwood - Walnut, black</option><option value="57">Hardwood - Willow, black</option><option value="58">Hardwood - Willow, Pacific</option><option value="59">Hardwood - Yellow-poplar (tulipwood)</option><option value="60">Softwood - Baldcypress</option><option value="61">Softwood - Cedar, Alaska yellow</option><option value="62">Softwood - Cedar, Atlantic white</option><option value="63">Softwood - Cedar, eastern red</option><option value="64">Softwood - Cedar, incense</option><option value="65">Softwood - Cedar, northern white</option><option value="66">Softwood - Cedar, Port-Orford</option><option value="67">Softwood - Cedar, western red</option><option value="68">Softwood - Douglas-fir, coast</option><option value="69">Softwood - Douglas-fir, interior north</option><option value="70">Softwood - Douglas-fir, interior west</option><option value="71">Softwood - Fir, balsam</option><option value="72">Softwood - Fir, California red</option><option value="73">Softwood - Fir, grand</option><option value="74">Softwood - Fir, noble</option><option value="75">Softwood - Fir, Pacific silver</option><option value="76">Softwood - Fir, subalpine</option><option value="77">Softwood - Fir, white</option><option value="78">Softwood - Hemlock, eastern</option><option value="79">Softwood - Hemlock, western</option><option value="80">Softwood - Larch, western</option><option value="81">Softwood - Pine, eastern white</option><option value="82">Softwood - Pine, jack</option><option value="83">Softwood - Pine, Jeffrey</option><option value="84">Softwood - Pine, loblolly</option><option value="85">Softwood - Pine, lodgepole</option><option value="86">Softwood - Pine, longleaf</option><option value="87">Softwood - Pine, pond</option><option value="88">Softwood - Pine, ponderosa</option><option value="89">Softwood - Pine, red</option><option value="90">Softwood - Pine, shortleaf</option><option value="91">Softwood - Pine, slash</option><option value="92">Softwood - Pine, sugar</option><option value="93">Softwood - Pine, Virginia</option><option value="94">Softwood - Pine, western white</option><option value="95">Softwood - Redwood, old growth</option><option value="96">Softwood - Redwood, second growth</option><option value="97">Softwood - Spruce, black</option><option value="98">Softwood - Spruce, Engelmann</option><option value="99">Softwood - Spruce, red</option><option value="100">Softwood - Spruce, Sitka</option><option value="101">Softwood - Spruce, white</option><option value="102">Softwood - Tamarack</option><option value="103">Imported - Andiroba (crabwood)</option><option value="104">Imported - Angelique</option><option value="105">Imported - Apitong / keruing</option><option value="106">Imported - Avodire</option><option value="107">Imported - Balsa</option><option value="108">Imported - Banak</option><option value="109">Imported - Cativo</option><option value="110">Imported - Cuangare</option><option value="111">Imported - Greenheart</option><option value="112">Imported - Iroko</option><option value="113">Imported - Khaya (African mahogany)</option><option value="114">Imported - Lauan, dark red (Philippine mahogany)</option><option value="115">Imported - Lauan, light red (Philippine mahogany)</option><option value="116">Imported - Limba</option><option value="117">Imported - Mahogany (American)</option><option value="118">Imported - Meranti</option><option value="119">Imported - Obeche</option><option value="120">Imported - Okoume</option><option value="121">Imported - Parana pine</option><option value="122">Imported - Pau marfim</option><option value="123">Imported - Primavera</option><option value="124">Imported - Ramin</option><option value="125">Imported - Santa Maria</option><option value="126">Imported - Spanish-cedar</option><option value="127">Imported - Teak</option></select></div><div class="f"><label for="cut">How it is sawn</label><select id="cut"><option value="flat" selected>Flatsawn / plain sawn (tangential)</option><option value="quarter">Quartersawn (radial)</option><option value="unsure">Not sure - assume the worst</option></select></div><div class="f"><label for="width">Width across the grain <span class="u"></span></label><input type="number" id="width" value="300" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">The full width of the panel or top, not one board</span></div></div></div><div class="card noprint"><h2>Conditions</h2><div class="row"><div class="f"><label for="mode">Work from</label><select id="mode"><option value="rh" selected>Relative humidity</option><option value="mc">Moisture content I have measured</option></select></div><div class="f"><label for="tunit">Temperature scale</label><select id="tunit"><option value="C" selected>Celsius</option><option value="F">Fahrenheit</option></select></div><div class="f"><label for="temp">Room temperature</label><input type="number" id="temp" value="20" step="any"><span style="font-size:.74rem;color:var(--muted)">Only used to convert humidity to moisture content</span></div><div class="f"><label for="rhLo">Driest season, RH %</label><input type="number" id="rhLo" value="30" step="1" min="1"><span style="font-size:.74rem;color:var(--muted)">Winter, heating on</span></div><div class="f"><label for="rhHi">Dampest season, RH %</label><input type="number" id="rhHi" value="65" step="1" min="1"><span style="font-size:.74rem;color:var(--muted)">Late summer</span></div></div></div><div class="card noprint"><h2>If working from moisture content</h2><div class="row"><div class="f"><label for="mcLo">Driest moisture content %</label><input type="number" id="mcLo" value="6" step="0.1" min="0"><span style="font-size:.74rem;color:var(--muted)">Ignored unless Work from is set to moisture content</span></div><div class="f"><label for="mcHi">Dampest moisture content %</label><input type="number" id="mcHi" value="12" step="0.1" min="0"><span style="font-size:.74rem;color:var(--muted)">Ignored unless Work from is set to moisture content</span></div></div></div></div>
+<div id="out"></div>
+
+<div class="card faq noprint">
+  <h2>Notes</h2>
+  <h3>Where the numbers come from</h3>
+  <p>The coefficients are Table 13-5 of the Wood Handbook (USDA Forest Products Laboratory, General Technical Report FPL-GTR-190), a public-domain reference. Nothing here is estimated or interpolated: if a species is not in that table it is not in this list.</p>
+  <h3>The equation</h3>
+  <p>Change in dimension = starting width x coefficient x change in moisture content, in percentage points. That is equation 13-2 of the Wood Handbook. It is a straight-line approximation validated between 6% and 14% moisture content, which covers almost all indoor furniture.</p>
+  <h3>Why the cut matters more than the species</h3>
+  <p>Tangential movement - the flatsawn face - is roughly twice radial movement in most species. Quartersawing the same board can halve the problem. That is why quartersawn stock is worth its price for wide panels, door frames and anything that has to stay flat.</p>
+  <h3>How humidity becomes moisture content</h3>
+  <p>Wood settles at an equilibrium moisture content set by the air around it. This tool converts your relative humidity and temperature using the Hailwood-Horrobin equation as fitted by Simpson, equation 4-5 of the Wood Handbook. At 21 C the results reproduce the published table exactly: 30% RH gives 6.2%, 65% gives 12.0%, 80% gives 16.0%.</p>
+  <h3>What relative humidity should I use</h3>
+  <p>Measure it. A cheap hygrometer in the room the piece will live in, read in February and again in August, beats any table. If you cannot, a heated house in a temperate winter typically sits at 25-35% and an unconditioned summer at 60-75% - but a coastal workshop and a centrally heated flat are different worlds.</p>
+  <h3>What this does not cover</h3>
+  <p>Movement along the grain is negligible and is ignored, which is correct for solid timber and wrong for nothing you are likely to build. Thickness moves like width and follows the same coefficients. Plywood and MDF barely move at all - do not use this for them. And a board that is still drying will move far more than this on its way to equilibrium.</p>
+</div>
+
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./box-joint-layout.html" style="color:var(--accent)">Box Joint &amp; Dovetail Layout</a> <span style="color:var(--muted)">— Even pin and tail spacing that actually divides, plus a 1:1 printable marking template.</span></li><li style="margin:4px 0"><a href="./compound-miter-calculator.html" style="color:var(--accent)">Compound Miter Angle Calculator</a> <span style="color:var(--muted)">— Saw miter and bevel settings for crown and sloped work, with the formulas shown.</span></li><li style="margin:4px 0"><a href="./polygon-miter-calculator.html" style="color:var(--accent)">Polygon Miter Angle Calculator</a> <span style="color:var(--muted)">— Miter angles and side lengths for hexagons, octagons and any polygon, from any known dimension.</span></li></ul></aside>
+<footer>
+  Runs entirely in your browser — nothing is uploaded, stored or tracked.
+  These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
+</footer>
+</div>
+
+<script>
+window.__SPEC__ = (function () {{
+
+var SPEC = {
+  fields: [
+    {id:'species', label:'Species', type:'select', value:'46', group:'The board',
+     options:[
+      {value:"0",label:"Hardwood - Alder, red"},
+      {value:"1",label:"Hardwood - Apple"},
+      {value:"2",label:"Hardwood - Ash, black"},
+      {value:"3",label:"Hardwood - Ash, green"},
+      {value:"4",label:"Hardwood - Ash, Oregon"},
+      {value:"5",label:"Hardwood - Ash, pumpkin"},
+      {value:"6",label:"Hardwood - Ash, white"},
+      {value:"7",label:"Hardwood - Aspen, quaking"},
+      {value:"8",label:"Hardwood - Basswood, American"},
+      {value:"9",label:"Hardwood - Beech, American"},
+      {value:"10",label:"Hardwood - Birch, paper"},
+      {value:"11",label:"Hardwood - Birch, river"},
+      {value:"12",label:"Hardwood - Birch, sweet"},
+      {value:"13",label:"Hardwood - Birch, yellow"},
+      {value:"14",label:"Hardwood - Buckeye, yellow"},
+      {value:"15",label:"Hardwood - Butternut"},
+      {value:"16",label:"Hardwood - Catalpa, northern"},
+      {value:"17",label:"Hardwood - Cherry, black"},
+      {value:"18",label:"Hardwood - Chestnut, American"},
+      {value:"19",label:"Hardwood - Cottonwood, black"},
+      {value:"20",label:"Hardwood - Cottonwood, eastern"},
+      {value:"21",label:"Hardwood - Elm, American"},
+      {value:"22",label:"Hardwood - Elm, cedar"},
+      {value:"23",label:"Hardwood - Elm, rock"},
+      {value:"24",label:"Hardwood - Elm, slippery"},
+      {value:"25",label:"Hardwood - Elm, winged"},
+      {value:"26",label:"Hardwood - Hackberry"},
+      {value:"27",label:"Hardwood - Hickory, pecan"},
+      {value:"28",label:"Hardwood - Hickory, true"},
+      {value:"29",label:"Hardwood - Holly, American"},
+      {value:"30",label:"Hardwood - Honeylocust"},
+      {value:"31",label:"Hardwood - Locust, black"},
+      {value:"32",label:"Hardwood - Madrone, Pacific"},
+      {value:"33",label:"Hardwood - Magnolia, cucumbertree"},
+      {value:"34",label:"Hardwood - Magnolia, southern"},
+      {value:"35",label:"Hardwood - Magnolia, sweetbay"},
+      {value:"36",label:"Hardwood - Maple, bigleaf"},
+      {value:"37",label:"Hardwood - Maple, black"},
+      {value:"38",label:"Hardwood - Maple, red"},
+      {value:"39",label:"Hardwood - Maple, silver"},
+      {value:"40",label:"Hardwood - Maple, sugar (hard maple)"},
+      {value:"41",label:"Hardwood - Oak, black"},
+      {value:"42",label:"Hardwood - Oak, California red"},
+      {value:"43",label:"Hardwood - Oak, live"},
+      {value:"44",label:"Hardwood - Oak, Oregon white"},
+      {value:"45",label:"Hardwood - Oak, overcup"},
+      {value:"46",label:"Hardwood - Oak, red (commercial)"},
+      {value:"47",label:"Hardwood - Oak, water / laurel / willow"},
+      {value:"48",label:"Hardwood - Oak, white (commercial)"},
+      {value:"49",label:"Hardwood - Persimmon, common"},
+      {value:"50",label:"Hardwood - Sassafras"},
+      {value:"51",label:"Hardwood - Sweetgum"},
+      {value:"52",label:"Hardwood - Sycamore, American"},
+      {value:"53",label:"Hardwood - Tanoak"},
+      {value:"54",label:"Hardwood - Tupelo, black"},
+      {value:"55",label:"Hardwood - Tupelo, water"},
+      {value:"56",label:"Hardwood - Walnut, black"},
+      {value:"57",label:"Hardwood - Willow, black"},
+      {value:"58",label:"Hardwood - Willow, Pacific"},
+      {value:"59",label:"Hardwood - Yellow-poplar (tulipwood)"},
+      {value:"60",label:"Softwood - Baldcypress"},
+      {value:"61",label:"Softwood - Cedar, Alaska yellow"},
+      {value:"62",label:"Softwood - Cedar, Atlantic white"},
+      {value:"63",label:"Softwood - Cedar, eastern red"},
+      {value:"64",label:"Softwood - Cedar, incense"},
+      {value:"65",label:"Softwood - Cedar, northern white"},
+      {value:"66",label:"Softwood - Cedar, Port-Orford"},
+      {value:"67",label:"Softwood - Cedar, western red"},
+      {value:"68",label:"Softwood - Douglas-fir, coast"},
+      {value:"69",label:"Softwood - Douglas-fir, interior north"},
+      {value:"70",label:"Softwood - Douglas-fir, interior west"},
+      {value:"71",label:"Softwood - Fir, balsam"},
+      {value:"72",label:"Softwood - Fir, California red"},
+      {value:"73",label:"Softwood - Fir, grand"},
+      {value:"74",label:"Softwood - Fir, noble"},
+      {value:"75",label:"Softwood - Fir, Pacific silver"},
+      {value:"76",label:"Softwood - Fir, subalpine"},
+      {value:"77",label:"Softwood - Fir, white"},
+      {value:"78",label:"Softwood - Hemlock, eastern"},
+      {value:"79",label:"Softwood - Hemlock, western"},
+      {value:"80",label:"Softwood - Larch, western"},
+      {value:"81",label:"Softwood - Pine, eastern white"},
+      {value:"82",label:"Softwood - Pine, jack"},
+      {value:"83",label:"Softwood - Pine, Jeffrey"},
+      {value:"84",label:"Softwood - Pine, loblolly"},
+      {value:"85",label:"Softwood - Pine, lodgepole"},
+      {value:"86",label:"Softwood - Pine, longleaf"},
+      {value:"87",label:"Softwood - Pine, pond"},
+      {value:"88",label:"Softwood - Pine, ponderosa"},
+      {value:"89",label:"Softwood - Pine, red"},
+      {value:"90",label:"Softwood - Pine, shortleaf"},
+      {value:"91",label:"Softwood - Pine, slash"},
+      {value:"92",label:"Softwood - Pine, sugar"},
+      {value:"93",label:"Softwood - Pine, Virginia"},
+      {value:"94",label:"Softwood - Pine, western white"},
+      {value:"95",label:"Softwood - Redwood, old growth"},
+      {value:"96",label:"Softwood - Redwood, second growth"},
+      {value:"97",label:"Softwood - Spruce, black"},
+      {value:"98",label:"Softwood - Spruce, Engelmann"},
+      {value:"99",label:"Softwood - Spruce, red"},
+      {value:"100",label:"Softwood - Spruce, Sitka"},
+      {value:"101",label:"Softwood - Spruce, white"},
+      {value:"102",label:"Softwood - Tamarack"},
+      {value:"103",label:"Imported - Andiroba (crabwood)"},
+      {value:"104",label:"Imported - Angelique"},
+      {value:"105",label:"Imported - Apitong / keruing"},
+      {value:"106",label:"Imported - Avodire"},
+      {value:"107",label:"Imported - Balsa"},
+      {value:"108",label:"Imported - Banak"},
+      {value:"109",label:"Imported - Cativo"},
+      {value:"110",label:"Imported - Cuangare"},
+      {value:"111",label:"Imported - Greenheart"},
+      {value:"112",label:"Imported - Iroko"},
+      {value:"113",label:"Imported - Khaya (African mahogany)"},
+      {value:"114",label:"Imported - Lauan, dark red (Philippine mahogany)"},
+      {value:"115",label:"Imported - Lauan, light red (Philippine mahogany)"},
+      {value:"116",label:"Imported - Limba"},
+      {value:"117",label:"Imported - Mahogany (American)"},
+      {value:"118",label:"Imported - Meranti"},
+      {value:"119",label:"Imported - Obeche"},
+      {value:"120",label:"Imported - Okoume"},
+      {value:"121",label:"Imported - Parana pine"},
+      {value:"122",label:"Imported - Pau marfim"},
+      {value:"123",label:"Imported - Primavera"},
+      {value:"124",label:"Imported - Ramin"},
+      {value:"125",label:"Imported - Santa Maria"},
+      {value:"126",label:"Imported - Spanish-cedar"},
+      {value:"127",label:"Imported - Teak"}
+     ]},
+    {id:'cut', label:'How it is sawn', type:'select', value:'flat', group:'The board',
+     options:[{value:'flat',label:'Flatsawn / plain sawn (tangential)'},
+              {value:'quarter',label:'Quartersawn (radial)'},
+              {value:'unsure',label:'Not sure - assume the worst'}]},
+    {id:'width', label:'Width across the grain', value:300, unit:'length', group:'The board', min:0,
+     hint:'The full width of the panel or top, not one board'},
+    {id:'mode', label:'Work from', type:'select', value:'rh', group:'Conditions',
+     options:[{value:'rh',label:'Relative humidity'},
+              {value:'mc',label:'Moisture content I have measured'}]},
+    {id:'tunit', label:'Temperature scale', type:'select', value:'C', group:'Conditions',
+     options:[{value:'C',label:'Celsius'},{value:'F',label:'Fahrenheit'}]},
+    {id:'temp', label:'Room temperature', value:20, group:'Conditions',
+     hint:'Only used to convert humidity to moisture content'},
+    {id:'rhLo', label:'Driest season, RH %', value:30, group:'Conditions', min:1, step:1, hint:'Winter, heating on'},
+    {id:'rhHi', label:'Dampest season, RH %', value:65, group:'Conditions', min:1, step:1, hint:'Late summer'},
+    {id:'mcLo', label:'Driest moisture content %', value:6, group:'If working from moisture content', min:0, step:0.1, hint:'Ignored unless Work from is set to moisture content'},
+    {id:'mcHi', label:'Dampest moisture content %', value:12, group:'If working from moisture content', min:0, step:0.1, hint:'Ignored unless Work from is set to moisture content'}
+  ],
+
+  compute: function (i) {
+    var SP = SPEC._species;
+    var idx = parseInt(i.species, 10);
+    if (!(idx >= 0 && idx < SP.length)) return {ok:false, errors:['Pick a species.']};
+    var sp = SP[idx];
+
+    var W = parseFloat(i.width);
+    if (!(W > 0)) return {ok:false, errors:['Width must be greater than zero.']};
+
+    // Coefficient : tangentiel pour du debit sur dosse, radial sur quartier.
+    // "Pas sur" retient le tangentiel, qui est toujours le plus defavorable.
+    var C = (i.cut === 'quarter') ? sp[1] : sp[2];
+    var cutName = i.cut === 'quarter' ? 'quartersawn (radial)'
+                : i.cut === 'flat' ? 'flatsawn (tangential)'
+                : 'unknown - tangential assumed';
+
+    var mcLo, mcHi, emcNote = '';
+    if (i.mode === 'mc') {
+      mcLo = parseFloat(i.mcLo); mcHi = parseFloat(i.mcHi);
+      if (!(isFinite(mcLo) && isFinite(mcHi))) return {ok:false, errors:['Enter both moisture contents.']};
+    } else {
+      var T = parseFloat(i.temp);
+      if (i.tunit === 'F') T = (T - 32) * 5 / 9;
+      if (!isFinite(T)) return {ok:false, errors:['Enter a room temperature.']};
+      if (T < -1 || T > 60) return {ok:false, errors:['Temperature is outside the range the equation was fitted over. Use something between about 0 and 60 C (32 to 140 F).']};
+      var rl = parseFloat(i.rhLo), rh = parseFloat(i.rhHi);
+      if (!(rl > 0 && rl < 100 && rh > 0 && rh < 100))
+        return {ok:false, errors:['Both humidity figures must be between 1 and 99 percent.']};
+      mcLo = SPEC._emc(T, rl); mcHi = SPEC._emc(T, rh);
+      emcNote = 'Equilibrium moisture content worked out from the air, not measured.';
+    }
+
+    if (mcHi < mcLo) { var t = mcLo; mcLo = mcHi; mcHi = t; }
+
+    var dMC   = mcHi - mcLo;
+    var move  = W * C * dMC;
+    var wLo   = W * (1 - C * (( (mcLo + mcHi) / 2) - mcLo));
+    var wHi   = W * (1 + C * ((mcHi - ((mcLo + mcHi) / 2))));
+    var pct   = 100 * move / W;
+    var per100 = 100 * C * dMC;
+
+    var warn = [];
+    if (mcLo < 6 || mcHi > 14) {
+      warn.push('Your range runs from ' + WCfmt(mcLo,1) + '% to ' + WCfmt(mcHi,1) +
+        '% moisture content. The coefficient is only validated between 6% and 14% - outside that the figure is indicative, and always on the low side.');
+    }
+    if (dMC < 0.05) warn.push('The two conditions are almost identical, so there is nothing to allow for. Check you have entered a dry season and a damp one.');
+    if (i.cut === 'unsure') warn.push('Cut not specified, so the tangential coefficient is used. If the board turns out to be quartersawn the real movement will be roughly ' + WCfmt(100*sp[1]/sp[2],0) + '% of this.');
+    if (i.cut === 'flat' && pct > 2) warn.push('Over 2% across the width. On a panel this wide, flatsawn, a fixed fastening will split it - it has to float.');
+
+    var u = i.unit === 'in' ? 'in' : 'mm';
+    var dp = i.unit === 'in' ? 3 : 1;
+
+    return {ok:true, move:move, W:W, wLo:wLo, wHi:wHi, u:u, dp:dp, pct:pct,
+      warnings: warn,
+      stats:[
+        {value: WCfmt(move, dp) + ' ' + u, label:'Total seasonal movement'},
+        {value: WCfmt(move/2, dp) + ' ' + u, label:'Each side of mid-position'},
+        {value: WCfmt(pct, 2) + '%', label:'Of the width'},
+        {value: WCfmt(mcLo,1) + '-' + WCfmt(mcHi,1) + '%', label:'Moisture content range'}
+      ],
+      tables:[
+        {title:'The calculation', head:['Item','Value'], rows:[
+          ['Species', sp[0]],
+          ['Cut', cutName],
+          ['Coefficient used', C.toFixed(5) + ' per 1% moisture content'],
+          ['Radial coefficient (quartersawn)', sp[1].toFixed(5)],
+          ['Tangential coefficient (flatsawn)', sp[2].toFixed(5)],
+          ['Moisture content, dry season', WCfmt(mcLo,1) + '%'],
+          ['Moisture content, damp season', WCfmt(mcHi,1) + '%'],
+          ['Change in moisture content', WCfmt(dMC,1) + ' percentage points'],
+          ['Starting width', WCfmt(W, dp) + ' ' + u],
+          ['Movement', WCfmt(move, dp) + ' ' + u + '  (' + WCfmt(per100,2) + ' ' + u + ' per 100 ' + u + ')'],
+          ['Narrowest', WCfmt(wLo, dp) + ' ' + u],
+          ['Widest', WCfmt(wHi, dp) + ' ' + u]
+        ]},
+        {title:'What to leave', head:['Detail','Allowance'], rows:[
+          ['Panel in a grooved frame, gap at each edge', WCfmt(move/2, dp) + ' ' + u + ' - fit the panel at mid-season, centred'],
+          ['Extra groove depth each side, over the gap', WCfmt(move/2, dp) + ' ' + u + ' so the panel never pulls out of the groove'],
+          ['Slotted fastening for a top, slot length', WCfmt(move, dp) + ' ' + u + ' beyond the screw shank'],
+          ['Drawer side in its opening, total clearance', WCfmt(move, dp) + ' ' + u + ' if the sides are this wide'],
+          ['Breadboard end, outer tenons', 'elongate the mortises by ' + WCfmt(move/2, dp) + ' ' + u + ' each way, glue the centre only']
+        ]}
+      ],
+      note: emcNote
+    };
+  },
+
+  diagram: function (r, i) {
+    var W = 560, H = 296, s = SVG.open(W, H);
+    var m = 50, avail = W - 2*m - 60;
+    var scale = avail / (r.wHi || 1);
+    var wLo = r.wLo * scale, wHi = r.wHi * scale, y = 56, h = 78;
+
+    s += SVG.text(W/2, 26, 'Same board, driest season and dampest', 13);
+
+    // Planche au plus etroit, pleine ; la bande gagnee en saison humide est
+    // remplie en accentue pour qu'on la voie : a l'echelle vraie elle ne fait
+    // que quelques pixels, et un trait fantome seul passait inapercu.
+    // Le remplissage passe par style= et non fill= : la regle CSS .ghost{fill:none}
+    // l'emporte sur un attribut de presentation.
+    s += SVG.rect(m, y, wLo, h, 'part');
+    s += SVG.rect(m + wLo, y, Math.max(2, wHi - wLo), h, 'ghost',
+                  ' style="fill:var(--accent);fill-opacity:.85;stroke:var(--accent)"');
+    s += SVG.text(m + wLo/2, y + h/2 + 4, 'dry ' + WCfmt(r.wLo, r.dp) + ' ' + r.u, 12);
+
+    // Ligne de rappel vers l'etiquette, posee hors de la planche.
+    var mid = m + wLo + Math.max(1, (wHi - wLo)/2), ly = y + h + 22;
+    s += SVG.line(mid, y + h, mid, ly, ' class="dim"');
+    s += SVG.line(mid, ly, m + wHi + 26, ly, ' class="dim"');
+    s += SVG.text(m + wHi + 30, ly + 4, WCfmt(r.move, r.dp) + ' ' + r.u, 12, 'start');
+    s += SVG.text(m + wHi + 30, ly + 20, 'to scale', 10, 'start');
+    s += SVG.text(W/2, y + h + 42, 'damp ' + WCfmt(r.wHi, r.dp) + ' ' + r.u +
+                  '   -   ' + WCfmt(r.pct, 2) + '% of the width', 12);
+
+    // Detail du bord : ce que le chiffre veut dire dans une rainure.
+    var dy = 208;
+    s += SVG.line(m, dy - 18, W - m, dy - 18, ' class="dim" stroke-dasharray="2 4"');
+    s += SVG.rect(40, dy, 92, 66, 'ghost', ' style="fill:var(--line);fill-opacity:.45"');
+    s += SVG.rect(110, dy + 18, 22, 30, 'ghost', ' style="fill:var(--surface)"');
+    s += SVG.rect(120, dy + 23, 148, 20, 'part');
+    s += SVG.line(112, dy + 10, 112, dy + 56, ' class="dim" stroke-dasharray="3 3"');
+    s += SVG.text(86, dy + 58, 'stile', 11);
+    s += SVG.text(200, dy + 37, 'panel', 11);
+    s += SVG.text(292, dy + 20, 'gap ' + WCfmt(r.move/2, r.dp) + ' ' + r.u + ' at each edge', 11, 'start');
+    s += SVG.text(292, dy + 38, 'plus ' + WCfmt(r.move/2, r.dp) + ' ' + r.u + ' groove depth', 11, 'start');
+    s += SVG.text(292, dy + 56, 'edge detail, not to scale', 10, 'start');
+    return s + SVG.close();
+  },
+
+  // Teneur en eau d'equilibre : Hailwood-Horrobin a deux hydrates,
+  // ajustement de Simpson, equation 4-5 du Wood Handbook. T en Celsius.
+  _emc: function (T, RH) {
+    var h = RH / 100;
+    var W  = 349 + 1.29*T + 0.0135*T*T;
+    var K  = 0.805 + 0.000736*T - 0.00000273*T*T;
+    var K1 = 6.27 - 0.00938*T - 0.000303*T*T;
+    var K2 = 1.91 + 0.0407*T - 0.000293*T*T;
+    var Kh = K*h;
+    return 1800/W * ( Kh/(1-Kh) + (K1*Kh + 2*K1*K2*Kh*Kh) / (1 + K1*Kh + K1*K2*Kh*Kh) );
+  },
+
+  _species: [
+    ["Alder, red",0.00151,0.00256],
+    ["Apple",0.00205,0.00376],
+    ["Ash, black",0.00172,0.00274],
+    ["Ash, green",0.00169,0.00274],
+    ["Ash, Oregon",0.00141,0.00285],
+    ["Ash, pumpkin",0.00126,0.00219],
+    ["Ash, white",0.00169,0.00274],
+    ["Aspen, quaking",0.00119,0.00234],
+    ["Basswood, American",0.00230,0.00330],
+    ["Beech, American",0.00190,0.00431],
+    ["Birch, paper",0.00219,0.00304],
+    ["Birch, river",0.00162,0.00327],
+    ["Birch, sweet",0.00256,0.00338],
+    ["Birch, yellow",0.00256,0.00338],
+    ["Buckeye, yellow",0.00123,0.00285],
+    ["Butternut",0.00116,0.00223],
+    ["Catalpa, northern",0.00085,0.00169],
+    ["Cherry, black",0.00126,0.00248],
+    ["Chestnut, American",0.00116,0.00234],
+    ["Cottonwood, black",0.00123,0.00304],
+    ["Cottonwood, eastern",0.00133,0.00327],
+    ["Elm, American",0.00144,0.00338],
+    ["Elm, cedar",0.00183,0.00419],
+    ["Elm, rock",0.00165,0.00285],
+    ["Elm, slippery",0.00169,0.00315],
+    ["Elm, winged",0.00183,0.00419],
+    ["Hackberry",0.00165,0.00315],
+    ["Hickory, pecan",0.00169,0.00315],
+    ["Hickory, true",0.00259,0.00411],
+    ["Holly, American",0.00165,0.00353],
+    ["Honeylocust",0.00144,0.00230],
+    ["Locust, black",0.00158,0.00252],
+    ["Madrone, Pacific",0.00194,0.00451],
+    ["Magnolia, cucumbertree",0.00180,0.00312],
+    ["Magnolia, southern",0.00187,0.00230],
+    ["Magnolia, sweetbay",0.00162,0.00293],
+    ["Maple, bigleaf",0.00126,0.00248],
+    ["Maple, black",0.00165,0.00353],
+    ["Maple, red",0.00137,0.00289],
+    ["Maple, silver",0.00102,0.00252],
+    ["Maple, sugar (hard maple)",0.00165,0.00353],
+    ["Oak, black",0.00123,0.00230],
+    ["Oak, California red",0.00123,0.00230],
+    ["Oak, live",0.00230,0.00338],
+    ["Oak, Oregon white",0.00144,0.00327],
+    ["Oak, overcup",0.00183,0.00462],
+    ["Oak, red (commercial)",0.00158,0.00369],
+    ["Oak, water / laurel / willow",0.00151,0.00350],
+    ["Oak, white (commercial)",0.00180,0.00365],
+    ["Persimmon, common",0.00278,0.00403],
+    ["Sassafras",0.00137,0.00216],
+    ["Sweetgum",0.00183,0.00365],
+    ["Sycamore, American",0.00172,0.00296],
+    ["Tanoak",0.00169,0.00423],
+    ["Tupelo, black",0.00176,0.00308],
+    ["Tupelo, water",0.00144,0.00267],
+    ["Walnut, black",0.00190,0.00274],
+    ["Willow, black",0.00112,0.00308],
+    ["Willow, Pacific",0.00099,0.00319],
+    ["Yellow-poplar (tulipwood)",0.00158,0.00289],
+    ["Baldcypress",0.00130,0.00216],
+    ["Cedar, Alaska yellow",0.00095,0.00208],
+    ["Cedar, Atlantic white",0.00099,0.00187],
+    ["Cedar, eastern red",0.00106,0.00162],
+    ["Cedar, incense",0.00112,0.00180],
+    ["Cedar, northern white",0.00101,0.00229],
+    ["Cedar, Port-Orford",0.00158,0.00241],
+    ["Cedar, western red",0.00111,0.00234],
+    ["Douglas-fir, coast",0.00165,0.00267],
+    ["Douglas-fir, interior north",0.00130,0.00241],
+    ["Douglas-fir, interior west",0.00165,0.00263],
+    ["Fir, balsam",0.00099,0.00241],
+    ["Fir, California red",0.00155,0.00278],
+    ["Fir, grand",0.00112,0.00245],
+    ["Fir, noble",0.00148,0.00293],
+    ["Fir, Pacific silver",0.00151,0.00327],
+    ["Fir, subalpine",0.00088,0.00259],
+    ["Fir, white",0.00112,0.00245],
+    ["Hemlock, eastern",0.00102,0.00237],
+    ["Hemlock, western",0.00144,0.00274],
+    ["Larch, western",0.00155,0.00323],
+    ["Pine, eastern white",0.00071,0.00212],
+    ["Pine, jack",0.00126,0.00230],
+    ["Pine, Jeffrey",0.00148,0.00234],
+    ["Pine, loblolly",0.00165,0.00259],
+    ["Pine, lodgepole",0.00148,0.00234],
+    ["Pine, longleaf",0.00176,0.00263],
+    ["Pine, pond",0.00165,0.00259],
+    ["Pine, ponderosa",0.00133,0.00216],
+    ["Pine, red",0.00130,0.00252],
+    ["Pine, shortleaf",0.00158,0.00271],
+    ["Pine, slash",0.00187,0.00267],
+    ["Pine, sugar",0.00099,0.00194],
+    ["Pine, Virginia",0.00144,0.00252],
+    ["Pine, western white",0.00141,0.00259],
+    ["Redwood, old growth",0.00120,0.00205],
+    ["Redwood, second growth",0.00101,0.00229],
+    ["Spruce, black",0.00141,0.00237],
+    ["Spruce, Engelmann",0.00130,0.00248],
+    ["Spruce, red",0.00130,0.00274],
+    ["Spruce, Sitka",0.00148,0.00263],
+    ["Spruce, white",0.00130,0.00274],
+    ["Tamarack",0.00126,0.00259],
+    ["Andiroba (crabwood)",0.00137,0.00274],
+    ["Angelique",0.00180,0.00312],
+    ["Apitong / keruing",0.00243,0.00527],
+    ["Avodire",0.00126,0.00226],
+    ["Balsa",0.00102,0.00267],
+    ["Banak",0.00158,0.00312],
+    ["Cativo",0.00078,0.00183],
+    ["Cuangare",0.00183,0.00342],
+    ["Greenheart",0.00390,0.00430],
+    ["Iroko",0.00153,0.00205],
+    ["Khaya (African mahogany)",0.00141,0.00201],
+    ["Lauan, dark red (Philippine mahogany)",0.00133,0.00267],
+    ["Lauan, light red (Philippine mahogany)",0.00126,0.00241],
+    ["Limba",0.00151,0.00187],
+    ["Mahogany (American)",0.00172,0.00238],
+    ["Meranti",0.00126,0.00289],
+    ["Obeche",0.00106,0.00183],
+    ["Okoume",0.00194,0.00212],
+    ["Parana pine",0.00137,0.00278],
+    ["Pau marfim",0.00158,0.00312],
+    ["Primavera",0.00106,0.00180],
+    ["Ramin",0.00133,0.00308],
+    ["Santa Maria",0.00187,0.00278],
+    ["Spanish-cedar",0.00141,0.00219],
+    ["Teak",0.00101,0.00186]
+  ]
+};
+
+return SPEC;
+}})();
+</script>
+<script>
+/* ============================================================================
+   Runtime partagé des outils Workshop Calc.
+   Écrit UNE fois, embarqué dans chaque outil généré.
+   Chaque outil ne fournit que : ses champs, sa formule, son schéma, ses notes.
+   ========================================================================== */
+(function () {
+  'use strict';
+
+  var SPEC = window.__SPEC__;
+  var $ = function (s) { return document.querySelector(s); };
+
+  /* ---- unités ------------------------------------------------------------ */
+  var UNITS = {
+    mm: { label: 'mm', toBase: 1, area: 'm²', vol: 'm³' },
+    in: { label: 'in', toBase: 25.4, area: 'ft²', vol: 'ft³' }
+  };
+  function unit() { return $('#unit') ? $('#unit').value : 'mm'; }
+
+  function num(v, fallback) {
+    var n = parseFloat(v);
+    return isFinite(n) ? n : (fallback === undefined ? NaN : fallback);
+  }
+
+  /* ---- formatage --------------------------------------------------------- */
+  function fmt(v, dp) {
+    if (v === null || v === undefined || !isFinite(v)) return '—';
+    dp = dp === undefined ? 1 : dp;
+    return (Math.round(v * Math.pow(10, dp)) / Math.pow(10, dp))
+      .toLocaleString('en-US', { maximumFractionDigits: dp });
+  }
+  function esc(t) {
+    var d = document.createElement('div');
+    d.textContent = String(t === undefined || t === null ? '' : t);
+    return d.innerHTML;
+  }
+
+  /* ---- construction du formulaire ---------------------------------------- */
+  function buildForm() {
+    // Le formulaire est désormais écrit en dur dans le HTML par la fabrique,
+    // pour que les robots qui n'exécutent pas le JavaScript le voient aussi.
+    // S'il est déjà là, on ne le reconstruit pas : on se contente de l'animer.
+    var host = $('#form');
+    if (host && host.querySelector('input, select')) return;
+
+    var groups = {};
+    SPEC.fields.forEach(function (f) {
+      var g = f.group || 'Inputs';
+      (groups[g] = groups[g] || []).push(f);
+    });
+
+    var html = '';
+    Object.keys(groups).forEach(function (g) {
+      html += '<div class="card noprint"><h2>' + esc(g) + '</h2><div class="row">';
+      groups[g].forEach(function (f) {
+        html += '<div class="f"><label for="' + f.id + '">' + esc(f.label) +
+                (f.unit === 'length' ? ' <span class="u"></span>' : '') + '</label>';
+        if (f.type === 'select') {
+          html += '<select id="' + f.id + '">' + f.options.map(function (o) {
+            return '<option value="' + esc(o.value) + '"' +
+                   (o.value === f.value ? ' selected' : '') + '>' + esc(o.label) + '</option>';
+          }).join('') + '</select>';
+        } else if (f.type === 'check') {
+          html += '<input type="checkbox" id="' + f.id + '"' + (f.value ? ' checked' : '') + '>';
+        } else {
+          html += '<input type="number" id="' + f.id + '" value="' + f.value +
+                  '" step="' + (f.step || 'any') + '"' +
+                  (f.min !== undefined ? ' min="' + f.min + '"' : '') + '>';
+        }
+        if (f.hint) html += '<span style="font-size:.74rem;color:var(--muted)">' + esc(f.hint) + '</span>';
+        html += '</div>';
+      });
+      html += '</div></div>';
+    });
+    $('#form').innerHTML = html;
+  }
+
+  function readInputs() {
+    var o = { unit: unit() };
+    SPEC.fields.forEach(function (f) {
+      var el = $('#' + f.id);
+      if (!el) return;
+      if (f.type === 'check') o[f.id] = el.checked;
+      else if (f.type === 'select') o[f.id] = el.value;
+      else o[f.id] = num(el.value, 0);
+    });
+    return o;
+  }
+
+  /* ---- rendu du résultat -------------------------------------------------- */
+  function render() {
+    var input = readInputs();
+    var res;
+    try { res = SPEC.compute(input); }
+    catch (err) { res = { ok: false, errors: ['Something went wrong: ' + err.message] }; }
+
+    var out = $('#out');
+    if (!res || res.ok === false) {
+      out.innerHTML = '<div class="card"><div class="warn"><strong>Cannot work this out:</strong><ul style="margin:6px 0 0;padding-left:18px">' +
+        ((res && res.errors) || ['Check your inputs.']).map(function (e) { return '<li>' + esc(e) + '</li>'; }).join('') +
+        '</ul></div></div>';
+      return;
+    }
+
+    var html = '<div class="card">';
+
+    if (res.warnings && res.warnings.length) {
+      html += '<div class="warn"><ul style="margin:0;padding-left:18px">' +
+        res.warnings.map(function (w) { return '<li>' + esc(w) + '</li>'; }).join('') + '</ul></div>';
+    }
+
+    if (res.stats && res.stats.length) {
+      html += '<div class="stats">' + res.stats.map(function (s) {
+        return '<div class="stat"><b>' + esc(s.value) + '</b><span>' + esc(s.label) + '</span></div>';
+      }).join('') + '</div>';
+    }
+
+    html += '<button class="primary noprint" onclick="window.print()">Print this</button>';
+
+    if (SPEC.diagram) {
+      try {
+        var svg = SPEC.diagram(res, input);
+        if (svg) html += '<div style="margin-top:16px">' + svg + '</div>';
+      } catch (e) { /* un schéma cassé ne doit pas emporter le résultat */ }
+    }
+
+    if (res.tables) {
+      res.tables.forEach(function (t) {
+        if (!t.rows || !t.rows.length) return;
+        html += '<h3 style="font-size:.95rem;margin:20px 0 8px">' + esc(t.title) + '</h3>';
+        html += '<table><thead><tr>' + t.head.map(function (h) { return '<th>' + esc(h) + '</th>'; }).join('') +
+                '</tr></thead><tbody>' + t.rows.map(function (r) {
+                  return '<tr>' + r.map(function (c) { return '<td>' + esc(c) + '</td>'; }).join('') + '</tr>';
+                }).join('') + '</tbody></table>';
+      });
+    }
+
+    if (res.note) {
+      html += '<p style="color:var(--muted);font-size:.88rem;margin-top:14px">' + esc(res.note) + '</p>';
+    }
+
+    html += '</div>';
+    out.innerHTML = html;
+  }
+
+  /* ---- aides au dessin ---------------------------------------------------- */
+  window.SVG = {
+    open: function (w, h, extra) {
+      return '<svg viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="xMidYMid meet"' +
+             (extra || '') + '>';
+    },
+    close: function () { return '</svg>'; },
+    rect: function (x, y, w, h, cls, extra) {
+      return '<rect x="' + x + '" y="' + y + '" width="' + Math.max(0, w) + '" height="' + Math.max(0, h) +
+             '" class="' + (cls || 'part') + '"' + (extra || '') + '/>';
+    },
+    line: function (x1, y1, x2, y2, extra) {
+      return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 +
+             '" stroke="currentColor" stroke-width="1"' + (extra || '') + '/>';
+    },
+    text: function (x, y, t, size, anchor) {
+      return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anchor || 'middle') +
+             '" class="plabel" style="font-size:' + (size || 12) + 'px">' + esc(t) + '</text>';
+    },
+    poly: function (pts, cls) {
+      return '<polygon points="' + pts.map(function (p) { return p[0] + ',' + p[1]; }).join(' ') +
+             '" class="' + (cls || 'part') + '"/>';
+    }
+  };
+
+  window.WCfmt = fmt;
+  window.WCesc = esc;
+
+  /* ---- démarrage ---------------------------------------------------------- */
+  function syncUnitLabels() {
+    var u = UNITS[unit()].label;
+    [].forEach.call(document.querySelectorAll('.u'), function (e) { e.textContent = '(' + u + ')'; });
+  }
+
+  function boot() {
+    buildForm();
+    syncUnitLabels();
+    document.addEventListener('input', function (e) {
+      if (e.target.id === 'unit') {
+        if (SPEC.onUnitChange) SPEC.onUnitChange(unit(), $);
+        syncUnitLabels();
+      }
+      render();
+    });
+    document.addEventListener('change', render);
+    render();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+
+</script>
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+</body>
+</html>

@@ -119,6 +119,9 @@ TOOLS = [
     ("bolt-circle-calculator",    "Bolt Hole Circle Calculator",
      "X and Y coordinates for every hole on a bolt circle, plus chord spacing and PCD from a measurement.",
      "Sheet goods"),
+    ("wood-movement-calculator", "Wood Movement Calculator",
+     "Seasonal expansion across the grain for 128 species, from published USDA coefficients &mdash; flatsawn or quartersawn.",
+     "Joinery"),
 ]
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -145,6 +148,9 @@ def inject_nav(tools):
         # chaque reconstruction (jusqu'a 8 copies sur une page).
         src = re.sub(r'<nav id="site-nav".*?</nav>', '', src, flags=re.S)
         src = re.sub(r'<aside id="related"[^>]*>.*?</aside>', '', src, flags=re.S)
+        # Le retrait laisse des lignes vides qui s'accumulaient a chaque build :
+        # on ecrase toute serie de plus de deux sauts de ligne.
+        src = re.sub(r'\n{3,}', '\n\n', src)
 
         nav = f'<nav id="site-nav" class="noprint" style="margin-bottom:18px;font-size:.88rem">' \
               f'<a href="./index.html" style="color:var(--muted);text-decoration:none">← All {SITE_NAME} tools</a></nav>'

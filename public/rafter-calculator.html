@@ -437,26 +437,6 @@ footer{margin-top:60px}
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <h1>Rafter &amp; Roof Framing Calculator</h1>
 <p class="sub">Rafter lengths and cut angles for a straightforward gable or hip roof: common rafter, hip rafter, valley rafter, plumb cut, seat cut, birdsmouth and ridge height. Enter the pitch in degrees or as a 6:12 ratio — both work, and every result is shown in all three notations. You get a fully dimensioned section drawing and a cut card you can take to the saw. Everything runs in your browser; nothing is uploaded and nothing is stored.</p>
 
@@ -542,19 +522,6 @@ footer{margin-top:60px}
   what you deduct at the top depends on whether it lands on the main ridge, a header or the
   sheathing plane. Cut one rafter, offer it up, and check it before you cut thirty.</p>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li><li style="margin:4px 0"><a href="./stud-wall-layout.html" style="color:var(--accent)">Stud Wall Layout Calculator</a> <span style="color:var(--muted)">— Stud positions with the first-stud correction so sheet edges land on framing, plus the material list.</span></li></ul></aside>
 <footer>
@@ -950,7 +917,6 @@ function calculateRafter(input) {
 /* ===== END PURE CALCULATION CORE ===== */
 
 if (typeof module !== 'undefined' && module.exports) { module.exports = { calculateRafter: calculateRafter }; }
-
 
 /* ============================================================================
    Presentation: formatting, SVG drawing, DOM wiring.
@@ -1424,10 +1390,6 @@ document.querySelectorAll('input,select').forEach(function (el) {
 
 run();
 </script>
-
-
-
-
 
 
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
