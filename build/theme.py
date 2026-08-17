@@ -221,13 +221,19 @@ LOGO = ('<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden
         'stroke-dasharray="1.5 3"/></svg>')
 
 
+# Compte les outils reellement presents : le nombre etait ecrit en dur
+# ("Browse all 15") et mentait des le 16e outil.
+N_TOOLS = len([f for f in os.listdir(os.path.dirname(os.path.abspath(__file__)))
+               if f.endswith('.html') and f != 'index.html'])
+
+
 def masthead(is_index):
     left = (f'<a class="brand" href="./index.html">{LOGO}<b>Kerf<span>Calc</span></b></a>')
     if is_index:
         right = ('<nav class="mnav">'
                  '<a href="#tools">Tools</a>'
                  '<a href="#what">What you get</a>'
-                 '<a class="cta" href="#tools">Browse all 15 &rarr;</a></nav>')
+                 f'<a class="cta" href="#tools">Browse all {N_TOOLS} &rarr;</a></nav>')
     else:
         right = ('<nav class="mnav">'
                  '<a href="./index.html">All tools</a>'
