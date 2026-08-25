@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Arc Calculator — Radius from Chord and Rise, With Marking Ordinates</title>
-<meta name="description" content="Work out the radius, arc length and trammel point of a curve from its width and height, and get the offsets to mark it out full size without a compass.">
+<title>Epoxy Mix Ratio Calculator — Parts A and B by Volume or Weight</title>
+<meta name="description" content="How much resin and hardener to measure for any batch, from the ratio on your product's label, by volume or by weight with your product's specific gravities.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -286,17 +286,17 @@ footer{margin-top:60px}
 }
 
 </style>
-<link rel="canonical" href="https://getkerfcalc.com/arc-layout-calculator.html">
+<link rel="canonical" href="https://getkerfcalc.com/epoxy-mix-ratio-calculator.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KerfCalc">
-<meta property="og:title" content="Arc Calculator — Radius from Chord and Rise, With Marking Ordinates">
-<meta property="og:description" content="Work out the radius, arc length and trammel point of a curve from its width and height, and get the offsets to mark it out full size without a compass.">
-<meta property="og:url" content="https://getkerfcalc.com/arc-layout-calculator.html">
+<meta property="og:title" content="Epoxy Mix Ratio Calculator — Parts A and B by Volume or Weight">
+<meta property="og:description" content="How much resin and hardener to measure for any batch, from the ratio on your product's label, by volume or by weight with your product's specific gravities.">
+<meta property="og:url" content="https://getkerfcalc.com/epoxy-mix-ratio-calculator.html">
 <meta property="og:image" content="https://getkerfcalc.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Arc Calculator — Radius from Chord and Rise, With Marking Ordinates">
+<meta name="twitter:title" content="Epoxy Mix Ratio Calculator — Parts A and B by Volume or Weight">
 <meta name="twitter:image" content="https://getkerfcalc.com/og.png">
-<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Arc Calculator", "url": "https://getkerfcalc.com/arc-layout-calculator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Work out the radius, arc length and trammel point of a curve from its width and height, and get the offsets to mark it out full size without a compass."}</script>
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Epoxy Mix Ratio Calculator", "url": "https://getkerfcalc.com/epoxy-mix-ratio-calculator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "How much resin and hardener to measure for any batch, from the ratio on your product's label, by volume or by weight with your product's specific gravities."}</script>
 </head>
 <body>
 <div class="wrap">
@@ -304,8 +304,8 @@ footer{margin-top:60px}
 
 
 
-<h1>Arc &amp; Curve Layout Calculator</h1>
-<p class="sub">You know the opening is 1200 wide and you want the curve to rise 200 in the middle. This gives you the radius, where to put the trammel point, and — if the radius is too big for a compass — a table of offsets to plot the curve point by point.</p>
+<h1>Epoxy Mix Ratio Calculator</h1>
+<p class="sub">Get the ratio wrong and the pour never cures. This takes the ratio printed on your product's label — 1:1, 2:1, 100:45, anything — and a batch size, and tells you exactly how much part A and part B to measure, by volume or by weight.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -315,24 +315,24 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Curve</h2><div class="row"><div class="f"><label for="chord">Width of the opening (chord) <span class="u"></span></label><input type="number" id="chord" value="1200" step="any" min="0"></div><div class="f"><label for="rise">Rise at the centre <span class="u"></span></label><input type="number" id="rise" value="200" step="any" min="0"></div></div></div><div class="card noprint"><h2>Marking out</h2><div class="row"><div class="f"><label for="points">Number of marking points</label><input type="number" id="points" value="9" step="2" min="3"><span style="font-size:.74rem;color:var(--muted)">Odd numbers put one point at the centre</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>The ratio on your label</h2><div class="row"><div class="f"><label for="ra">Ratio — parts A (resin)</label><input type="number" id="ra" value="2" step="any" min="0.01"><span style="font-size:.74rem;color:var(--muted)">e.g. 2 for a 2:1, 100 for a 100:45</span></div><div class="f"><label for="rb">Ratio — parts B (hardener)</label><input type="number" id="rb" value="1" step="any" min="0.01"></div><div class="f"><label for="rtype">That ratio is stated</label><select id="rtype"><option value="vol" selected>By volume</option><option value="wt">By weight</option></select></div></div></div><div class="card noprint"><h2>The batch</h2><div class="row"><div class="f"><label for="batch">Batch size, total mixed</label><input type="number" id="batch" value="1000" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">In ml, or in grams if working by weight</span></div><div class="f"><label for="btype">Measure the batch</label><select id="btype"><option value="vol" selected>By volume (ml)</option><option value="wt">By weight (g)</option></select></div></div></div><div class="card noprint"><h2>Only if converting volume to weight</h2><div class="row"><div class="f"><label for="sga">Specific gravity, part A (only to convert)</label><input type="number" id="sga" value="1.1" step="any" min="0.5"><span style="font-size:.74rem;color:var(--muted)">From the data sheet; ~1.1 typical for epoxy resin</span></div><div class="f"><label for="sgb">Specific gravity, part B</label><input type="number" id="sgb" value="1" step="any" min="0.5"><span style="font-size:.74rem;color:var(--muted)">~0.9-1.0 typical for hardeners</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>Where the formula comes from</h3>
-  <p>With chord C and rise H, the radius is (C squared divided by 8H) plus H over 2. It falls out of the intersecting chords theorem, and it is exact, not an approximation.</p>
-  <h3>When the radius is bigger than your shop</h3>
-  <p>A 1200 opening rising 100 needs a radius of 1850 — fine. Rising 20 needs 9010, and no trammel reaches that. That is what the offsets table is for: measure along the chord, mark the offset up from it, and bend a batten through the points.</p>
-  <h3>Marking with a batten</h3>
-  <p>Drive a nail at each plotted point, spring a thin strip of straight-grained stock against them, and pencil along it. A batten naturally takes a fair curve, which is more forgiving to the eye than a slightly wrong true arc.</p>
-  <h3>What this does not do</h3>
-  <p>It handles circular arcs only. Ellipses, ogees and free curves are a different problem, and a batten sprung through three points is usually the better answer for those anyway.</p>
+  <h3>Volume ratio and weight ratio are different numbers</h3>
+  <p>Resin and hardener have different densities, so a 2:1 by volume product is NOT 2:1 by weight. Your data sheet states which one the printed ratio is, and usually gives both. Enter the ratio as your label states it, and pick the matching mode.</p>
+  <h3>Weighing is more accurate</h3>
+  <p>A scale reads to the gram; measuring cups trap film and misread menisci. If your data sheet gives the weight ratio, use it with a scale. If it only gives volume and you want to weigh, enter the specific gravity of each part from the data sheet and the tool converts.</p>
+  <h3>Never adjust the ratio to change cure speed</h3>
+  <p>More hardener does not cure faster — it leaves permanently soft resin. The ratio is chemistry, not seasoning. Change cure speed by changing product or temperature, never proportions.</p>
+  <h3>Mix more than you pour</h3>
+  <p>The film left on the bucket and stick is real: mix 5-10% extra. The batch size here should already include your waste allowance — the epoxy volume calculator on this site works that out.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./box-joint-layout.html" style="color:var(--accent)">Box Joint &amp; Dovetail Layout</a> <span style="color:var(--muted)">— Even pin and tail spacing that actually divides, plus a 1:1 printable marking template.</span></li><li style="margin:4px 0"><a href="./compound-miter-calculator.html" style="color:var(--accent)">Compound Miter Angle Calculator</a> <span style="color:var(--muted)">— Saw miter and bevel settings for crown and sloped work, with the formulas shown.</span></li><li style="margin:4px 0"><a href="./polygon-miter-calculator.html" style="color:var(--accent)">Polygon Miter Angle Calculator</a> <span style="color:var(--muted)">— Miter angles and side lengths for hexagons, octagons and any polygon, from any known dimension.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./tile-layout-planner.html" style="color:var(--accent)">Tile Layout Planner</a> <span style="color:var(--muted)">— Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span></li><li style="margin:4px 0"><a href="./concrete-volume-calculator.html" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="./gravel-volume-calculator.html" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li></ul></aside>
 
-<details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/arc-layout-calculator.html?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
+<details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/epoxy-mix-ratio-calculator.html?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
 <footer><span class="noprint" style="float:right"><a href="./privacy.html" style="color:var(--muted)">Privacy &amp; how this site works</a></span>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -344,71 +344,79 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'chord', label:'Width of the opening (chord)', value:1200, unit:'length', group:'Curve', min:0},
-    {id:'rise', label:'Rise at the centre', value:200, unit:'length', group:'Curve', min:0},
-    {id:'points', label:'Number of marking points', value:9, group:'Marking out', min:3, step:2,
-     hint:'Odd numbers put one point at the centre'}
+    {id:'ra', label:'Ratio — parts A (resin)', value:2, group:'The ratio on your label', min:0.01,
+     hint:'e.g. 2 for a 2:1, 100 for a 100:45'},
+    {id:'rb', label:'Ratio — parts B (hardener)', value:1, group:'The ratio on your label', min:0.01},
+    {id:'rtype', label:'That ratio is stated', type:'select', value:'vol', group:'The ratio on your label',
+     options:[{value:'vol',label:'By volume'},{value:'wt',label:'By weight'}]},
+    {id:'batch', label:'Batch size, total mixed', value:1000, group:'The batch', min:1,
+     hint:'In ml, or in grams if working by weight'},
+    {id:'btype', label:'Measure the batch', type:'select', value:'vol', group:'The batch',
+     options:[{value:'vol',label:'By volume (ml)'},{value:'wt',label:'By weight (g)'}]},
+    {id:'sga', label:'Specific gravity, part A (only to convert)', value:1.1, group:'Only if converting volume to weight', min:0.5,
+     hint:'From the data sheet; ~1.1 typical for epoxy resin'},
+    {id:'sgb', label:'Specific gravity, part B', value:1.0, group:'Only if converting volume to weight', min:0.5,
+     hint:'~0.9-1.0 typical for hardeners'}
   ],
   compute: function (i) {
-    var C = i.chord, Hh = i.rise;
-    if (!(C > 0)) return {ok:false, errors:['The chord (width) must be greater than zero.']};
-    if (!(Hh > 0)) return {ok:false, errors:['The rise must be greater than zero — with no rise there is no curve.']};
-    if (Hh > C/2) return {ok:false, errors:['A rise larger than half the chord is more than a half circle. Check the numbers.']};
+    if (!(i.ra>0 && i.rb>0 && i.batch>0))
+      return {ok:false, errors:['Ratio parts and batch size must be greater than zero.']};
 
-    var R = (C*C)/(8*Hh) + Hh/2;
-    var halfAngle = Math.asin((C/2)/R);
-    var theta = 2*halfAngle;
-    var arc = R*theta;
-    var centreBelow = R - Hh;        // profondeur du point de compas sous la corde
+    var unit = i.btype==='vol' ? 'ml' : 'g';
+    var A, B, conv = false;
 
-    var n = Math.max(3, Math.round(i.points));
-    var rows = [];
-    for (var k = 0; k < n; k++) {
-      var x = -C/2 + C*k/(n-1);
-      var y = Math.sqrt(Math.max(0, R*R - x*x)) - centreBelow;
-      rows.push([WCfmt(C/2 + x,1), WCfmt(y,2)]);
+    if (i.rtype === i.btype) {
+      // Meme grandeur des deux cotes : simple proportion.
+      A = i.batch * i.ra/(i.ra+i.rb);
+      B = i.batch * i.rb/(i.ra+i.rb);
+    } else if (i.rtype==='vol' && i.btype==='wt') {
+      // Ratio en volume, pesee au gramme : chaque part pese volume x densite.
+      conv = true;
+      if (!(i.sga>0 && i.sgb>0)) return {ok:false, errors:['Enter both specific gravities to convert volume to weight.']};
+      var wa = i.ra*i.sga, wb = i.rb*i.sgb;          // poids relatifs
+      A = i.batch * wa/(wa+wb);
+      B = i.batch * wb/(wa+wb);
+    } else {
+      // Ratio en poids, mesure en volume : chaque part occupe poids / densite.
+      conv = true;
+      if (!(i.sga>0 && i.sgb>0)) return {ok:false, errors:['Enter both specific gravities to convert weight to volume.']};
+      var va = i.ra/i.sga, vb = i.rb/i.sgb;
+      A = i.batch * va/(va+vb);
+      B = i.batch * vb/(va+vb);
     }
 
     var warn = [];
-    if (R > 3000) warn.push('Radius is '+WCfmt(R,0)+' — too big for most trammels. Use the offsets table and a sprung batten.');
+    if (conv) warn.push('Converted between volume and weight using the specific gravities you entered — check them against your data sheet, they differ between products.');
 
-    return {ok:true, R:R, arc:arc, theta:theta*180/Math.PI, centreBelow:centreBelow, C:C, rise:Hh,
-      warnings: warn,
+    return {ok:true, A:A, B:B, unit:unit,
+      warnings:warn,
       stats:[
-        {value: WCfmt(R,1), label:'Radius'},
-        {value: WCfmt(arc,1), label:'Arc length'},
-        {value: WCfmt(theta*180/Math.PI,2)+String.fromCharCode(176), label:'Included angle'},
-        {value: WCfmt(centreBelow,1), label:'Centre below chord'}
+        {value: WCfmt(A,1)+' '+unit, label:'Part A (resin)'},
+        {value: WCfmt(B,1)+' '+unit, label:'Part B (hardener)'},
+        {value: WCfmt(i.ra,2)+' : '+WCfmt(i.rb,2), label:'Ratio ('+(i.rtype==='vol'?'volume':'weight')+')'},
+        {value: WCfmt(i.batch,0)+' '+unit, label:'Total batch'}
       ],
-      tables:[
-        {title:'Setting out', head:['Item','Value'], rows:[
-          ['Chord (width)', WCfmt(C,1)],
-          ['Rise at centre', WCfmt(Hh,1)],
-          ['Radius', WCfmt(R,2)],
-          ['Trammel point', WCfmt(centreBelow,2)+' below the chord, on the centreline'],
-          ['Arc length', WCfmt(arc,2)],
-          ['Included angle', WCfmt(theta*180/Math.PI,3)+String.fromCharCode(176)],
-          ['Material length for the blank', WCfmt(C,1)+' x '+WCfmt(Hh,1)+' minimum']
-        ]},
-        {title:'Offsets from the chord', head:['Along the chord','Offset up'], rows: rows}
-      ],
-      note:'Measure along the chord from the left end, mark the offset square up from it. Spring a batten through the marks and pencil the curve.'
+      tables:[{title:'Pour sequence', head:['Step','What to do'], rows:[
+        ['1', 'Tare the container on the scale (or use a marked cup).'],
+        ['2', 'Add part A to '+WCfmt(A,1)+' '+unit+'.'],
+        ['3', 'Add part B until the total reads '+WCfmt(i.batch,0)+' '+unit+' ('+WCfmt(B,1)+' '+unit+' of B).'],
+        ['4', 'Mix 3 minutes, scrape walls and bottom, transfer to a clean cup, mix again briefly.']
+      ]}],
+      note:'The printed ratio is chemistry — never change it to speed up or slow down the cure.'
     };
   },
   diagram: function (r, i) {
-    var W=640,H=300,m=50,s=SVG.open(W,H);
-    var sc=(W-2*m)/r.C, base=H-70;
-    var riseP=r.rise*sc, cW=r.C*sc, x0=m, x1=m+cW;
-    var Rp=r.R*sc, cyP=base+ (r.centreBelow*sc);
-    s+='<path d="M '+x0+' '+base+' A '+Rp+' '+Rp+' 0 0 1 '+x1+' '+base+'" fill="none" stroke="var(--accent)" stroke-width="2.5"/>';
-    s+=SVG.line(x0,base,x1,base,' class="dim"');
-    s+=SVG.line(W/2,base,W/2,base-riseP,' class="dim"');
-    if (cyP < H+400) s+=SVG.line(W/2,base,W/2,Math.min(cyP,H-6),' class="dim" stroke-dasharray="5 5"');
-    s+=SVG.text(W/2, base+22, 'chord '+WCfmt(r.C,0), 12);
-    s+=SVG.text(W/2-8, base-riseP-10, 'rise '+WCfmt(r.rise,0), 12);
-    s+=SVG.text(W/2, 26, 'radius '+WCfmt(r.R,1), 13);
-    s+=SVG.text(W/2, H-14, 'arc '+WCfmt(r.arc,1)+'  ·  trammel point '+WCfmt(r.centreBelow,0)+' below the chord', 12);
-    return s+SVG.close();
+    var W=560, H=200, s=SVG.open(W,H);
+    s += SVG.text(W/2, 24, 'The batch, to proportion', 13);
+    var total = r.A + r.B, m=70, bw=W-2*m, y=60, h=56;
+    var aw = bw * r.A/total;
+    s += SVG.rect(m, y, aw, h, 'part');
+    s += SVG.rect(m+aw, y, bw-aw, h, 'ghost', ' style="fill:var(--accent);fill-opacity:.35"');
+    s += SVG.text(m+aw/2, y+h/2+4, 'A  '+WCfmt(r.A,1)+' '+r.unit, 12);
+    s += SVG.text(m+aw+(bw-aw)/2, y+h/2+4, 'B  '+WCfmt(r.B,1)+' '+r.unit, 12);
+    s += SVG.line(m, y+h+18, m+bw, y+h+18, ' class="dim"');
+    s += SVG.text(W/2, y+h+34, 'total '+WCfmt(i.batch,0)+' '+r.unit, 11);
+    return s + SVG.close();
   }
 };
 
@@ -616,6 +624,6 @@ return SPEC;
 
 
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
-<script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/arc-layout-calculator.html" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
+<script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/epoxy-mix-ratio-calculator.html" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
 </body>
 </html>

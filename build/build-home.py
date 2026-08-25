@@ -3,8 +3,12 @@
 
 import os, importlib.util
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-spec = importlib.util.spec_from_file_location("bi", os.path.join(HERE, "build-index.py"))
+_here = os.path.dirname(os.path.abspath(__file__))
+_pub = os.path.join(os.path.dirname(_here), "public")
+# Deux dispositions possibles : l'atelier (script a cote des pages) et le
+# depot (script dans build/, pages dans public/). On vise ce qui existe.
+HERE = _pub if os.path.isdir(_pub) else _here
+spec = importlib.util.spec_from_file_location("bi", os.path.join(_here, "build-index.py"))
 bi = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bi)
 

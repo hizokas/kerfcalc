@@ -121,11 +121,20 @@ TOOLS = [
      "Sheet goods"),
     ("wood-movement-calculator", "Wood Movement Calculator",
      "Seasonal expansion across the grain for 128 species, from published USDA coefficients &mdash; flatsawn or quartersawn.",
-     "Joinery"),
+     "Joinery"),    ("epoxy-resin-calculator", "Epoxy Resin Volume &amp; Cost Calculator",
+     "River table and pour volume with waste allowance, litres or gallons, and the cost of the pour.",
+     "Finishing"),
+    ("epoxy-mix-ratio-calculator", "Epoxy Mix Ratio Calculator",
+     "Parts A and B for any batch size, by volume or weight, from the ratio on your label.",
+     "Finishing"),
 ]
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-STYLE = open(os.path.join(HERE, "_shared.css")).read()
+_here = os.path.dirname(os.path.abspath(__file__))
+_pub = os.path.join(os.path.dirname(_here), "public")
+# Deux dispositions possibles : l'atelier (script a cote des pages) et le
+# depot (script dans build/, pages dans public/). On vise ce qui existe.
+HERE = _pub if os.path.isdir(_pub) else _here
+STYLE = open(os.path.join(_here, "_shared.css")).read()
 
 
 def existing():

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Arc Calculator — Radius from Chord and Rise, With Marking Ordinates</title>
-<meta name="description" content="Work out the radius, arc length and trammel point of a curve from its width and height, and get the offsets to mark it out full size without a compass.">
+<title>Epoxy Resin Calculator — River Table Volume, Litres and Cost</title>
+<meta name="description" content="Resin volume for river tables, slab pours and coatings, with waste allowance, litre and gallon conversion, cost per pour and a scaled diagram of the pour.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -286,17 +286,17 @@ footer{margin-top:60px}
 }
 
 </style>
-<link rel="canonical" href="https://getkerfcalc.com/arc-layout-calculator.html">
+<link rel="canonical" href="https://getkerfcalc.com/epoxy-resin-calculator.html">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KerfCalc">
-<meta property="og:title" content="Arc Calculator — Radius from Chord and Rise, With Marking Ordinates">
-<meta property="og:description" content="Work out the radius, arc length and trammel point of a curve from its width and height, and get the offsets to mark it out full size without a compass.">
-<meta property="og:url" content="https://getkerfcalc.com/arc-layout-calculator.html">
+<meta property="og:title" content="Epoxy Resin Calculator — River Table Volume, Litres and Cost">
+<meta property="og:description" content="Resin volume for river tables, slab pours and coatings, with waste allowance, litre and gallon conversion, cost per pour and a scaled diagram of the pour.">
+<meta property="og:url" content="https://getkerfcalc.com/epoxy-resin-calculator.html">
 <meta property="og:image" content="https://getkerfcalc.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Arc Calculator — Radius from Chord and Rise, With Marking Ordinates">
+<meta name="twitter:title" content="Epoxy Resin Calculator — River Table Volume, Litres and Cost">
 <meta name="twitter:image" content="https://getkerfcalc.com/og.png">
-<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Arc Calculator", "url": "https://getkerfcalc.com/arc-layout-calculator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Work out the radius, arc length and trammel point of a curve from its width and height, and get the offsets to mark it out full size without a compass."}</script>
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Epoxy Resin Calculator", "url": "https://getkerfcalc.com/epoxy-resin-calculator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Resin volume for river tables, slab pours and coatings, with waste allowance, litre and gallon conversion, cost per pour and a scaled diagram of the pour."}</script>
 </head>
 <body>
 <div class="wrap">
@@ -304,8 +304,8 @@ footer{margin-top:60px}
 
 
 
-<h1>Arc &amp; Curve Layout Calculator</h1>
-<p class="sub">You know the opening is 1200 wide and you want the curve to rise 200 in the middle. This gives you the radius, where to put the trammel point, and — if the radius is too big for a compass — a table of offsets to plot the curve point by point.</p>
+<h1>Epoxy Resin Volume &amp; Cost Calculator</h1>
+<p class="sub">Resin is too expensive to guess. This works out the true volume of a river channel or slab pour, adds a waste allowance you control, converts to the litres or gallons on the tin, and prices the pour — with the geometry drawn so you can check it against the real slab.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -315,24 +315,26 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Curve</h2><div class="row"><div class="f"><label for="chord">Width of the opening (chord) <span class="u"></span></label><input type="number" id="chord" value="1200" step="any" min="0"></div><div class="f"><label for="rise">Rise at the centre <span class="u"></span></label><input type="number" id="rise" value="200" step="any" min="0"></div></div></div><div class="card noprint"><h2>Marking out</h2><div class="row"><div class="f"><label for="points">Number of marking points</label><input type="number" id="points" value="9" step="2" min="3"><span style="font-size:.74rem;color:var(--muted)">Odd numbers put one point at the centre</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>The pour</h2><div class="row"><div class="f"><label for="shape">What are you pouring</label><select id="shape"><option value="river" selected>River channel (average width)</option><option value="slab">Full rectangular pour / mold</option><option value="coat">Surface coating (thin flood coat)</option></select></div><div class="f"><label for="len">Length <span class="u"></span></label><input type="number" id="len" value="1800" step="any" min="0"></div><div class="f"><label for="wid">Width (average, for a river) <span class="u"></span></label><input type="number" id="wid" value="120" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Measure the channel every 200 mm and average it</span></div><div class="f"><label for="dep">Depth / coat thickness <span class="u"></span></label><input type="number" id="dep" value="40" step="any" min="0"></div></div></div><div class="card noprint"><h2>Allowances</h2><div class="row"><div class="f"><label for="waste">Waste allowance %</label><input type="number" id="waste" value="10" step="1" min="0"><span style="font-size:.74rem;color:var(--muted)">Mixing losses, bucket film, absorption: 5-15% typical</span></div><div class="f"><label for="maxpour">Max depth per pour (0 = single pour) <span class="u"></span></label><input type="number" id="maxpour" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">From your resin data sheet</span></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="price">Price per litre of mixed resin (0 = skip cost)</label><input type="number" id="price" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Kit price divided by kit litres</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
   <h2>Notes</h2>
-  <h3>Where the formula comes from</h3>
-  <p>With chord C and rise H, the radius is (C squared divided by 8H) plus H over 2. It falls out of the intersecting chords theorem, and it is exact, not an approximation.</p>
-  <h3>When the radius is bigger than your shop</h3>
-  <p>A 1200 opening rising 100 needs a radius of 1850 — fine. Rising 20 needs 9010, and no trammel reaches that. That is what the offsets table is for: measure along the chord, mark the offset up from it, and bend a batten through the points.</p>
-  <h3>Marking with a batten</h3>
-  <p>Drive a nail at each plotted point, spring a thin strip of straight-grained stock against them, and pencil along it. A batten naturally takes a fair curve, which is more forgiving to the eye than a slightly wrong true arc.</p>
+  <h3>How the river channel is estimated</h3>
+  <p>The channel is measured as an average width times length times depth. A live-edge channel is irregular — measure its width every 200 mm or so, average the readings, and use that. The diagram shows what the average-width rectangle looks like against your dimensions.</p>
+  <h3>Why the waste allowance</h3>
+  <p>Mixing losses, the film left in the bucket, overflow into the seal coat and absorption into the wood typically eat 5 to 15 percent. Deep-pour epoxies on well-sealed wood waste less; first pours on thirsty timber waste more. It is an input, not a hidden markup.</p>
+  <h3>Maximum pour depth</h3>
+  <p>Every epoxy has a maximum depth per pour — exceed it and the pour overheats, yellows or cracks. That limit is on YOUR product's data sheet, not in this tool: enter it and the tool splits the volume into pours.</p>
+  <h3>Litres, gallons, and board feet do not mix</h3>
+  <p>Resin kits are sold by total volume of the two parts combined. The figure here is that combined volume — compare it directly to the kit size on the label.</p>
   <h3>What this does not do</h3>
-  <p>It handles circular arcs only. Ellipses, ogees and free curves are a different problem, and a batten sprung through three points is usually the better answer for those anyway.</p>
+  <p>It does not know your product's mixing ratio, pot life, or exotherm limits — read the data sheet. And it does not estimate seal coats for porous surfaces; add those to the waste allowance instead.</p>
 </div>
 
-<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./box-joint-layout.html" style="color:var(--accent)">Box Joint &amp; Dovetail Layout</a> <span style="color:var(--muted)">— Even pin and tail spacing that actually divides, plus a 1:1 printable marking template.</span></li><li style="margin:4px 0"><a href="./compound-miter-calculator.html" style="color:var(--accent)">Compound Miter Angle Calculator</a> <span style="color:var(--muted)">— Saw miter and bevel settings for crown and sloped work, with the formulas shown.</span></li><li style="margin:4px 0"><a href="./polygon-miter-calculator.html" style="color:var(--accent)">Polygon Miter Angle Calculator</a> <span style="color:var(--muted)">— Miter angles and side lengths for hexagons, octagons and any polygon, from any known dimension.</span></li></ul></aside>
+<aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./tile-layout-planner.html" style="color:var(--accent)">Tile Layout Planner</a> <span style="color:var(--muted)">— Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span></li><li style="margin:4px 0"><a href="./concrete-volume-calculator.html" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="./gravel-volume-calculator.html" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li></ul></aside>
 
-<details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/arc-layout-calculator.html?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
+<details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/epoxy-resin-calculator.html?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
 <footer><span class="noprint" style="float:right"><a href="./privacy.html" style="color:var(--muted)">Privacy &amp; how this site works</a></span>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
@@ -344,71 +346,91 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'chord', label:'Width of the opening (chord)', value:1200, unit:'length', group:'Curve', min:0},
-    {id:'rise', label:'Rise at the centre', value:200, unit:'length', group:'Curve', min:0},
-    {id:'points', label:'Number of marking points', value:9, group:'Marking out', min:3, step:2,
-     hint:'Odd numbers put one point at the centre'}
+    {id:'shape', label:'What are you pouring', type:'select', value:'river', group:'The pour',
+     options:[{value:'river',label:'River channel (average width)'},
+              {value:'slab',label:'Full rectangular pour / mold'},
+              {value:'coat',label:'Surface coating (thin flood coat)'}]},
+    {id:'len', label:'Length', value:1800, unit:'length', group:'The pour', min:0},
+    {id:'wid', label:'Width (average, for a river)', value:120, unit:'length', group:'The pour', min:0,
+     hint:'Measure the channel every 200 mm and average it'},
+    {id:'dep', label:'Depth / coat thickness', value:40, unit:'length', group:'The pour', min:0},
+    {id:'waste', label:'Waste allowance %', value:10, group:'Allowances', min:0, step:1,
+     hint:'Mixing losses, bucket film, absorption: 5-15% typical'},
+    {id:'maxpour', label:'Max depth per pour (0 = single pour)', value:0, unit:'length', group:'Allowances', min:0,
+     hint:'From your resin data sheet'},
+    {id:'price', label:'Price per litre of mixed resin (0 = skip cost)', value:0, group:'Cost', min:0,
+     hint:'Kit price divided by kit litres'}
   ],
   compute: function (i) {
-    var C = i.chord, Hh = i.rise;
-    if (!(C > 0)) return {ok:false, errors:['The chord (width) must be greater than zero.']};
-    if (!(Hh > 0)) return {ok:false, errors:['The rise must be greater than zero — with no rise there is no curve.']};
-    if (Hh > C/2) return {ok:false, errors:['A rise larger than half the chord is more than a half circle. Check the numbers.']};
+    var mm = i.unit !== 'in';
+    var toL = function(v){ return mm ? v/1e6 : v*0.0163871; };  // mm3->cm3->L ; in3->L
+    if (!(i.len>0 && i.wid>0 && i.dep>0))
+      return {ok:false, errors:['Length, width and depth must all be greater than zero.']};
 
-    var R = (C*C)/(8*Hh) + Hh/2;
-    var halfAngle = Math.asin((C/2)/R);
-    var theta = 2*halfAngle;
-    var arc = R*theta;
-    var centreBelow = R - Hh;        // profondeur du point de compas sous la corde
+    var volRaw = i.len * i.wid * i.dep;           // en unites cubes saisies
+    var litres = toL(volRaw) * (mm ? 1000 : 1);   // mm: mm3 -> L directement via /1e6 (cm3) puis... voir note
+    // Correction d'unites, ecrite noir sur blanc :
+    // mm3 -> litres = /1 000 000 ; in3 -> litres = x 0.0163871
+    litres = mm ? volRaw/1e6 : volRaw*0.0163871;
 
-    var n = Math.max(3, Math.round(i.points));
-    var rows = [];
-    for (var k = 0; k < n; k++) {
-      var x = -C/2 + C*k/(n-1);
-      var y = Math.sqrt(Math.max(0, R*R - x*x)) - centreBelow;
-      rows.push([WCfmt(C/2 + x,1), WCfmt(y,2)]);
+    var withWaste = litres * (1 + Math.max(0,i.waste)/100);
+    var gallons = withWaste / 3.78541;
+
+    var pours = 1, perPour = withWaste;
+    if (i.maxpour > 0 && i.maxpour < i.dep) {
+      pours = Math.ceil(i.dep / i.maxpour);
+      perPour = withWaste / pours;
     }
+    var cost = i.price > 0 ? withWaste * i.price : null;
 
     var warn = [];
-    if (R > 3000) warn.push('Radius is '+WCfmt(R,0)+' — too big for most trammels. Use the offsets table and a sprung batten.');
+    if (mm && i.dep > 50 && i.maxpour === 0)
+      warn.push('A pour deeper than 50 mm is beyond many table-top epoxies. Check your product\'s maximum depth and enter it above to plan the pours.');
+    if (!mm && i.dep > 2 && i.maxpour === 0)
+      warn.push('A pour deeper than 2 in is beyond many table-top epoxies. Check your product\'s maximum depth and enter it above to plan the pours.');
 
-    return {ok:true, R:R, arc:arc, theta:theta*180/Math.PI, centreBelow:centreBelow, C:C, rise:Hh,
-      warnings: warn,
-      stats:[
-        {value: WCfmt(R,1), label:'Radius'},
-        {value: WCfmt(arc,1), label:'Arc length'},
-        {value: WCfmt(theta*180/Math.PI,2)+String.fromCharCode(176), label:'Included angle'},
-        {value: WCfmt(centreBelow,1), label:'Centre below chord'}
-      ],
-      tables:[
-        {title:'Setting out', head:['Item','Value'], rows:[
-          ['Chord (width)', WCfmt(C,1)],
-          ['Rise at centre', WCfmt(Hh,1)],
-          ['Radius', WCfmt(R,2)],
-          ['Trammel point', WCfmt(centreBelow,2)+' below the chord, on the centreline'],
-          ['Arc length', WCfmt(arc,2)],
-          ['Included angle', WCfmt(theta*180/Math.PI,3)+String.fromCharCode(176)],
-          ['Material length for the blank', WCfmt(C,1)+' x '+WCfmt(Hh,1)+' minimum']
-        ]},
-        {title:'Offsets from the chord', head:['Along the chord','Offset up'], rows: rows}
-      ],
-      note:'Measure along the chord from the left end, mark the offset square up from it. Spring a batten through the marks and pencil the curve.'
+    var stats = [
+      {value: WCfmt(withWaste,2)+' L', label:'Mixed resin to buy'},
+      {value: WCfmt(gallons,2)+' gal', label:'US gallons'},
+      {value: String(pours), label:'Pour'+(pours>1?'s':'')},
+      cost !== null ? {value: WCfmt(cost,0), label:'Cost of the pour'}
+                    : {value: WCfmt(litres,2)+' L', label:'Net volume, no waste'}
+    ];
+
+    return {ok:true, litres:litres, withWaste:withWaste, pours:pours, u: mm?'mm':'in',
+      warnings:warn, stats:stats,
+      tables:[{title:'The arithmetic', head:['Item','Value'], rows:[
+        ['Volume', WCfmt(i.len,0)+' x '+WCfmt(i.wid,0)+' x '+WCfmt(i.dep,0)+' = '+WCfmt(litres,2)+' L net'],
+        ['Waste allowance', WCfmt(i.waste,0)+'% -> '+WCfmt(withWaste-litres,2)+' L'],
+        ['Total mixed resin', WCfmt(withWaste,2)+' L  ('+WCfmt(gallons,2)+' US gal)'],
+        ['Pours', pours>1 ? pours+' pours of ~'+WCfmt(perPour,2)+' L, max '+WCfmt(i.maxpour,0)+' '+(mm?'mm':'in')+' deep each' : 'single pour'],
+        ['Cost', cost !== null ? WCfmt(cost,2)+' at '+WCfmt(i.price,2)+' per litre' : 'enter a price per litre to see it']
+      ]}],
+      note:'Compare the total to the KIT size on the label — kits quote the combined volume of resin plus hardener.'
     };
   },
   diagram: function (r, i) {
-    var W=640,H=300,m=50,s=SVG.open(W,H);
-    var sc=(W-2*m)/r.C, base=H-70;
-    var riseP=r.rise*sc, cW=r.C*sc, x0=m, x1=m+cW;
-    var Rp=r.R*sc, cyP=base+ (r.centreBelow*sc);
-    s+='<path d="M '+x0+' '+base+' A '+Rp+' '+Rp+' 0 0 1 '+x1+' '+base+'" fill="none" stroke="var(--accent)" stroke-width="2.5"/>';
-    s+=SVG.line(x0,base,x1,base,' class="dim"');
-    s+=SVG.line(W/2,base,W/2,base-riseP,' class="dim"');
-    if (cyP < H+400) s+=SVG.line(W/2,base,W/2,Math.min(cyP,H-6),' class="dim" stroke-dasharray="5 5"');
-    s+=SVG.text(W/2, base+22, 'chord '+WCfmt(r.C,0), 12);
-    s+=SVG.text(W/2-8, base-riseP-10, 'rise '+WCfmt(r.rise,0), 12);
-    s+=SVG.text(W/2, 26, 'radius '+WCfmt(r.R,1), 13);
-    s+=SVG.text(W/2, H-14, 'arc '+WCfmt(r.arc,1)+'  ·  trammel point '+WCfmt(r.centreBelow,0)+' below the chord', 12);
-    return s+SVG.close();
+    var W=560, H=250, s=SVG.open(W,H), m=55;
+    s += SVG.text(W/2, 24, i.shape==='river' ? 'River channel as the average-width rectangle' : 'The pour, to scale', 13);
+    var sc = Math.min((W-2*m)/i.len, 90/i.wid);
+    var pw = i.len*sc, ph = Math.max(10, i.wid*sc), x0=(W-pw)/2, y0=54;
+    if (i.shape==='river') {
+      // La dalle en fantome, le canal en accent au milieu.
+      s += SVG.rect(x0, y0-18, pw, ph+36, 'ghost');
+      s += SVG.rect(x0, y0, pw, ph, 'part');
+      s += SVG.text(x0+pw/2, y0+ph/2+4, 'channel', Math.min(12, ph-2));
+    } else {
+      s += SVG.rect(x0, y0, pw, ph, 'part');
+    }
+    s += SVG.line(x0, y0+ph+26, x0+pw, y0+ph+26, ' class="dim"');
+    s += SVG.text(x0+pw/2, y0+ph+40, WCfmt(i.len,0)+' '+r.u+' long, '+WCfmt(i.wid,0)+' '+r.u+' wide (average)', 11);
+    // Coupe : profondeur et nombre de coulees.
+    var cy = y0+ph+66, cw=160, cd=Math.max(14, Math.min(46, i.dep*sc*2));
+    s += SVG.rect(W/2-cw/2, cy, cw, cd, 'part');
+    for (var k=1; k<r.pours; k++)
+      s += SVG.line(W/2-cw/2, cy+cd*k/r.pours, W/2+cw/2, cy+cd*k/r.pours, ' stroke-dasharray="5 3"');
+    s += SVG.text(W/2, cy+cd+16, 'section: '+WCfmt(i.dep,0)+' '+r.u+' deep'+(r.pours>1?' in '+r.pours+' pours':''), 11);
+    return s + SVG.close();
   }
 };
 
@@ -616,6 +638,6 @@ return SPEC;
 
 
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
-<script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/arc-layout-calculator.html" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
+<script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/epoxy-resin-calculator.html" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
 </body>
 </html>

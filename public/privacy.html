@@ -1,23 +1,11 @@
-#!/usr/bin/env python3
-"""
-Passe de style : applique l'identité visuelle à toutes les pages.
-
-Idempotent — on peut le relancer autant de fois qu'on veut.
-Il injecte un bandeau de marque et un bloc CSS qui écrase les règles de base
-(la cascade fait que ce qui est ajouté en dernier gagne), donc il fonctionne
-aussi bien sur les outils écrits à la main que sur ceux sortis de la fabrique.
-"""
-
-import os, re, glob
-
-_here = os.path.dirname(os.path.abspath(__file__))
-_pub = os.path.join(os.path.dirname(_here), "public")
-# Deux dispositions possibles : l'atelier (script a cote des pages) et le
-# depot (script dans build/, pages dans public/). On vise ce qui existe.
-HERE = _pub if os.path.isdir(_pub) else _here
-MARK = "/* === KERFCALC THEME v3 === */"
-
-THEME = MARK + """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy &amp; How This Site Works — KerfCalc</title>
+<meta name="description" content="What KerfCalc does and does not collect: the calculators run entirely in your browser and upload nothing.">
+<style>/* === KERFCALC THEME v3 === */
 @import url('');
 :root{
   --bg:#faf8f5; --surface:#ffffff; --ink:#1b1a17; --muted:#6f6a61;
@@ -226,135 +214,67 @@ footer{margin-top:60px}
   .card{box-shadow:none;border:1px solid #ddd}
   body{background:#fff}
 }
-"""
 
-LOGO = ('<svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">'
-        '<rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" '
-        'stroke-width="1.7" opacity=".28"/>'
-        '<path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" '
-        'stroke-linecap="round" stroke-linejoin="round"/>'
-        '<path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" '
-        'stroke-dasharray="1.5 3"/></svg>')
-
-
-# Compte les outils reellement presents : le nombre etait ecrit en dur
-# ("Browse all 15") et mentait des le 16e outil.
-NOT_TOOLS = {'index.html', 'privacy.html'}   # pages qui ne sont pas des outils
-N_TOOLS = len([f for f in os.listdir(HERE)
-               if f.endswith('.html') and f not in NOT_TOOLS])
-
-
-def masthead(is_index):
-    left = (f'<a class="brand" href="./index.html">{LOGO}<b>Kerf<span>Calc</span></b></a>')
-    if is_index:
-        right = ('<nav class="mnav">'
-                 '<a href="#tools">Tools</a>'
-                 '<a href="#what">What you get</a>'
-                 f'<a class="cta" href="#tools">Browse all {N_TOOLS} &rarr;</a></nav>')
-    else:
-        right = ('<nav class="mnav">'
-                 '<a href="./index.html">All tools</a>'
-                 '<a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav>')
-    return f'<header class="masthead noprint">{left}{right}</header>'
+</style>
+<link rel="canonical" href="https://getkerfcalc.com/privacy.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KerfCalc">
+<meta property="og:title" content="Privacy &amp; How This Site Works — KerfCalc">
+<meta property="og:description" content="What KerfCalc does and does not collect: the calculators run entirely in your browser and upload nothing.">
+<meta property="og:url" content="https://getkerfcalc.com/privacy.html">
+<meta property="og:image" content="https://getkerfcalc.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Privacy &amp; How This Site Works — KerfCalc">
+<meta name="twitter:image" content="https://getkerfcalc.com/og.png">
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Privacy &amp; How This Site Works", "url": "https://getkerfcalc.com/privacy.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "What KerfCalc does and does not collect: the calculators run entirely in your browser and upload nothing."}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
 
 
-def apply_to(path):
-    src = open(path).read()
-    is_index = os.path.basename(path) == 'index.html'
-
-    # 1. CSS — on remplace la version precedente si elle est deja la
-    if MARK in src:
-        src = re.sub(re.escape(MARK) + r".*?(?=</style>)", "", src, flags=re.S)
-    src = src.replace('</style>', THEME + '\n</style>', 1)
-
-    # 2. Bandeau — on retire l'ancien avant d'ajouter le nouveau
-    src = re.sub(r'<header class="masthead[^"]*">.*?</header>', '', src, flags=re.S)
-    src = re.sub(r'<nav id="site-nav".*?</nav>', '', src, flags=re.S)
-    src = re.sub(r'(<div class="wrap">)', r'\1\n' + masthead(is_index), src, count=1)
-
-    # 3. Apparition au defilement (leger, sans dependance)
-    src = re.sub(r'<script id="reveal">.*?</script>', '', src, flags=re.S)
-    reveal = ('<script id="reveal">(function(){var m=window.matchMedia&&'
-              'window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
-              'var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");'
-              'if(m||!("IntersectionObserver" in window)){return;}'
-              'els.forEach(function(e){e.classList.add("reveal");});'
-              'var io=new IntersectionObserver(function(es){es.forEach(function(en){'
-              'if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},'
-              '{rootMargin:"0px 0px -40px 0px",threshold:.06});'
-              'els.forEach(function(e){io.observe(e);});})();</script>')
-    src = src.replace('</body>', reveal + '\n</body>', 1)
-
-    # 4. Encastrement — chaque outil peut vivre en iframe chez un tiers.
-    #    C'est le canal de diffusion qui ne depend pas de Google : le site
-    #    qui l'encastre nous fait un lien, et ses visiteurs nous decouvrent.
-    src = re.sub(r'<script id="embed">.*?</script>', '', src, flags=re.S)
-    src = re.sub(r'<details id="embedbox".*?</details>', '', src, flags=re.S)
-    if not is_index:
-        slug = os.path.basename(path)
-        url = f'https://getkerfcalc.com/{slug}'
-        code = (f'&lt;iframe src=&quot;{url}?embed=1&quot; width=&quot;100%&quot; '
-                'height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; '
-                'loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;')
-        box = ('<details id="embedbox" class="noprint"><summary>Embed this calculator '
-               'on your own site (free)</summary><textarea rows="3" readonly '
-               'onclick="this.select()">' + code + '</textarea>'
-               '<p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">'
-               'Copy, paste, done. Please keep the link back to us.</p></details>')
-        src = src.replace('<footer>', box + '\n<footer>', 1)
-        embed = ('<script id="embed">(function(){'
-                 'if(location.search.indexOf("embed=1")<0)return;'
-                 'document.body.classList.add("embedded");'
-                 'var p=document.createElement("p");p.className="pby";'
-                 'p.innerHTML=\'Powered by <a href="' + url +
-                 '" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators\';'
-                 'var w=document.querySelector(".wrap");if(w)w.appendChild(p);'
-                 '})();</script>')
-        src = src.replace('</body>', embed + '\n</body>', 1)
-
-    # --- Blindage du <head> : canonical + reseaux sociaux + donnees structurees.
-    # Retrait inconditionnel avant reinjection (regle n.4 du briefing).
-    fname = os.path.basename(path)
-    url = 'https://getkerfcalc.com/' + ('' if fname == 'index.html' else fname)
-    src = re.sub(r'<link rel="canonical"[^>]*>\n?', '', src)
-    src = re.sub(r'<meta (?:property="og:|name="twitter:)[^>]*>\n?', '', src)
-    src = re.sub(r'<script type="application/ld\+json" id="ld">.*?</script>\n?', '', src, flags=re.S)
-
-    mt = re.search(r'<title>(.*?)</title>', src)
-    md = re.search(r'<meta name="description" content="([^"]*)"', src)
-    title = mt.group(1) if mt else 'KerfCalc'
-    desc = md.group(1) if md else ''
-    import json as _json
-    ld = {"@context": "https://schema.org", "@type": "WebApplication",
-          "name": re.sub(r'\s*[—-].*$', '', title), "url": url,
-          "applicationCategory": "UtilitiesApplication",
-          "operatingSystem": "Any (browser)", "isAccessibleForFree": True,
-          "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-          "description": desc}
-    head = ('<link rel="canonical" href="%s">\n'
-            '<meta property="og:type" content="website">\n'
-            '<meta property="og:site_name" content="KerfCalc">\n'
-            '<meta property="og:title" content="%s">\n'
-            '<meta property="og:description" content="%s">\n'
-            '<meta property="og:url" content="%s">\n'
-            '<meta property="og:image" content="https://getkerfcalc.com/og.png">\n'
-            '<meta name="twitter:card" content="summary_large_image">\n'
-            '<meta name="twitter:title" content="%s">\n'
-            '<meta name="twitter:image" content="https://getkerfcalc.com/og.png">\n'
-            '<script type="application/ld+json" id="ld">%s</script>\n'
-            ) % (url, title, desc, url, title, _json.dumps(ld))
-    src = src.replace('</head>', head + '</head>', 1)
-
-    # Lien vie privee dans le pied de page, une seule fois.
-    if 'privacy.html' not in src and '<footer>' in src:
-        src = src.replace('<footer>',
-            '<footer><span class="noprint" style="float:right"><a href="./privacy.html" '
-            'style="color:var(--muted)">Privacy &amp; how this site works</a></span>', 1)
-
-    open(path, 'w').write(src)
-    return os.path.basename(path)
 
 
-if __name__ == '__main__':
-    done = [apply_to(p) for p in sorted(glob.glob(os.path.join(HERE, '*.html')))]
-    print(f"Habillage appliqué à {len(done)} pages")
+<h1>Privacy &amp; how this site works</h1>
+<p class="sub">Short version: the calculators run entirely in your browser. Your measurements, cut lists and results never leave your device.</p>
+
+<div class="card">
+<h2>What we collect</h2>
+<p><strong>From the calculators: nothing.</strong> Every tool on this site is a static page whose arithmetic runs in your browser. What you type is not transmitted, stored or logged by us — close the tab and it is gone.</p>
+<p><strong>From serving the pages:</strong> like any website, our hosting provider (Cloudflare) receives the standard technical data your browser sends to load a page — IP address, browser type, page requested — and uses it to deliver the page and defend against abuse. We do not build profiles from it.</p>
+<p><strong>Cookies and analytics:</strong> this site currently sets no cookies and runs no analytics scripts. If that ever changes — for example if advertising is added to keep the tools free — this page will say so plainly, and anything requiring consent will ask for it first.</p>
+</div>
+
+<div class="card">
+<h2>Embedded calculators</h2>
+<p>Site owners may embed our calculators in their own pages using an iframe or our WordPress plugin. The same rules apply there: the embedded page is served by Cloudflare (which sees the standard request data), and the calculator itself uploads nothing.</p>
+</div>
+
+<div class="card">
+<h2>What the results are</h2>
+<p>The tools are planning aids built on published geometry and arithmetic, with sources named where a published reference is used (for example, wood movement coefficients from the USDA Forest Products Laboratory's <em>Wood Handbook</em>). They are not engineering advice: structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.</p>
+</div>
+
+<div class="card">
+<h2>Contact</h2>
+<p>Found a mistake in a calculator? We would honestly rather know than not: <a href="mailto:hello@getkerfcalc.com">hello@getkerfcalc.com</a>.</p>
+</div>
+
+
+
+
+<details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/privacy.html?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
+<footer>
+  KerfCalc — free workshop calculators. <a href="./index.html">All tools</a>
+</footer>
+</div>
+
+
+
+
+
+
+<script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+<script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/privacy.html" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
+</body>
+</html>

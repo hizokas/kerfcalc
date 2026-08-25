@@ -233,6 +233,18 @@ body{
 .mnav .cta:hover{background:var(--accent-ink);border-color:var(--accent-ink);color:#fff}
 @media (max-width:700px){.mnav a:not(.cta){display:none}}
 
+/* ---- mode encastre : la page dans un iframe chez quelqu'un d'autre ---- */
+body.embedded .masthead,body.embedded footer,body.embedded #site-nav,
+body.embedded #related,body.embedded .faq,body.embedded #embedbox{display:none}
+body.embedded .wrap{padding:6px 14px 20px;max-width:none}
+body.embedded h1{font-size:1.3rem;margin-top:4px}
+body.embedded .sub{display:none}
+.pby{font-size:.78rem;margin:10px 0 0}
+.pby a{color:var(--accent);text-decoration:none;font-weight:560}
+#embedbox summary{cursor:pointer;color:var(--muted);font-size:.85rem}
+#embedbox textarea{width:100%;font:12px ui-monospace,monospace;margin-top:8px;
+  border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--bg);color:var(--ink)}
+
 /* ---- profondeur sur les cartes ---- */
 .card,.tool,.shot,.faqitem,.whyitem,.band{position:relative;overflow:hidden}
 .tool::before,.shot::before{
@@ -274,10 +286,22 @@ footer{margin-top:60px}
 }
 
 </style>
+<link rel="canonical" href="https://getkerfcalc.com/ramp-slope-calculator.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="KerfCalc">
+<meta property="og:title" content="Slope Calculator — Convert Between Ratio, Percent, Degrees and Rise per Metre">
+<meta property="og:description" content="Convert any slope between ratio, percentage, degrees and fall per metre, and work out ramp length, rise or run when you know the other two.">
+<meta property="og:url" content="https://getkerfcalc.com/ramp-slope-calculator.html">
+<meta property="og:image" content="https://getkerfcalc.com/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Slope Calculator — Convert Between Ratio, Percent, Degrees and Rise per Metre">
+<meta name="twitter:image" content="https://getkerfcalc.com/og.png">
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Slope Calculator", "url": "https://getkerfcalc.com/ramp-slope-calculator.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Convert any slope between ratio, percentage, degrees and fall per metre, and work out ramp length, rise or run when you know the other two."}</script>
 </head>
 <body>
 <div class="wrap">
 <header class="masthead noprint"><a class="brand" href="./index.html"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="./index.html">All tools</a><a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav></header>
+
 
 
 <h1>Ramp &amp; Slope Calculator</h1>
@@ -307,7 +331,9 @@ footer{margin-top:60px}
 </div>
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="./stair-stringer-calculator.html" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="./rafter-calculator.html" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="./deck-board-planner.html" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li></ul></aside>
-<footer>
+
+<details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/ramp-slope-calculator.html?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
+<footer><span class="noprint" style="float:right"><a href="./privacy.html" style="color:var(--muted)">Privacy &amp; how this site works</a></span>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
   These tools are planning aids, not engineering. Structural work needs span tables, local building regulations and professional judgement. Check every result against the real material before you cut.
 </footer>
@@ -591,6 +617,9 @@ return SPEC;
 })();
 
 </script>
+
+
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
+<script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/ramp-slope-calculator.html" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
 </body>
 </html>

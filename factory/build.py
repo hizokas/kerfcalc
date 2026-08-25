@@ -12,8 +12,14 @@ Conséquence : ajouter un outil coûte ~80 lignes au lieu de ~600.
 import os, re, json, glob, importlib.util
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SITE = os.path.join(os.path.dirname(HERE), "site")
-STYLE = open(os.path.join(SITE, "_shared.css")).read()
+# Atelier : ../site ; depot : ../public. On ecrit la ou les pages vivent.
+_root = os.path.dirname(HERE)
+SITE = next(d for d in (os.path.join(_root, "public"), os.path.join(_root, "site"))
+            if os.path.isdir(d))
+_css = next(q for q in (os.path.join(_root, "build", "_shared.css"),
+                        os.path.join(_root, "site", "_shared.css"))
+            if os.path.exists(q))
+STYLE = open(_css).read()
 FRAMEWORK = open(os.path.join(HERE, "framework.js")).read()
 
 EXTRA_CSS = """
