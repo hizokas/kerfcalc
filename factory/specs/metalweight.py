@@ -34,7 +34,7 @@ var SPEC = {
     {id:'wall', label:'Wall thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes only'},
     {id:'len', label:'Length', value:1000, unit:'length', group:'Dimensions', min:0},
     {id:'qty', label:'How many pieces', value:1, group:'Dimensions', min:1, step:1},
-    {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'0 to skip'}
+    {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'In whatever currency you buy in. 0 to skip the cost.'}
   ],
   compute: function (i) {
     var DENS = {steel:7850, stainless:8000, alu:2700, brass:8500, copper:8960, castiron:7200, lead:11340};
@@ -74,7 +74,7 @@ var SPEC = {
       {value: WCfmt(kgPerM,3), label:'kg per metre'},
       {value: String(n), label:'Pieces'}
     ];
-    if (cost !== null) stats.push({value:'\u00a4'+WCfmt(cost,2), label:'Estimated cost'});
+    if (cost !== null) stats.push({value:WCfmt(cost,2), label:'Estimated cost'});
 
     return {ok:true, each:each, total:total, kgPerM:kgPerM, label:label, area:area, rho:rho,
       stats: stats,

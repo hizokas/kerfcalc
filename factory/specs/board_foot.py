@@ -18,7 +18,7 @@ var SPEC = {
     {id:'length', label:'Length', value:2400, unit:'length', group:'Board size', min:0},
     {id:'qty', label:'How many boards', value:10, group:'Board size', min:1, step:1},
     {id:'waste', label:'Waste allowance (%)', value:15, group:'Cost', min:0, hint:'15-25% for rough stock'},
-    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'Leave 0 to skip cost'}
+    {id:'price', label:'Price per board foot', value:6.5, group:'Cost', min:0, hint:'In whatever currency you buy in. Leave 0 to skip the cost.'}
   ],
   compute: function (i) {
     var k = i.unit === 'in' ? 1 : 1/25.4;          // vers pouces
@@ -40,7 +40,7 @@ var SPEC = {
       {value: WCfmt(bfTotal,1), label:'Board feet total'},
       {value: WCfmt(bfWithWaste,1), label:'Buy this many bf'}
     ];
-    if (cost!==null) stats.push({value:'\u00a4'+WCfmt(cost,2), label:'Estimated cost'});
+    if (cost!==null) stats.push({value:WCfmt(cost,2), label:'Estimated cost'});
     stats.push({value: WCfmt(m3,3), label:'Cubic metres'});
 
     return {ok:true, bfEach:bfEach, bfTotal:bfTotal, bfWithWaste:bfWithWaste, m3:m3, cost:cost,

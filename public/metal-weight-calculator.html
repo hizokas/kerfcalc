@@ -304,10 +304,6 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
 
-
-
-
-
 <h1>Metal Weight Calculator</h1>
 <p class="sub">Before you order it, before you lift it, before you work out what the trailer can carry. Choose the shape and the metal, enter the dimensions, and get the weight per metre, the total, and the cost if you know the rate.</p>
 
@@ -319,7 +315,7 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Section</h2><div class="row"><div class="f"><label for="shape">Shape</label><select id="shape"><option value="round" selected>Round bar</option><option value="square">Square bar</option><option value="flat">Flat bar / plate</option><option value="tube">Round tube</option><option value="sqtube">Square tube</option><option value="sheet">Sheet</option></select></div><div class="f"><label for="metal">Metal</label><select id="metal"><option value="steel" selected>Mild steel (7850)</option><option value="stainless">Stainless (8000)</option><option value="alu">Aluminium (2700)</option><option value="brass">Brass (8500)</option><option value="copper">Copper (8960)</option><option value="castiron">Cast iron (7200)</option><option value="lead">Lead (11340)</option></select></div></div></div><div class="card noprint"><h2>Dimensions</h2><div class="row"><div class="f"><label for="d1">Diameter / width <span class="u"></span></label><input type="number" id="d1" value="25" step="any" min="0"></div><div class="f"><label for="d2">Height / second side <span class="u"></span></label><input type="number" id="d2" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Flat bar, square tube, sheet</span></div><div class="f"><label for="wall">Wall thickness <span class="u"></span></label><input type="number" id="wall" value="2" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Tubes only</span></div><div class="f"><label for="len">Length <span class="u"></span></label><input type="number" id="len" value="1000" step="any" min="0"></div><div class="f"><label for="qty">How many pieces</label><input type="number" id="qty" value="1" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="price">Price per kg</label><input type="number" id="price" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">0 to skip</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Section</h2><div class="row"><div class="f"><label for="shape">Shape</label><select id="shape"><option value="round" selected>Round bar</option><option value="square">Square bar</option><option value="flat">Flat bar / plate</option><option value="tube">Round tube</option><option value="sqtube">Square tube</option><option value="sheet">Sheet</option></select></div><div class="f"><label for="metal">Metal</label><select id="metal"><option value="steel" selected>Mild steel (7850)</option><option value="stainless">Stainless (8000)</option><option value="alu">Aluminium (2700)</option><option value="brass">Brass (8500)</option><option value="copper">Copper (8960)</option><option value="castiron">Cast iron (7200)</option><option value="lead">Lead (11340)</option></select></div></div></div><div class="card noprint"><h2>Dimensions</h2><div class="row"><div class="f"><label for="d1">Diameter / width <span class="u"></span></label><input type="number" id="d1" value="25" step="any" min="0"></div><div class="f"><label for="d2">Height / second side <span class="u"></span></label><input type="number" id="d2" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Flat bar, square tube, sheet</span></div><div class="f"><label for="wall">Wall thickness <span class="u"></span></label><input type="number" id="wall" value="2" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Tubes only</span></div><div class="f"><label for="len">Length <span class="u"></span></label><input type="number" id="len" value="1000" step="any" min="0"></div><div class="f"><label for="qty">How many pieces</label><input type="number" id="qty" value="1" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="price">Price per kg</label><input type="number" id="price" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">In whatever currency you buy in. 0 to skip the cost.</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
@@ -334,11 +330,7 @@ footer{margin-top:60px}
   <p>It weighs geometry. It does not check whether a section is strong enough, which depends on span, load and how it is fixed.</p>
 </div>
 
-
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="/cut-list-optimizer" style="color:var(--accent)">Cut List Optimizer</a> <span style="color:var(--muted)">— Lay out your parts on full sheets with the least waste. Kerf and grain aware, with scaled diagrams.</span></li><li style="margin:4px 0"><a href="/linear-cut-optimizer" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="/board-foot-calculator" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li></ul></aside>
-
-
-
 <details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/metal-weight-calculator?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
 <footer><span class="noprint" style="float:right"><a href="/privacy" style="color:var(--muted)">Privacy &amp; how this site works</a></span>
   Runs entirely in your browser — nothing is uploaded, stored or tracked.
@@ -372,7 +364,7 @@ var SPEC = {
     {id:'wall', label:'Wall thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes only'},
     {id:'len', label:'Length', value:1000, unit:'length', group:'Dimensions', min:0},
     {id:'qty', label:'How many pieces', value:1, group:'Dimensions', min:1, step:1},
-    {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'0 to skip'}
+    {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'In whatever currency you buy in. 0 to skip the cost.'}
   ],
   compute: function (i) {
     var DENS = {steel:7850, stainless:8000, alu:2700, brass:8500, copper:8960, castiron:7200, lead:11340};
@@ -412,7 +404,7 @@ var SPEC = {
       {value: WCfmt(kgPerM,3), label:'kg per metre'},
       {value: String(n), label:'Pieces'}
     ];
-    if (cost !== null) stats.push({value:'¤'+WCfmt(cost,2), label:'Estimated cost'});
+    if (cost !== null) stats.push({value:WCfmt(cost,2), label:'Estimated cost'});
 
     return {ok:true, each:each, total:total, kgPerM:kgPerM, label:label, area:area, rho:rho,
       stats: stats,
@@ -649,15 +641,6 @@ return SPEC;
 })();
 
 </script>
-
-
-
-
-
-
-
-
-
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
 <script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/metal-weight-calculator" target="_blank" rel="noopener">KerfCalc</a> — 38 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>
 </body>

@@ -52,7 +52,7 @@ var SPEC = {
       {value: WCfmt(faceCords,2), label:'Face cords'},
       {value: WCfmt(ft3,0), label:'Cubic feet'}
     ];
-    if (pricePerCord !== null) stats.push({value:'\u00a4'+WCfmt(pricePerCord,0), label:'Price per cord'});
+    if (pricePerCord !== null) stats.push({value:WCfmt(pricePerCord,0), label:'Price per cord'});
 
     return {ok:true, m3:m3, cords:cords, faceCords:faceCords, L:L, Hh:Hh, depth:depth,
       warnings: warn, stats: stats,
