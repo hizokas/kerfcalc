@@ -34,6 +34,16 @@ Le push déclenche le déploiement Cloudflare automatiquement.
   du libellé**, jamais d'après la taille de la pièce seule.
 - **Vérifier chaque calcul avec node** et recalculer deux cas à la main avant
   de publier. Un mauvais chiffre détruit la crédibilité de tout le site.
+- **Les URL servies n'ont pas d'extension.** Cloudflare redirige
+  `/outil.html` vers `/outil`. Tout ce que le site déclare doit donc être sans
+  `.html` : sitemap, canonical, og:url, JSON-LD et liens internes. Le 01/09/2026
+  le site déclarait partout la forme `.html` : Google tournait en boucle
+  (redirection puis canonical qui renvoie vers la forme redirigée), 3 pages
+  étaient indexées deux fois et 26 restaient « détectée, non explorée ».
+- **`os.path.basename(path)` rend le nom de fichier, pas le slug.** Dans
+  theme.py cette confusion avait produit une URL d'iframe fausse sur les 38
+  pages pendant des semaines.
+
 - **Pas de génération de masse.** 25 à 40 outils réellement distincts, pas
   plus : la mise à jour anti-spam de juin 2026 vise les pages en rafale.
 
