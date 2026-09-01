@@ -15,6 +15,9 @@ _pub = os.path.join(os.path.dirname(_here), "public")
 # Deux dispositions possibles : l'atelier (script a cote des pages) et le
 # depot (script dans build/, pages dans public/). On vise ce qui existe.
 HERE = _pub if os.path.isdir(_pub) else _here
+# Jeton de verification Pinterest (revendication du domaine getkerfcalc.com).
+PINTEREST_VERIFY = "0657e581c7b5d105bbfcb596a9fcb099"
+
 MARK = "/* === KERFCALC THEME v3 === */"
 
 THEME = MARK + """
@@ -318,6 +321,7 @@ def apply_to(path):
     url = 'https://getkerfcalc.com/' + ('' if fname == 'index.html' else re.sub(r'\.html$', '', fname))
     src = re.sub(r'<link rel="canonical"[^>]*>\n?', '', src)
     src = re.sub(r'<meta (?:property="og:|name="twitter:)[^>]*>\n?', '', src)
+    src = re.sub(r'<meta name="p:domain_verify"[^>]*>\n?', '', src)
     src = re.sub(r'<script type="application/ld\+json" id="ld">.*?</script>\n?', '', src, flags=re.S)
 
     mt = re.search(r'<title>(.*?)</title>', src)
@@ -343,6 +347,7 @@ def apply_to(path):
             '<meta name="twitter:image" content="https://getkerfcalc.com/og.png">\n'
             '<script type="application/ld+json" id="ld">%s</script>\n'
             ) % (url, title, desc, url, title, _json.dumps(ld))
+    head = '<meta name="p:domain_verify" content="' + PINTEREST_VERIFY + '">\n' + head
     src = src.replace('</head>', head + '</head>', 1)
 
     # Lien vie privee dans le pied de page, une seule fois.
