@@ -162,13 +162,13 @@ def inject_nav(tools):
         src = re.sub(r'\n{3,}', '\n\n', src)
 
         nav = f'<nav id="site-nav" class="noprint" style="margin-bottom:18px;font-size:.88rem">' \
-              f'<a href="./index.html" style="color:var(--muted);text-decoration:none">← All {SITE_NAME} tools</a></nav>'
+              f'<a href="/" style="color:var(--muted);text-decoration:none">← All {SITE_NAME} tools</a></nav>'
 
         siblings = [t for t in tools if t[3] == cat and t[0] != slug][:3]
         if len(siblings) < 3:
             siblings += [t for t in tools if t[3] != cat and t[0] != slug][:3 - len(siblings)]
         links = "".join(
-            f'<li style="margin:4px 0"><a href="./{s}.html" style="color:var(--accent)">{ti}</a> '
+            f'<li style="margin:4px 0"><a href="/{s}" style="color:var(--accent)">{ti}</a> '
             f'<span style="color:var(--muted)">— {de}</span></li>'
             for s, ti, de, _ in siblings)
         related = f'<aside id="related" class="card noprint"><h2>Related tools</h2>' \
@@ -182,7 +182,7 @@ def inject_nav(tools):
 def build_sitemap(tools):
     today = datetime.date.today().isoformat()
     urls = "".join(
-        f"  <url><loc>{DOMAIN}/{s}.html</loc><lastmod>{today}</lastmod></url>\n"
+        f"  <url><loc>{DOMAIN}/{s}</loc><lastmod>{today}</lastmod></url>\n"
         for s, _, _, _ in tools)
     xml = f'''<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

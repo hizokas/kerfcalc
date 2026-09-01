@@ -159,7 +159,7 @@ def build():
                   '<p class="catblurb">' + BLURB.get(cat, "") + '</p></div>\n'
                   '  </div>\n  <div class="grid">\n')
         for slug, title, desc in groups[cat]:
-            cards += ('    <a class="tool" href="./' + slug + '.html">\n'
+            cards += ('    <a class="tool" href="/' + slug + '">\n'
                       '      <strong>' + title + '</strong>\n'
                       '      <span>' + desc + '</span>\n'
                       '      <em class="go">Open tool &rarr;</em>\n    </a>\n')
@@ -228,7 +228,7 @@ def build():
             continue
         foot_links += '<div><h5>' + cat + '</h5>'
         for slug, title, _ in groups[cat][:4]:
-            foot_links += '<a href="./' + slug + '.html">' + title + '</a>'
+            foot_links += '<a href="/' + slug + '">' + title + '</a>'
         foot_links += '</div>'
 
     parts.append('<footer><div class="footgrid">'

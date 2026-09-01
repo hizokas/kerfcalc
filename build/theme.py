@@ -245,7 +245,7 @@ N_TOOLS = len([f for f in os.listdir(HERE)
 
 
 def masthead(is_index):
-    left = (f'<a class="brand" href="./index.html">{LOGO}<b>Kerf<span>Calc</span></b></a>')
+    left = (f'<a class="brand" href="/">{LOGO}<b>Kerf<span>Calc</span></b></a>')
     if is_index:
         right = ('<nav class="mnav">'
                  '<a href="#tools">Tools</a>'
@@ -253,8 +253,8 @@ def masthead(is_index):
                  f'<a class="cta" href="#tools">Browse all {N_TOOLS} &rarr;</a></nav>')
     else:
         right = ('<nav class="mnav">'
-                 '<a href="./index.html">All tools</a>'
-                 '<a class="cta" href="./index.html">Back to KerfCalc &rarr;</a></nav>')
+                 '<a href="/">All tools</a>'
+                 '<a class="cta" href="/">Back to KerfCalc &rarr;</a></nav>')
     return f'<header class="masthead noprint">{left}{right}</header>'
 
 
@@ -291,7 +291,7 @@ def apply_to(path):
     src = re.sub(r'<script id="embed">.*?</script>', '', src, flags=re.S)
     src = re.sub(r'<details id="embedbox".*?</details>', '', src, flags=re.S)
     if not is_index:
-        slug = os.path.basename(path)
+        slug = re.sub(r'\.html$', '', os.path.basename(path))
         url = f'https://getkerfcalc.com/{slug}'
         code = (f'&lt;iframe src=&quot;{url}?embed=1&quot; width=&quot;100%&quot; '
                 'height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; '
@@ -307,7 +307,7 @@ def apply_to(path):
                  'document.body.classList.add("embedded");'
                  'var p=document.createElement("p");p.className="pby";'
                  'p.innerHTML=\'Powered by <a href="' + url +
-                 '" target="_blank" rel="noopener">KerfCalc</a> — 36 free workshop calculators\';'
+                 '" target="_blank" rel="noopener">KerfCalc</a> — ' + str(N_TOOLS) + ' free workshop calculators\';'
                  'var w=document.querySelector(".wrap");if(w)w.appendChild(p);'
                  '})();</script>')
         src = src.replace('</body>', embed + '\n</body>', 1)
@@ -315,7 +315,7 @@ def apply_to(path):
     # --- Blindage du <head> : canonical + reseaux sociaux + donnees structurees.
     # Retrait inconditionnel avant reinjection (regle n.4 du briefing).
     fname = os.path.basename(path)
-    url = 'https://getkerfcalc.com/' + ('' if fname == 'index.html' else fname)
+    url = 'https://getkerfcalc.com/' + ('' if fname == 'index.html' else re.sub(r'\.html$', '', fname))
     src = re.sub(r'<link rel="canonical"[^>]*>\n?', '', src)
     src = re.sub(r'<meta (?:property="og:|name="twitter:)[^>]*>\n?', '', src)
     src = re.sub(r'<script type="application/ld\+json" id="ld">.*?</script>\n?', '', src, flags=re.S)
@@ -346,9 +346,10 @@ def apply_to(path):
     src = src.replace('</head>', head + '</head>', 1)
 
     # Lien vie privee dans le pied de page, une seule fois.
-    if 'privacy.html' not in src and '<footer>' in src:
+    src = re.sub(r'<span class="noprint" style="float:right"><a href="[^"]*privacy[^"]*"[^>]*>Privacy[^<]*</a></span>', '', src)
+    if '<footer>' in src:
         src = src.replace('<footer>',
-            '<footer><span class="noprint" style="float:right"><a href="./privacy.html" '
+            '<footer><span class="noprint" style="float:right"><a href="/privacy" '
             'style="color:var(--muted)">Privacy &amp; how this site works</a></span>', 1)
 
     open(path, 'w').write(src)
