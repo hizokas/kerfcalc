@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.DS_Store
+_to_delete/
+_pinterest-epingles/
+_sauvegarde-InkAndNumbers/
