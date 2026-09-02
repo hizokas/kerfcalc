@@ -303,7 +303,6 @@ footer{margin-top:60px}
 <div class="wrap">
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
-
 <h1>Tank Volume &amp; Fill Level Calculator</h1>
 <p class="sub">A vertical tank half full holds half its capacity. A horizontal one does too — but at a third of the way up it holds barely a fifth, and that is where people get caught. This gives the volume at any depth, plus a dipstick table.</p>
 
@@ -402,7 +401,7 @@ var SPEC = {
       ],
       tables:[
         {title:'Now', head:['Item','Value'], rows:[
-          ['Shape', i.shape],
+          ['Shape', {vertical:'Vertical cylinder', horizontal:'Horizontal cylinder', rect:'Rectangular'}[i.shape] || i.shape],
           ['Capacity', WCfmt(full*1000,1)+' litres / '+WCfmt(full,4)+' m3 / '+WCfmt(full*219.969,1)+' imp gal'],
           ['Fill depth', WCfmt(lvl*1000,0)+' mm of '+WCfmt(height*1000,0)+' mm'],
           ['Depth as a percentage', WCfmt(pctHeight,1)+'%'],

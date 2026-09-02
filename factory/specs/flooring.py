@@ -41,7 +41,10 @@ var SPEC = {
 
     var perRow = Math.ceil(L/i.plankL);
     var totalPlanks = rows*perRow;
-    var area = (i.roomL*i.roomW)/1e6;
+    // La surface est annoncee en m2 : il faut convertir la saisie, sinon le
+    // mode pouces divise par 645 (25,4 au carre).
+    var toMm = i.unit === 'in' ? 25.4 : 1;
+    var area = (i.roomL*toMm)*(i.roomW*toMm)/1e6;
     var withWaste = Math.ceil(totalPlanks*(1+Math.max(0,i.waste)/100));
     var boxes = Math.ceil(withWaste/Math.max(1,i.perBox));
 

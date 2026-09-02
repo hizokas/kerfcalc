@@ -33,8 +33,11 @@ var SPEC = {
     if (!(P>0 && Hh>0)) return {ok:false, errors:['Wall length and height must be greater than zero.']};
     if (!(i.rollW>0 && i.rollL>0)) return {ok:false, errors:['Roll width and length must be greater than zero.']};
 
-    // Deduction : une porte ~0.9 m de large, une fenetre ~1.2 m
-    var deduct = Math.max(0,i.doors)*900 + Math.max(0,i.windows)*1200;
+    // Deduction : une porte ~0.9 m de large, une fenetre ~1.2 m.
+    // Les largeurs sont en millimetres : on les ramene dans l'unite saisie,
+    // sinon en pouces la deduction vaut cinq fois le perimetre de la piece.
+    var toMm = i.unit === 'in' ? 25.4 : 1;
+    var deduct = (Math.max(0,i.doors)*900 + Math.max(0,i.windows)*1200)/toMm;
     var netP = Math.max(0, P - deduct);
     var drops = Math.ceil(netP/i.rollW);
 
@@ -50,12 +53,10 @@ var SPEC = {
     var dropsPerRoll = Math.floor(i.rollL/cutLength);
     if (dropsPerRoll < 1) return {ok:false, errors:['A single drop is longer than a whole roll. Check the roll length and the repeat.']};
 
+    // Chaque le doit sortir d'un seul tenant : on ne recolle pas deux chutes.
+    // Le nombre de les par rouleau est donc plafonne par la longueur du rouleau,
+    // et un raccord saute consomme davantage de papier, jamais moins.
     var rolls = Math.ceil(drops/dropsPerRoll);
-    // Un raccord saute recupere en moyenne une demi-repetition par tambour
-    if (i.match === 'offset' && i.repeat > 0) {
-      var effective = Math.floor((i.rollL + i.repeat/2)/cutLength);
-      if (effective > dropsPerRoll) rolls = Math.ceil(drops/effective);
-    }
 
     var totalWaste = drops*wastePerDrop;
     var warn=[];
@@ -81,7 +82,7 @@ var SPEC = {
         ['Pattern repeat', i.repeat>0 ? WCfmt(i.repeat,0) : 'plain'],
         ['Cut length per drop', WCfmt(cutLength,0)],
         ['Wasted per drop', WCfmt(wastePerDrop,0)],
-        ['Total waste', WCfmt(totalWaste/1000,2)+' m of paper'],
+        ['Total waste', WCfmt(totalWaste*toMm/1000,2)+' m of paper'],
         ['Drops per roll', String(dropsPerRoll)],
         ['Rolls to buy', String(rolls)]
       ]}],

@@ -426,8 +426,6 @@ footer{margin-top:60px}
 <div class="wrap">
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
-
-
 <h1>Cut List Optimizer</h1>
 <p class="sub">Work out how to cut your parts from full sheets with the least waste. Accounts for saw kerf and grain direction, and gives you scaled diagrams plus a printable cut list. Everything runs in your browser — nothing is uploaded, no sign-up.</p>
 
@@ -480,7 +478,6 @@ footer{margin-top:60px}
   <h3>What this does not do</h3>
   <p>It does not sequence your cuts for you, and it assumes every sheet is identical and defect-free. Check the diagram against your actual sheet before cutting — knots, damaged corners and factory edges are not accounted for.</p>
 </div>
-
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="/linear-cut-optimizer" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="/board-foot-calculator" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li><li style="margin:4px 0"><a href="/sheet-metal-bend-calculator" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
 <details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/cut-list-optimizer?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
@@ -818,8 +815,6 @@ function esc(t) { const d = document.createElement('div'); d.textContent = t; re
 
 $('#demo').click();
 </script>
-
-
 
 <script id="reveal">(function(){var m=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");if(m||!("IntersectionObserver" in window)){return;}els.forEach(function(e){e.classList.add("reveal");});var io=new IntersectionObserver(function(es){es.forEach(function(en){if(en.isIntersecting){en.target.classList.add("in");io.unobserve(en.target);}});},{rootMargin:"0px 0px -40px 0px",threshold:.06});els.forEach(function(e){io.observe(e);});})();</script>
 <script id="embed">(function(){if(location.search.indexOf("embed=1")<0)return;document.body.classList.add("embedded");var p=document.createElement("p");p.className="pby";p.innerHTML='Powered by <a href="https://getkerfcalc.com/cut-list-optimizer" target="_blank" rel="noopener">KerfCalc</a> — 38 free workshop calculators';var w=document.querySelector(".wrap");if(w)w.appendChild(p);})();</script>

@@ -271,12 +271,12 @@ def apply_to(path):
     src = src.replace('</style>', THEME + '\n</style>', 1)
 
     # 2. Bandeau — on retire l'ancien avant d'ajouter le nouveau
-    src = re.sub(r'<header class="masthead[^"]*">.*?</header>', '', src, flags=re.S)
-    src = re.sub(r'<nav id="site-nav".*?</nav>', '', src, flags=re.S)
+    src = re.sub(r'<header class="masthead[^"]*">.*?</header>\n?', '', src, flags=re.S)
+    src = re.sub(r'<nav id="site-nav".*?</nav>\n?', '', src, flags=re.S)
     src = re.sub(r'(<div class="wrap">)', r'\1\n' + masthead(is_index), src, count=1)
 
     # 3. Apparition au defilement (leger, sans dependance)
-    src = re.sub(r'<script id="reveal">.*?</script>', '', src, flags=re.S)
+    src = re.sub(r'<script id="reveal">.*?</script>\n?', '', src, flags=re.S)
     reveal = ('<script id="reveal">(function(){var m=window.matchMedia&&'
               'window.matchMedia("(prefers-reduced-motion: reduce)").matches;'
               'var els=document.querySelectorAll(".card,.tool,.shot,.faqitem,.band,.catblock,.showcase");'
@@ -291,8 +291,8 @@ def apply_to(path):
     # 4. Encastrement — chaque outil peut vivre en iframe chez un tiers.
     #    C'est le canal de diffusion qui ne depend pas de Google : le site
     #    qui l'encastre nous fait un lien, et ses visiteurs nous decouvrent.
-    src = re.sub(r'<script id="embed">.*?</script>', '', src, flags=re.S)
-    src = re.sub(r'<details id="embedbox".*?</details>', '', src, flags=re.S)
+    src = re.sub(r'<script id="embed">.*?</script>\n?', '', src, flags=re.S)
+    src = re.sub(r'<details id="embedbox".*?</details>\n?', '', src, flags=re.S)
     if not is_index:
         slug = re.sub(r'\.html$', '', os.path.basename(path))
         url = f'https://getkerfcalc.com/{slug}'

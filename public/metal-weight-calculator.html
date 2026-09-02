@@ -303,7 +303,6 @@ footer{margin-top:60px}
 <div class="wrap">
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
-
 <h1>Metal Weight Calculator</h1>
 <p class="sub">Before you order it, before you lift it, before you work out what the trailer can carry. Choose the shape and the metal, enter the dimensions, and get the weight per metre, the total, and the cost if you know the rate.</p>
 
@@ -315,7 +314,7 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Section</h2><div class="row"><div class="f"><label for="shape">Shape</label><select id="shape"><option value="round" selected>Round bar</option><option value="square">Square bar</option><option value="flat">Flat bar / plate</option><option value="tube">Round tube</option><option value="sqtube">Square tube</option><option value="sheet">Sheet</option></select></div><div class="f"><label for="metal">Metal</label><select id="metal"><option value="steel" selected>Mild steel (7850)</option><option value="stainless">Stainless (8000)</option><option value="alu">Aluminium (2700)</option><option value="brass">Brass (8500)</option><option value="copper">Copper (8960)</option><option value="castiron">Cast iron (7200)</option><option value="lead">Lead (11340)</option></select></div></div></div><div class="card noprint"><h2>Dimensions</h2><div class="row"><div class="f"><label for="d1">Diameter / width <span class="u"></span></label><input type="number" id="d1" value="25" step="any" min="0"></div><div class="f"><label for="d2">Height / second side <span class="u"></span></label><input type="number" id="d2" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Flat bar, square tube, sheet</span></div><div class="f"><label for="wall">Wall thickness <span class="u"></span></label><input type="number" id="wall" value="2" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Tubes only</span></div><div class="f"><label for="len">Length <span class="u"></span></label><input type="number" id="len" value="1000" step="any" min="0"></div><div class="f"><label for="qty">How many pieces</label><input type="number" id="qty" value="1" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="price">Price per kg</label><input type="number" id="price" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">In whatever currency you buy in. 0 to skip the cost.</span></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Section</h2><div class="row"><div class="f"><label for="shape">Shape</label><select id="shape"><option value="round" selected>Round bar</option><option value="square">Square bar</option><option value="flat">Flat bar / plate</option><option value="tube">Round tube</option><option value="sqtube">Square tube</option><option value="sheet">Sheet</option><option value="angle">Angle / L-section</option></select></div><div class="f"><label for="metal">Metal</label><select id="metal"><option value="steel" selected>Mild steel (7850)</option><option value="stainless">Stainless (8000)</option><option value="alu">Aluminium (2700)</option><option value="brass">Brass (8500)</option><option value="copper">Copper (8960)</option><option value="castiron">Cast iron (7200)</option><option value="lead">Lead (11340)</option></select></div></div></div><div class="card noprint"><h2>Dimensions</h2><div class="row"><div class="f"><label for="d1">Diameter / width <span class="u"></span></label><input type="number" id="d1" value="25" step="any" min="0"></div><div class="f"><label for="d2">Height / second side <span class="u"></span></label><input type="number" id="d2" value="25" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Flat bar, square tube, sheet</span></div><div class="f"><label for="wall">Wall / leg thickness <span class="u"></span></label><input type="number" id="wall" value="2" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Tubes and angle</span></div><div class="f"><label for="len">Length <span class="u"></span></label><input type="number" id="len" value="1000" step="any" min="0"></div><div class="f"><label for="qty">How many pieces</label><input type="number" id="qty" value="1" step="1" min="1"></div></div></div><div class="card noprint"><h2>Cost</h2><div class="row"><div class="f"><label for="price">Price per kg</label><input type="number" id="price" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">In whatever currency you buy in. 0 to skip the cost.</span></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
@@ -349,7 +348,8 @@ var SPEC = {
       {value:'flat', label:'Flat bar / plate'},
       {value:'tube', label:'Round tube'},
       {value:'sqtube', label:'Square tube'},
-      {value:'sheet', label:'Sheet'}]},
+      {value:'sheet', label:'Sheet'},
+      {value:'angle', label:'Angle / L-section'}]},
     {id:'metal', label:'Metal', type:'select', value:'steel', group:'Section', options:[
       {value:'steel', label:'Mild steel (7850)'},
       {value:'stainless', label:'Stainless (8000)'},
@@ -361,13 +361,15 @@ var SPEC = {
     {id:'d1', label:'Diameter / width', value:25, unit:'length', group:'Dimensions', min:0},
     {id:'d2', label:'Height / second side', value:25, unit:'length', group:'Dimensions', min:0,
      hint:'Flat bar, square tube, sheet'},
-    {id:'wall', label:'Wall thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes only'},
+    {id:'wall', label:'Wall / leg thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes and angle'},
     {id:'len', label:'Length', value:1000, unit:'length', group:'Dimensions', min:0},
     {id:'qty', label:'How many pieces', value:1, group:'Dimensions', min:1, step:1},
     {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'In whatever currency you buy in. 0 to skip the cost.'}
   ],
   compute: function (i) {
     var DENS = {steel:7850, stainless:8000, alu:2700, brass:8500, copper:8960, castiron:7200, lead:11340};
+    var MNAME = {steel:'Mild steel', stainless:'Stainless', alu:'Aluminium', brass:'Brass',
+                 copper:'Copper', castiron:'Cast iron', lead:'Lead'};
     var rho = DENS[i.metal];
     var k = i.unit === 'in' ? 0.0254 : 0.001;
     var d1=i.d1*k, d2=i.d2*k, wall=i.wall*k, L=i.len*k;
@@ -386,6 +388,12 @@ var SPEC = {
                                   if(2*wall>=d1) return {ok:false,errors:['The wall is thicker than the radius — that is solid bar.']};
                                   var bore=d1-2*wall; area=Math.PI*(d1*d1-bore*bore)/4;
                                   label='Tube Ø'+WCfmt(i.d1,1)+' × '+WCfmt(i.wall,1)+' wall'; }
+    else if (i.shape==='angle') { if(!(d1>0 && d2>0)) return {ok:false,errors:['Both legs must be greater than zero.']};
+                                  if(!(wall>0)) return {ok:false,errors:['Leg thickness must be greater than zero.']};
+                                  if(wall>=Math.min(d1,d2)) return {ok:false,errors:['The leg thickness is larger than the leg — that is solid bar.']};
+                                  // Deux ailes qui se recouvrent sur un carre d'epaisseur : on ne le compte qu'une fois.
+                                  area=wall*(d1+d2-wall);
+                                  label='Angle '+WCfmt(i.d1,1)+' × '+WCfmt(i.d2,1)+' × '+WCfmt(i.wall,1); }
     else                        { if(!(d1>0 && d2>0)) return {ok:false,errors:['Both sides must be greater than zero.']};
                                   if(!(wall>0)) return {ok:false,errors:['Wall thickness must be greater than zero.']};
                                   if(2*wall>=Math.min(d1,d2)) return {ok:false,errors:['The wall is too thick for that section.']};
@@ -410,7 +418,7 @@ var SPEC = {
       stats: stats,
       tables:[{title:'Working', head:['Item','Value'], rows:[
         ['Section', label],
-        ['Metal', i.metal+' at '+WCfmt(rho,0)+' kg/m3'],
+        ['Metal', (MNAME[i.metal]||i.metal)+' at '+WCfmt(rho,0)+' kg/m3'],
         ['Cross-section area', WCfmt(area*1e6,2)+' mm2'],
         ['Weight per metre', WCfmt(kgPerM,4)+' kg/m'],
         ['Length each', WCfmt(L,3)+' m'],
@@ -432,6 +440,9 @@ var SPEC = {
       var w=62*Math.max(0.1,(i.d1-2*i.wall)/Math.max(i.d1,1));
       s+='<rect x="'+(cx-w)+'" y="'+(cy-w*0.84)+'" width="'+(2*w)+'" height="'+(2*w*0.84)+'" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>'; }
     else if (i.shape==='square'){ s+=SVG.rect(cx-55,cy-55,110,110,'part'); }
+    else if (i.shape==='angle'){
+      var aw=Math.max(6,62*Math.max(0.08,i.wall/Math.max(i.d1,1)));
+      s+='<path d="M'+(cx-62)+' '+(cy-62)+' h'+aw+' v'+(124-aw)+' h'+(124-aw)+' v'+aw+' h-124 z" class="part"/>'; }
     else { s+=SVG.rect(cx-95,cy-32,190,64,'part'); }
     s+=SVG.text(cx,cy+4,WCfmt(r.kgPerM,2)+' kg/m',13);
     s+=SVG.text(cx,26,r.label,13);

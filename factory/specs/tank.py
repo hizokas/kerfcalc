@@ -72,7 +72,7 @@ var SPEC = {
       ],
       tables:[
         {title:'Now', head:['Item','Value'], rows:[
-          ['Shape', i.shape],
+          ['Shape', {vertical:'Vertical cylinder', horizontal:'Horizontal cylinder', rect:'Rectangular'}[i.shape] || i.shape],
           ['Capacity', WCfmt(full*1000,1)+' litres / '+WCfmt(full,4)+' m3 / '+WCfmt(full*219.969,1)+' imp gal'],
           ['Fill depth', WCfmt(lvl*1000,0)+' mm of '+WCfmt(height*1000,0)+' mm'],
           ['Depth as a percentage', WCfmt(pctHeight,1)+'%'],

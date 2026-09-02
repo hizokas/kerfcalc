@@ -50,9 +50,28 @@ var SPEC = {
     var totalLen = nAlongLen*a.total + nAlongWid*b.total;
     var intersections = nAlongLen*nAlongWid;
 
+    // Les saisies sont dans l'unite choisie par l'utilisateur : on convertit
+    // avant toute masse ou longueur en metres, sinon le mode pouces donne 0.
+    var toMm = i.unit === 'in' ? 25.4 : 1;
+    var diaMm = dia*toMm;
+    var totalM = totalLen*toMm/1000;
     // Masse : 0.006165 kg par mm de diametre au carre et par metre (acier)
-    var kgPerM = 0.006165*dia*dia;
-    var weight = (totalLen/1000)*kgPerM;
+    var kgPerM = 0.006165*diaMm*diaMm;
+    var weight = totalM*kgPerM;
+
+    // Une barre se coupe d'un seul tenant : les chutes de deux barres
+    // differentes ne s'additionnent pas. On compte donc combien de barres
+    // sortent d'une longueur commerciale, direction par direction.
+    function stockFor(n, one, total, stock) {
+      if (stock <= 0) return n;
+      if (one <= stock) {
+        var per = Math.floor(stock/one);
+        return per > 0 ? Math.ceil(n/per) : n;
+      }
+      return n*Math.ceil(total/stock);
+    }
+    var stockCount = stockFor(nAlongLen, barLenL, a.total, i.stock)
+                   + stockFor(nAlongWid, barLenW, b.total, i.stock);
 
     var warn = [];
     if (lap > 0 && (barLenL > i.stock || barLenW > i.stock))
@@ -63,7 +82,7 @@ var SPEC = {
       warnings: warn,
       stats:[
         {value: String(nAlongLen + nAlongWid), label:'Bars in total'},
-        {value: WCfmt(totalLen/1000,1), label:'Linear metres'},
+        {value: WCfmt(totalM,1), label:'Linear metres'},
         {value: WCfmt(weight,1), label:'Weight (kg)'},
         {value: String(intersections), label:'Ties needed'}
       ],
@@ -72,9 +91,9 @@ var SPEC = {
         ['Across the width', String(nAlongWid), WCfmt(actualSpL,1), WCfmt(barLenW,0), WCfmt(b.total,0)]
       ]},
       {title:'Order list', head:['Item','Quantity'], rows:[
-        ['Bar diameter', WCfmt(dia,0)],
-        ['Total linear length', WCfmt(totalLen/1000,2)+' m'],
-        ['Stock lengths of '+WCfmt(i.stock,0), String(Math.ceil(totalLen/i.stock))],
+        ['Bar diameter', WCfmt(dia, i.unit === 'in' ? 2 : 0)],
+        ['Total linear length', WCfmt(totalM,2)+' m'],
+        ['Stock lengths of '+WCfmt(i.stock,0), String(stockCount)],
         ['Approximate weight', WCfmt(weight,1)+' kg'],
         ['Tie wire points', String(intersections)],
         ['Lap length used', WCfmt(lap,0)+'  ('+WCfmt(i.lapDia,0)+' \u00d7 diameter)']

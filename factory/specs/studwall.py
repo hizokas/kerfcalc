@@ -28,9 +28,16 @@ var SPEC = {
     if(!(t>0)) return {ok:false, errors:['Stud thickness must be greater than zero.']};
     if(sp<=t) return {ok:false, errors:['Spacing must be larger than the stud thickness.']};
 
-    var pos=[], first=sp-t/2;
+    // Ces positions sont des CENTRES. Le premier montant est en bout de mur
+    // (centre a une demi-epaisseur), les suivants tombent sur l'entraxe plein.
+    // Le bord d'un panneau pose depuis le bout arrive alors au CENTRE d'un
+    // montant, avec une demi-epaisseur d'appui de chaque cote du joint.
+    // C'est le tracage qui est recule d'une demi-epaisseur, pas le centre :
+    // reculer le centre faisait tomber le joint sur la face exterieure du
+    // montant, donc sans aucun appui pour le panneau suivant.
+    var pos=[];
     pos.push(t/2);
-    for(var x=first; x<L-t/2; x+=sp) pos.push(x);
+    for(var x=sp; x<L-t/2; x+=sp) pos.push(x);
     var last=L-t/2;
     if (last-pos[pos.length-1] > 1) pos.push(last);
     var spare = pos.length>1 ? (pos[pos.length-1]-pos[pos.length-2]) : 0;
@@ -61,7 +68,7 @@ var SPEC = {
           ['Plate stock at '+WCfmt(i.stockLen,0), String(plateSticks)+' lengths'],
           ['Noggins', String(nogCount)+' pieces, '+WCfmt(Math.max(0,nogLen),0)+' total'],
           ['Spacing', WCfmt(sp,0)+' centres'],
-          ['First stud centre', WCfmt(pos[1]!==undefined?pos[1]:pos[0],1)+' (pulled back by half a stud so sheets break on centre)']
+          ['Second stud centre', WCfmt(pos[1]!==undefined?pos[1]:pos[0],1)+' (full spacing, so a sheet edge breaks on a stud centre)']
         ]}
       ],
       note:'Positions are to stud centres, measured from the same end of the wall throughout. Mark them all from one end rather than measuring stud to stud, or the error accumulates.'

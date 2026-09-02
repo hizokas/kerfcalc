@@ -51,13 +51,16 @@ var SPEC = {
     var warn=[];
     if (aL.adjusted || aW.adjusted) warn.push('One row was dropped so the borders stay above '+WCfmt(i.minBorder,0)+'. Borders are now '+WCfmt(aL.border,0)+' and '+WCfmt(aW.border,0)+'.');
 
+    // Les longueurs sont annoncees en metres : convertir la saisie.
+    var toMm = i.unit === 'in' ? 25.4 : 1;
+
     return {ok:true, aL:aL, aW:aW, totalTiles:totalTiles, fullTiles:fullTiles, L:L, Wd:Wd, tl:tl, tw:tw,
       warnings: warn,
       stats:[
         {value: String(totalTiles), label:'Tiles in total'},
         {value: String(fullTiles), label:'Full tiles'},
         {value: WCfmt(aL.border,0)+' / '+WCfmt(aW.border,0), label:'Border widths'},
-        {value: WCfmt(runnerLen/1000,1), label:'m of main runner'}
+        {value: WCfmt(runnerLen*toMm/1000,1), label:'m of main runner'}
       ],
       tables:[{title:'Take-off', head:['Item','Quantity'], rows:[
         ['Room', WCfmt(L,0)+' \u00d7 '+WCfmt(Wd,0)],
@@ -67,10 +70,10 @@ var SPEC = {
         ['Border along the width', WCfmt(aW.border,1)+' each side'],
         ['Cut border tiles', String(borderTilesL+borderTilesW+corners)],
         ['Tiles to order', String(totalTiles)],
-        ['Main runners', String(runnerRows)+' rows, '+WCfmt(runnerLen/1000,2)+' m'],
+        ['Main runners', String(runnerRows)+' rows, '+WCfmt(runnerLen*toMm/1000,2)+' m'],
         ['Cross tees', String(crossTees)],
         ['Hangers', String(hangers)],
-        ['Perimeter trim', WCfmt(perimeter/1000,2)+' m']
+        ['Perimeter trim', WCfmt(perimeter*toMm/1000,2)+' m']
       ]}],
       note:'Set out from the centre of the room in both directions so the border tiles match on opposite walls.'
     };

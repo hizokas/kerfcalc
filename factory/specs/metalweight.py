@@ -19,7 +19,8 @@ var SPEC = {
       {value:'flat', label:'Flat bar / plate'},
       {value:'tube', label:'Round tube'},
       {value:'sqtube', label:'Square tube'},
-      {value:'sheet', label:'Sheet'}]},
+      {value:'sheet', label:'Sheet'},
+      {value:'angle', label:'Angle / L-section'}]},
     {id:'metal', label:'Metal', type:'select', value:'steel', group:'Section', options:[
       {value:'steel', label:'Mild steel (7850)'},
       {value:'stainless', label:'Stainless (8000)'},
@@ -31,13 +32,15 @@ var SPEC = {
     {id:'d1', label:'Diameter / width', value:25, unit:'length', group:'Dimensions', min:0},
     {id:'d2', label:'Height / second side', value:25, unit:'length', group:'Dimensions', min:0,
      hint:'Flat bar, square tube, sheet'},
-    {id:'wall', label:'Wall thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes only'},
+    {id:'wall', label:'Wall / leg thickness', value:2, unit:'length', group:'Dimensions', min:0, hint:'Tubes and angle'},
     {id:'len', label:'Length', value:1000, unit:'length', group:'Dimensions', min:0},
     {id:'qty', label:'How many pieces', value:1, group:'Dimensions', min:1, step:1},
     {id:'price', label:'Price per kg', value:0, group:'Cost', min:0, hint:'In whatever currency you buy in. 0 to skip the cost.'}
   ],
   compute: function (i) {
     var DENS = {steel:7850, stainless:8000, alu:2700, brass:8500, copper:8960, castiron:7200, lead:11340};
+    var MNAME = {steel:'Mild steel', stainless:'Stainless', alu:'Aluminium', brass:'Brass',
+                 copper:'Copper', castiron:'Cast iron', lead:'Lead'};
     var rho = DENS[i.metal];
     var k = i.unit === 'in' ? 0.0254 : 0.001;
     var d1=i.d1*k, d2=i.d2*k, wall=i.wall*k, L=i.len*k;
@@ -56,6 +59,12 @@ var SPEC = {
                                   if(2*wall>=d1) return {ok:false,errors:['The wall is thicker than the radius \u2014 that is solid bar.']};
                                   var bore=d1-2*wall; area=Math.PI*(d1*d1-bore*bore)/4;
                                   label='Tube \u00d8'+WCfmt(i.d1,1)+' \u00d7 '+WCfmt(i.wall,1)+' wall'; }
+    else if (i.shape==='angle') { if(!(d1>0 && d2>0)) return {ok:false,errors:['Both legs must be greater than zero.']};
+                                  if(!(wall>0)) return {ok:false,errors:['Leg thickness must be greater than zero.']};
+                                  if(wall>=Math.min(d1,d2)) return {ok:false,errors:['The leg thickness is larger than the leg \u2014 that is solid bar.']};
+                                  // Deux ailes qui se recouvrent sur un carre d'epaisseur : on ne le compte qu'une fois.
+                                  area=wall*(d1+d2-wall);
+                                  label='Angle '+WCfmt(i.d1,1)+' \u00d7 '+WCfmt(i.d2,1)+' \u00d7 '+WCfmt(i.wall,1); }
     else                        { if(!(d1>0 && d2>0)) return {ok:false,errors:['Both sides must be greater than zero.']};
                                   if(!(wall>0)) return {ok:false,errors:['Wall thickness must be greater than zero.']};
                                   if(2*wall>=Math.min(d1,d2)) return {ok:false,errors:['The wall is too thick for that section.']};
@@ -80,7 +89,7 @@ var SPEC = {
       stats: stats,
       tables:[{title:'Working', head:['Item','Value'], rows:[
         ['Section', label],
-        ['Metal', i.metal+' at '+WCfmt(rho,0)+' kg/m3'],
+        ['Metal', (MNAME[i.metal]||i.metal)+' at '+WCfmt(rho,0)+' kg/m3'],
         ['Cross-section area', WCfmt(area*1e6,2)+' mm2'],
         ['Weight per metre', WCfmt(kgPerM,4)+' kg/m'],
         ['Length each', WCfmt(L,3)+' m'],
@@ -102,6 +111,9 @@ var SPEC = {
       var w=62*Math.max(0.1,(i.d1-2*i.wall)/Math.max(i.d1,1));
       s+='<rect x="'+(cx-w)+'" y="'+(cy-w*0.84)+'" width="'+(2*w)+'" height="'+(2*w*0.84)+'" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>'; }
     else if (i.shape==='square'){ s+=SVG.rect(cx-55,cy-55,110,110,'part'); }
+    else if (i.shape==='angle'){
+      var aw=Math.max(6,62*Math.max(0.08,i.wall/Math.max(i.d1,1)));
+      s+='<path d="M'+(cx-62)+' '+(cy-62)+' h'+aw+' v'+(124-aw)+' h'+(124-aw)+' v'+aw+' h-124 z" class="part"/>'; }
     else { s+=SVG.rect(cx-95,cy-32,190,64,'part'); }
     s+=SVG.text(cx,cy+4,WCfmt(r.kgPerM,2)+' kg/m',13);
     s+=SVG.text(cx,26,r.label,13);

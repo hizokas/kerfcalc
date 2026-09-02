@@ -303,7 +303,6 @@ footer{margin-top:60px}
 <div class="wrap">
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
-
 <h1>Suspended Ceiling Grid Calculator</h1>
 <p class="sub">Start a ceiling grid from one corner and you finish with a full tile on one wall and a 60 mm sliver on the other. This centres the grid so both borders match, then counts every component you have to order.</p>
 
@@ -381,13 +380,16 @@ var SPEC = {
     var warn=[];
     if (aL.adjusted || aW.adjusted) warn.push('One row was dropped so the borders stay above '+WCfmt(i.minBorder,0)+'. Borders are now '+WCfmt(aL.border,0)+' and '+WCfmt(aW.border,0)+'.');
 
+    // Les longueurs sont annoncees en metres : convertir la saisie.
+    var toMm = i.unit === 'in' ? 25.4 : 1;
+
     return {ok:true, aL:aL, aW:aW, totalTiles:totalTiles, fullTiles:fullTiles, L:L, Wd:Wd, tl:tl, tw:tw,
       warnings: warn,
       stats:[
         {value: String(totalTiles), label:'Tiles in total'},
         {value: String(fullTiles), label:'Full tiles'},
         {value: WCfmt(aL.border,0)+' / '+WCfmt(aW.border,0), label:'Border widths'},
-        {value: WCfmt(runnerLen/1000,1), label:'m of main runner'}
+        {value: WCfmt(runnerLen*toMm/1000,1), label:'m of main runner'}
       ],
       tables:[{title:'Take-off', head:['Item','Quantity'], rows:[
         ['Room', WCfmt(L,0)+' × '+WCfmt(Wd,0)],
@@ -397,10 +399,10 @@ var SPEC = {
         ['Border along the width', WCfmt(aW.border,1)+' each side'],
         ['Cut border tiles', String(borderTilesL+borderTilesW+corners)],
         ['Tiles to order', String(totalTiles)],
-        ['Main runners', String(runnerRows)+' rows, '+WCfmt(runnerLen/1000,2)+' m'],
+        ['Main runners', String(runnerRows)+' rows, '+WCfmt(runnerLen*toMm/1000,2)+' m'],
         ['Cross tees', String(crossTees)],
         ['Hangers', String(hangers)],
-        ['Perimeter trim', WCfmt(perimeter/1000,2)+' m']
+        ['Perimeter trim', WCfmt(perimeter*toMm/1000,2)+' m']
       ]}],
       note:'Set out from the centre of the room in both directions so the border tiles match on opposite walls.'
     };
