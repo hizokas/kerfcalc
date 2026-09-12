@@ -6,9 +6,11 @@ SPEC = {
 "card_desc":"Bar count and positions each way, total length with laps, ties and weight for a slab.",
 "category":"Finishing",
 "intro":"Give the slab size, the spacing and the cover, and this returns how many bars run each way, exactly where they sit, the total linear metres once laps are added, and how many ties you will get through.",
-"notes":[("How the count is worked out","The first and last bars sit one cover in from each edge, and the rest are spaced evenly between them. So the count is the clear span divided by the spacing, rounded down, plus one \u2014 the extra bar catches the one at the far edge."),
+"notes":[("How the count is worked out","The requested spacing is a maximum, measured centre to centre. Subtract twice the edge-to-centre distance from the perpendicular slab dimension. Divide that span by the maximum spacing, round UP to get the number of intervals, then add one bar. Actual spacing is the span divided by the number of intervals."),
+("Worked example: 6 m by 4 m slab","With bar centrelines 50 mm from each edge and maximum spacing of 200 mm, the spans are 5,900 mm and 3,900 mm. The 3,900 mm span needs ceil(3900 / 200) + 1 = 21 bars along the length, at 195 mm centres. The other direction needs 31 bars at 196.7 mm centres. That is 52 bars, 244.8 m of steel before any laps, and 651 crossings for a single two-way grid."),
+("What the edge distance means","The input is the distance from the slab edge to the BAR CENTRELINE, not clear concrete cover to the steel surface. If your drawing specifies clear cover, add half the bar diameter to obtain this centreline distance. Confirm the layout and cover with your designer."),
 ("Laps","Bars longer than the stock length have to overlap, and the lap is usually expressed as a number of bar diameters. Set it from your own specification \u2014 the default here is a common figure, not a rule."),
-("Cover is not optional","Cover is what stops water reaching the steel. Too little and the slab spalls in a few winters; too much and the steel is not doing structural work where it should be. The right figure depends on exposure and comes from the design, not from a calculator."),
+("Buying stock and counting ties","Stock quantities are conservative: each direction is cut separately and offcuts are not shared between directions or spliced runs. For a spliced run, each extra stock piece adds stock length minus one lap to the covered distance. The tie figure is one tie per crossing for one grid; it is not a tying specification and does not include extra layers or chairs."),
 ("What this does not do","It does not size reinforcement. Bar diameter, spacing and layer position are structural decisions that depend on loads and ground conditions \u2014 this tool lays out what you were told to place.")],
 "js":"""
 var SPEC = {
@@ -16,7 +18,8 @@ var SPEC = {
     {id:'len', label:'Slab length', value:6000, unit:'length', group:'Slab', min:0},
     {id:'wid', label:'Slab width', value:4000, unit:'length', group:'Slab', min:0},
     {id:'spacing', label:'Bar spacing (centres)', value:200, unit:'length', group:'Slab', min:1},
-    {id:'cover', label:'Cover from each edge', value:50, unit:'length', group:'Slab', min:0},
+    {id:'cover', label:'Edge to bar centreline', value:50, unit:'length', group:'Slab', min:0,
+     hint:'Clear concrete cover + half the bar diameter'},
     {id:'dia', label:'Bar diameter', value:12, unit:'length', group:'Bars', min:1},
     {id:'stock', label:'Bar stock length', value:6000, unit:'length', group:'Bars', min:1},
     {id:'lapDia', label:'Lap length (bar diameters)', value:40, group:'Bars', min:0,
@@ -24,8 +27,13 @@ var SPEC = {
   ],
   compute: function (i) {
     var L = i.len, Wd = i.wid, sp = i.spacing, cov = i.cover, dia = i.dia;
+    if (![L,Wd,sp,cov,dia,i.stock,i.lapDia].every(Number.isFinite))
+      return {ok:false, errors:['Enter a finite number in every field.']};
     if (!(L > 0 && Wd > 0)) return {ok:false, errors:['Slab length and width must be greater than zero.']};
     if (!(sp > 0)) return {ok:false, errors:['Spacing must be greater than zero.']};
+    if (cov < 0 || dia <= 0 || i.stock <= 0 || i.lapDia < 0)
+      return {ok:false, errors:['Edge distance and lap multiplier cannot be negative. Diameter and stock length must be greater than zero.']};
+    if (cov < dia/2) return {ok:false, errors:['The bar centreline must be at least half a bar diameter inside the slab.']};
     if (2*cov >= Math.min(L, Wd)) return {ok:false, errors:['Cover on both sides leaves no slab left. Check the numbers.']};
 
     // Barres paralleles a la longueur : reparties sur la largeur
@@ -41,9 +49,11 @@ var SPEC = {
 
     var barLenL = clearL, barLenW = clearW;
     var lap = Math.max(0, i.lapDia)*dia;
+    if (Math.max(barLenL,barLenW) > i.stock && lap >= i.stock)
+      return {ok:false, errors:['Lap length must be shorter than stock length when bars need to be joined.']};
     function withLaps(barLen, stock) {
-      if (stock <= 0 || barLen <= stock) return {pieces:1, total:barLen};
-      var joints = Math.ceil(barLen/stock) - 1;
+      if (barLen <= stock) return {pieces:1, total:barLen};
+      var joints = Math.ceil((barLen-stock)/(stock-lap));
       return {pieces: joints+1, total: barLen + joints*lap};
     }
     var a = withLaps(barLenL, i.stock), b = withLaps(barLenW, i.stock);
@@ -77,14 +87,15 @@ var SPEC = {
     if (lap > 0 && (barLenL > i.stock || barLenW > i.stock))
       warn.push('Bars are longer than the stock length, so laps of '+WCfmt(lap,0)+' have been added at each joint.');
 
-    return {ok:true, nL:nAlongLen, nW:nAlongWid, totalLen:totalLen, weight:weight,
+    return {ok:true, nL:nAlongLen, nW:nAlongWid, totalLen:totalLen, totalM:totalM, weight:weight,
+      piecesL:a.pieces, piecesW:b.pieces, stockCount:stockCount,
       L:L, Wd:Wd, cov:cov, spW:actualSpW, spL:actualSpL,
       warnings: warn,
       stats:[
         {value: String(nAlongLen + nAlongWid), label:'Bars in total'},
         {value: WCfmt(totalM,1), label:'Linear metres'},
         {value: WCfmt(weight,1), label:'Weight (kg)'},
-        {value: String(intersections), label:'Ties needed'}
+        {value: String(intersections), label:'Grid crossings'}
       ],
       tables:[{title:'Layout', head:['Direction','Bars','Actual spacing','Length each','With laps'], rows:[
         ['Along the length', String(nAlongLen), WCfmt(actualSpW,1), WCfmt(barLenL,0), WCfmt(a.total,0)],
@@ -95,10 +106,10 @@ var SPEC = {
         ['Total linear length', WCfmt(totalM,2)+' m'],
         ['Stock lengths of '+WCfmt(i.stock,0), String(stockCount)],
         ['Approximate weight', WCfmt(weight,1)+' kg'],
-        ['Tie wire points', String(intersections)],
+        ['Crossings (one grid)', String(intersections)],
         ['Lap length used', WCfmt(lap,0)+'  ('+WCfmt(i.lapDia,0)+' \u00d7 diameter)']
       ]}],
-      note:'Spacing is adjusted so the first and last bars sit exactly one cover in from the edges, and the rest divide the space evenly.'
+      note:'One two-way grid. Spacing never exceeds the requested maximum. Edge distances are to bar centrelines; stock counts do not reuse offcuts between directions.'
     };
   },
   diagram: function (r, i) {
@@ -106,16 +117,17 @@ var SPEC = {
     var sc=Math.min((W-2*m)/r.L, (H-2*m-30)/r.Wd);
     var x0=m, y0=m+16, sw=r.L*sc, sh=r.Wd*sc;
     s+=SVG.rect(x0,y0,sw,sh,'ghost');
-    for(var k=0;k<r.nL;k++){
+    var strideL=Math.max(1,Math.ceil(r.nL/150)),strideW=Math.max(1,Math.ceil(r.nW/150));
+    for(var k=0;k<r.nL;k+=strideL){
       var yy=y0+(r.cov + k*r.spW)*sc;
       s+=SVG.line(x0+r.cov*sc,yy,x0+sw-r.cov*sc,yy,' stroke="var(--accent)" stroke-width="1.6"');
     }
-    for(var k=0;k<r.nW;k++){
+    for(var k=0;k<r.nW;k+=strideW){
       var xx=x0+(r.cov + k*r.spL)*sc;
       s+=SVG.line(xx,y0+r.cov*sc,xx,y0+sh-r.cov*sc,' stroke="var(--accent)" stroke-width="1.6" opacity=".72"');
     }
-    s+=SVG.text(W/2, 20, r.nL+' + '+r.nW+' bars  \u00b7  '+WCfmt(r.totalLen/1000,1)+' m  \u00b7  '+WCfmt(r.weight,0)+' kg', 13);
-    s+=SVG.text(W/2, H-10, WCfmt(r.L,0)+' \u00d7 '+WCfmt(r.Wd,0)+'  \u00b7  cover '+WCfmt(r.cov,0), 12);
+    s+=SVG.text(W/2, 20, r.nL+' + '+r.nW+' bars  \u00b7  '+WCfmt(r.totalM,1)+' m  \u00b7  '+WCfmt(r.weight,0)+' kg', 13);
+    s+=SVG.text(W/2, H-10, WCfmt(r.L,0)+' \u00d7 '+WCfmt(r.Wd,0)+'  \u00b7  edge to centre '+WCfmt(r.cov,0)+(strideL>1||strideW>1?' (grid simplified)':''), 12);
     return s+SVG.close();
   }
 };
