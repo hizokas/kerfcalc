@@ -1,0 +1,12 @@
+const vm=require('node:vm'),cp=require('node:child_process'),a=require('node:assert/strict'),fs=require('node:fs');
+const js=cp.execFileSync('python3',['-c',"import runpy;print(runpy.run_path('factory/specs/studwall.py')['SPEC']['js'])"],{encoding:'utf8'}).trim();
+a.ok(fs.readFileSync('public/stud-wall-layout.html','utf8').includes(js),'published spec matches source');
+const c=vm.createContext({WCfmt:(n,d)=>n.toFixed(d)});vm.runInContext(js,c);
+const defaults={wallLen:6000,hgt:2400,spacing:400,studW:38,plates:3,stockLen:4800,noggins:1};
+const calc=x=>c.SPEC.compute({...defaults,...x});
+let r=calc({});a.equal(r.ok,true);a.equal(r.pos.length,16);a.equal(r.pos[0],19);a.equal(r.pos[3],1200);a.equal(r.pos[15],5981);a.equal(r.clearBays[0],343);a.equal(r.clearBays[14],343);a.equal(r.clearBays.reduce((a,b)=>a+b,0),5392);a.equal(r.stats[2].value,'4');a.equal(r.stats[3].value,'15');
+r=calc({wallLen:144,spacing:16,studW:1.5});a.equal(r.ok,true);a.deepEqual(Array.from(r.pos),[.75,16,32,48,64,80,96,112,128,143.25]);
+r=calc({wallLen:76});a.equal(r.ok,true);a.equal(r.stats[3].value,'0');
+a.equal(calc({noggins:0}).stats[3].value,'0');a.equal(calc({noggins:2}).stats[3].value,'30');
+for(const bad of [{wallLen:Infinity},{spacing:Infinity},{studW:NaN},{wallLen:30},{wallLen:1230},{spacing:40},{spacing:.001,studW:.0001},{hgt:0},{stockLen:-1},{plates:1.2},{noggins:-1}])a.equal(calc(bad).ok,false,JSON.stringify(bad));
+console.log('PASS stud layout: metric/imperial examples, stock lower bound, clear bays, zero rows, touching studs, overlaps and invalid inputs');

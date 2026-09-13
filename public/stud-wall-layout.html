@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Stud Wall Calculator — Stud Count, Positions and Plate Lengths</title>
-<meta name="description" content="Stud positions at 400 or 600 mm centres (16 or 24 in), corrected so sheet edges land on a stud, with plate lengths and a full material list.">
+<meta name="description" content="Calculate stud count, centre positions, clear bay widths, noggins and plate-stock length for a straight wall. Metric and imperial units, with a worked example.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -291,13 +291,13 @@ footer{margin-top:60px}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KerfCalc">
 <meta property="og:title" content="Stud Wall Calculator — Stud Count, Positions and Plate Lengths">
-<meta property="og:description" content="Stud positions at 400 or 600 mm centres (16 or 24 in), corrected so sheet edges land on a stud, with plate lengths and a full material list.">
+<meta property="og:description" content="Calculate stud count, centre positions, clear bay widths, noggins and plate-stock length for a straight wall. Metric and imperial units, with a worked example.">
 <meta property="og:url" content="https://getkerfcalc.com/stud-wall-layout">
 <meta property="og:image" content="https://getkerfcalc.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Stud Wall Calculator — Stud Count, Positions and Plate Lengths">
 <meta name="twitter:image" content="https://getkerfcalc.com/og.png">
-<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Stud Wall Calculator", "url": "https://getkerfcalc.com/stud-wall-layout", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Stud positions at 400 or 600 mm centres (16 or 24 in), corrected so sheet edges land on a stud, with plate lengths and a full material list."}</script>
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Stud Wall Calculator", "url": "https://getkerfcalc.com/stud-wall-layout", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Calculate stud count, centre positions, clear bay widths, noggins and plate-stock length for a straight wall. Metric and imperial units, with a worked example."}</script>
 <link rel="stylesheet" href="/workshop.css">
 </head>
 <body>
@@ -305,7 +305,7 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
 <h1>Stud Wall Layout Calculator</h1>
-<p class="sub">Stud positions worked out so that sheet edges land on framing, which is the part people get wrong. The first stud is pulled back by half a stud thickness so the sheet breaks on the centre of the fourth stud rather than the edge of it.</p>
+<p class="sub">Count studs and lay out a straight wall from one reference end. Results give stud centres, clear bay widths, noggin quantities and a plate-stock length estimate. Enter the actual stud cut length, excluding plates.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -315,19 +315,24 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Wall</h2><div class="row"><div class="f"><label for="wallLen">Wall length <span class="u"></span></label><input type="number" id="wallLen" value="6000" step="any" min="0"></div><div class="f"><label for="hgt">Wall height <span class="u"></span></label><input type="number" id="hgt" value="2400" step="any" min="0"></div><div class="f"><label for="spacing">Stud spacing (centres) <span class="u"></span></label><input type="number" id="spacing" value="400" step="any" min="1"></div><div class="f"><label for="studW">Stud thickness <span class="u"></span></label><input type="number" id="studW" value="38" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">38 mm = 1.5 in</span></div><div class="f"><label for="plates">Number of plates</label><input type="number" id="plates" value="3" step="1" min="1"><span style="font-size:.74rem;color:var(--muted)">1 bottom + 2 top is common</span></div></div></div><div class="card noprint"><h2>Materials</h2><div class="row"><div class="f"><label for="stockLen">Plate stock length <span class="u"></span></label><input type="number" id="stockLen" value="4800" step="any" min="1"></div><div class="f"><label for="noggins">Rows of noggins</label><input type="number" id="noggins" value="1" step="1" min="0"></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Wall</h2><div class="row"><div class="f"><label for="wallLen">Wall length <span class="u"></span></label><input type="number" id="wallLen" value="6000" step="any" min="0"></div><div class="f"><label for="hgt">Stud cut length <span class="u"></span></label><input type="number" id="hgt" value="2400" step="any" min="0"></div><div class="f"><label for="spacing">Stud spacing (centres) <span class="u"></span></label><input type="number" id="spacing" value="400" step="any" min="1"></div><div class="f"><label for="studW">Stud thickness <span class="u"></span></label><input type="number" id="studW" value="38" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">Use actual material thickness</span></div><div class="f"><label for="plates">Number of plates</label><input type="number" id="plates" value="3" step="1" min="1"><span style="font-size:.74rem;color:var(--muted)">1 bottom + 2 top is common</span></div></div></div><div class="card noprint"><h2>Materials</h2><div class="row"><div class="f"><label for="stockLen">Plate stock length <span class="u"></span></label><input type="number" id="stockLen" value="4800" step="any" min="1"></div><div class="f"><label for="noggins">Rows of noggins</label><input type="number" id="noggins" value="1" step="1" min="0"></div></div></div></div>
 <div id="out"></div>
 
 <div class="card faq noprint">
-  <h2>Notes</h2>
-  <h3>Why the first stud is offset</h3>
-  <p>Sheets are measured from the wall end, studs are measured to centres. If you set the first stud at a full spacing from the end, the sheet edge lands on the far side of a stud with nothing to fix to. Pulling the first one back by half a stud thickness fixes it.</p>
-  <h3>400 or 600 centres</h3>
-  <p>600 mm (24 in) uses fewer studs and is common for non-loadbearing partitions. 400 mm (16 in) is stiffer, better under tile or heavy cladding, and required in plenty of loadbearing situations.</p>
-  <h3>Openings</h3>
-  <p>Door and window openings need their own trimmers, cripples and a header sized for the load. That is a structural question and deliberately outside this tool.</p>
-  <h3>What this does not do</h3>
-  <p>It does not size anything structurally, and it does not tell you whether the wall can be built this way. It lays out a straight run.</p>
+<h2>Stud layout: method and examples</h2>
+<h3>Centres and marking lines are different</h3>
+<p>The first end stud has its centre at half its thickness. Regular interior centres are at one spacing, two spacings and so on from the wall end. A near-face marking line is half a stud thickness before each centre. Do not subtract half a thickness from the centre itself.</p>
+<h3>Worked example: a 6,000 mm straight run</h3>
+<p>With 400 mm spacing and 38 mm studs, the centres are 19, 400, 800, 1,200 … 5,600 and 5,981 mm: 16 studs. The first and last clear bays are 343 mm; the 13 middle clear bays are 362 mm. One row therefore has 15 noggins totalling 5,392 mm before cutting allowances. Three plate runs total 18,000 mm, or at least four 4,800 mm stock lengths by total length alone.</p>
+<h3>How many studs for a 12-foot wall at 16 inches?</h3>
+<p>For a 144-inch run, 16-inch spacing and 1.5-inch actual stud thickness, the centres are 0.75, 16, 32, 48, 64, 80, 96, 112, 128 and 143.25 inches: 10 studs. This straight-run count excludes opening framing, corner assemblies, intersections and spares.</p>
+<h3>Choosing spacing and matching sheets</h3>
+<p>Enter the spacing specified for your wall and cladding. Metric 400/600 mm and imperial 16/24 inches are different dimensions, not exact conversions. Panel joints must be checked against the actual framing layout. Spacing suitability depends on the wall system, panel rating and applicable design requirements; this tool does not select it.</p>
+<h3>Cut lengths and buying materials</h3>
+<p>Stud cut length excludes the top and bottom plates. The plate-stock count divides total plate length by stock length and rounds up; it is a lower bound, not a cutting plan. Check joint locations, kerf, offcuts and waste before ordering. Noggins use clear bay widths, not centre spacing.</p>
+<h3>Openings and unusual end bays</h3>
+<p>Doors, windows, corners and wall intersections need additional framing and their own details. If a regular centre causes overlap with the closing stud, the tool stops instead of returning an impossible layout. This calculator does not size headers or verify structural capacity.</p>
+<p>For wall-system context, see <a href="https://www.apawood.org/applications-systems/fully-sheathed-wall-systems/advanced-framing/">APA’s advanced framing guidance</a> and the specified panel installation instructions.</p>
 </div>
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="/stair-stringer-calculator" style="color:var(--accent)">Stair Stringer Calculator</a> <span style="color:var(--muted)">— Riser and tread layout, stringer length, and the dropped-stringer correction most people forget.</span></li><li style="margin:4px 0"><a href="/rafter-calculator" style="color:var(--accent)">Rafter & Roof Framing Calculator</a> <span style="color:var(--muted)">— Common, hip and valley rafter lengths, plumb and seat cuts, with a fully dimensioned diagram.</span></li><li style="margin:4px 0"><a href="/deck-board-planner" style="color:var(--accent)">Deck Board Layout Planner</a> <span style="color:var(--muted)">— Board positions, staggered butt joints landing on joists, and a buy list by stock length.</span></li></ul></aside>
@@ -344,18 +349,18 @@ window.__SPEC__ = (function () {{
 var SPEC = {
   fields: [
     {id:'wallLen', label:'Wall length', value:6000, unit:'length', group:'Wall', min:0},
-    {id:'hgt', label:'Wall height', value:2400, unit:'length', group:'Wall', min:0},
+    {id:'hgt', label:'Stud cut length', value:2400, unit:'length', group:'Wall', min:0},
     {id:'spacing', label:'Stud spacing (centres)', value:400, unit:'length', group:'Wall', min:1},
-    {id:'studW', label:'Stud thickness', value:38, unit:'length', group:'Wall', min:1, hint:'38 mm = 1.5 in'},
+    {id:'studW', label:'Stud thickness', value:38, unit:'length', group:'Wall', min:1, hint:'Use actual material thickness'},
     {id:'plates', label:'Number of plates', value:3, group:'Wall', min:1, step:1, hint:'1 bottom + 2 top is common'},
     {id:'stockLen', label:'Plate stock length', value:4800, unit:'length', group:'Materials', min:1},
     {id:'noggins', label:'Rows of noggins', value:1, group:'Materials', min:0, step:1}
   ],
   compute: function (i) {
     var L=i.wallLen, sp=i.spacing, t=i.studW;
-    if(!(L>0)) return {ok:false, errors:['Wall length must be greater than zero.']};
-    if(!(sp>0)) return {ok:false, errors:['Stud spacing must be greater than zero.']};
-    if(!(t>0)) return {ok:false, errors:['Stud thickness must be greater than zero.']};
+    if(!Number.isFinite(L)||!(L>0)) return {ok:false, errors:['Wall length must be greater than zero.']};
+    if(!Number.isFinite(sp)||!(sp>0)) return {ok:false, errors:['Stud spacing must be greater than zero.']};
+    if(!Number.isFinite(t)||!(t>0)) return {ok:false, errors:['Stud thickness must be greater than zero.']};
     if(sp<=t) return {ok:false, errors:['Spacing must be larger than the stud thickness.']};
 
     // Ces positions sont des CENTRES. Le premier montant est en bout de mur
@@ -365,40 +370,48 @@ var SPEC = {
     // C'est le tracage qui est recule d'une demi-epaisseur, pas le centre :
     // reculer le centre faisait tomber le joint sur la face exterieure du
     // montant, donc sans aucun appui pour le panneau suivant.
+    if(L<2*t) return {ok:false, errors:['The wall must fit two end studs without overlap.']};
+    if(!Number.isFinite(i.hgt)||i.hgt<=0||!Number.isFinite(i.stockLen)||i.stockLen<=0) return {ok:false, errors:['Stud cut length and plate stock length must be finite and greater than zero.']};
+    if(!Number.isInteger(i.plates)||i.plates<1||i.plates>20||!Number.isInteger(i.noggins)||i.noggins<0||i.noggins>100) return {ok:false, errors:['Use whole numbers: 1–20 plates and 0–100 noggin rows.']};
+    if(L/sp>498) return {ok:false, errors:['This layout supports up to 500 studs. Split a longer run into sections.']};
     var pos=[];
     pos.push(t/2);
     for(var x=sp; x<L-t/2; x+=sp) pos.push(x);
     var last=L-t/2;
-    if (last-pos[pos.length-1] > 1) pos.push(last);
+    var endGap=last-pos[pos.length-1];
+    if(endGap>1e-7 && endGap<t-1e-7) return {ok:false, errors:['A regular stud overlaps the closing end stud for these dimensions. This end detail needs a separate layout; adjust the run or spacing to match your actual design.']};
+    if (endGap > 1e-7) pos.push(last);
+    if(pos.some(function(p,n){return n>0 && p-pos[n-1]<t-1e-7;})) return {ok:false, errors:['These positions overlap near the first end stud. Check the spacing and actual material thickness.']};
     var spare = pos.length>1 ? (pos[pos.length-1]-pos[pos.length-2]) : 0;
 
     var plates=Math.max(1,Math.round(i.plates));
     var plateLen=L*plates;
-    var plateSticks=Math.ceil(plateLen/Math.max(1,i.stockLen));
+    var plateSticks=Math.ceil(plateLen/i.stockLen);
     var nogRows=Math.max(0,Math.round(i.noggins));
-    var nogCount=nogRows*Math.max(0,pos.length-1);
-    var nogLen=nogRows*(L-pos.length*t);
+    var clearBays=pos.slice(1).map(function(p,n){return Math.max(0,p-pos[n]-t);});
+    var nogCount=nogRows*clearBays.filter(function(g){return g>1e-7;}).length;
+    var nogLen=nogRows*clearBays.reduce(function(a,b){return a+b;},0);
 
-    var warn=[];
+    var warn=['Plate stock is a length-only minimum. Joint positions, cuts, waste and usable offcuts can increase the purchase quantity.'];
     if (spare>0 && spare<sp*0.4 && pos.length>2) warn.push('The last bay is only '+WCfmt(spare,0)+' — normal at the end of a run, just make sure the closing stud is fixed properly.');
 
-    return {ok:true, pos:pos, L:L, warnings:warn,
+    return {ok:true, pos:pos, clearBays:clearBays, L:L, warnings:warn,
       stats:[
         {value:String(pos.length), label:'Studs'},
         {value:WCfmt(plateLen,0), label:'Plate length total'},
-        {value:String(plateSticks), label:'Plate sticks'},
+        {value:String(plateSticks), label:'Plate stock minimum'},
         {value:String(nogCount), label:'Noggins'}
       ],
       tables:[
-        {title:'Stud positions (centres from the wall end)', head:['#','Centre','Bay to next'],
-         rows: pos.map(function(p,n){ return [String(n+1), WCfmt(p,1), n<pos.length-1?WCfmt(pos[n+1]-p,1):'-']; })},
+        {title:'Stud positions (centres from the wall end)', head:['#','Centre','Centre to next','Clear bay to next'],
+         rows: pos.map(function(p,n){ return [String(n+1), WCfmt(p,1), n<pos.length-1?WCfmt(pos[n+1]-p,1):'-', n<clearBays.length?WCfmt(clearBays[n],1):'-']; })},
         {title:'Material list', head:['Item','Quantity'], rows:[
           ['Studs at '+WCfmt(i.hgt,0)+' long', String(pos.length)],
           ['Plates', String(plates)+' runs, '+WCfmt(plateLen,0)+' total'],
-          ['Plate stock at '+WCfmt(i.stockLen,0), String(plateSticks)+' lengths'],
+          ['Plate stock at '+WCfmt(i.stockLen,0), String(plateSticks)+' lengths minimum, before cuts / waste'],
           ['Noggins', String(nogCount)+' pieces, '+WCfmt(Math.max(0,nogLen),0)+' total'],
           ['Spacing', WCfmt(sp,0)+' centres'],
-          ['Second stud centre', WCfmt(pos[1]!==undefined?pos[1]:pos[0],1)+' (full spacing, so a sheet edge breaks on a stud centre)']
+          ['Second stud centre', WCfmt(pos[1]!==undefined?pos[1]:pos[0],1)+' (check actual sheet joints against these positions)']
         ]}
       ],
       note:'Positions are to stud centres, measured from the same end of the wall throughout. Mark them all from one end rather than measuring stud to stud, or the error accumulates.'
