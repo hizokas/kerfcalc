@@ -1,0 +1,16 @@
+const vm=require('node:vm'),cp=require('node:child_process'),a=require('node:assert/strict'),fs=require('node:fs');
+const js=cp.execFileSync('python3',['-c',"import runpy;print(runpy.run_path('factory/specs/metalweight.py')['SPEC']['js'])"],{encoding:'utf8'}).trim();
+const html=fs.readFileSync('public/metal-weight-calculator.html','utf8');a.ok(html.includes(js));
+let rects=[];const c=vm.createContext({WCfmt:(n,d)=>n.toFixed(d),SVG:{open:()=>'<svg>',close:()=>'</svg>',rect:(x,y,w,h)=>{rects.push({x,y,w,h});return `<rect x="${x}" y="${y}" width="${w}" height="${h}"/>`;},text:()=>''}});vm.runInContext(js,c);
+const defaults=Object.fromEntries(c.SPEC.fields.map(f=>[f.id,f.value]));const calc=x=>c.SPEC.compute({...defaults,...x});const near=(x,y)=>a.ok(Math.abs(x-y)<1e-9,`${x} != ${y}`);
+let input={shape:'sqtube',d1:100,d2:50,wall:3,len:2000,qty:3,price:2.5};let r=calc(input);a.equal(r.ok,true);near(r.area,864e-6);near(r.kgPerM,6.7824);near(r.total,40.6944);a.equal(r.stats[4].value,'101.74');
+rects=[];let svg=c.SPEC.diagram(r,{...defaults,...input});near(rects[0].w/rects[0].h,2);a.ok(svg.includes('width="282" height="132"'),'inside 94 x44 rectangle uses same 3px/mm scale');
+r=calc({shape:'sheet',d1:100,d2:3,len:1000,qty:2,density:8530});near(r.each,2.559);near(r.total,5.118);
+r=calc({shape:'angle',d1:50,d2:30,wall:3});near(r.area,231e-6);
+r=calc({shape:'tube',d1:20,wall:2});near(r.area,Math.PI*(.02*.02-.016*.016)/4);
+const inches={unit:'in',...input};for(const f of c.SPEC.fields)if(f.unit==='length')inches[f.id]=(input[f.id]??f.value)/25.4;
+near(calc(inches).total,40.6944);
+for(const bad of [{shape:'bogus'},{metal:'bogus'},{density:NaN},{density:-1},{d1:Infinity},{qty:1.5},{qty:0},{qty:1e30},{price:Infinity},{price:-1},{shape:'tube',wall:13},{shape:'sqtube',d2:2,wall:1},{shape:'angle',wall:25},{shape:'sheet',d2:0}])a.equal(calc(bad).ok,false,JSON.stringify(bad));
+a.equal(calc({shape:'round',d2:NaN,wall:NaN}).ok,true,'unused dimensions ignored');
+for(const f of c.SPEC.fields)a.ok(html.includes(`id="${f.id}"`));
+console.log('PASS metal: rectangular tube geometry/proportions, brass grade density, angle/tube area, metric/imperial equivalence and invalid inputs');
