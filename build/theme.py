@@ -348,6 +348,8 @@ def apply_to(path):
             '<script type="application/ld+json" id="ld">%s</script>\n'
             ) % (url, title, desc, url, title, _json.dumps(ld))
     head = '<meta name="p:domain_verify" content="' + PINTEREST_VERIFY + '">\n' + head
+    if not is_index and '/workshop.css' not in src:
+        head += '<link rel="stylesheet" href="/workshop.css">\n'
     src = src.replace('</head>', head + '</head>', 1)
 
     # Lien vie privee dans le pied de page, une seule fois.

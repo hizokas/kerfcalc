@@ -30,11 +30,11 @@ BLURB = {
 HERO_FIG = """<svg class="figsvg" viewBox="0 0 2440 1220" preserveAspectRatio="xMidYMid meet" aria-label="Example cutting layout">
   <rect x="0" y="0" width="2440" height="1220" rx="14" class="hsheet"/>
   <g class="hpart">
-    <rect x="24" y="24" width="717" height="557" rx="6"/><rect x="765" y="24" width="717" height="557" rx="6"/>
-    <rect x="1506" y="24" width="717" height="557" rx="6"/><rect x="24" y="605" width="797" height="557" rx="6"/>
-    <rect x="845" y="605" width="797" height="557" rx="6"/><rect x="1666" y="605" width="593" height="557" rx="6"/>
-    <rect x="2247" y="24" width="169" height="557" rx="6" class="hoff"/>
-    <rect x="2283" y="605" width="133" height="557" rx="6" class="hoff"/>
+    <rect x="0" y="0" width="720" height="560" rx="0"/><rect x="723" y="0" width="720" height="560" rx="0"/>
+    <rect x="1446" y="0" width="720" height="560" rx="0"/><rect x="0" y="563" width="800" height="560" rx="0"/>
+    <rect x="803" y="563" width="800" height="560" rx="0"/><rect x="1606" y="563" width="596" height="560" rx="0"/>
+    <rect x="2169" y="0" width="271" height="560" rx="6" class="hoff"/>
+    <rect x="2205" y="563" width="235" height="560" rx="6" class="hoff"/>
   </g>
   <g class="hlab">
     <text x="382" y="330">720 &#215; 560</text><text x="1123" y="330">720 &#215; 560</text>
@@ -56,9 +56,9 @@ def stair_fig():
             '<line x1="46" y1="415" x2="46" y2="55" class="sdim"/>'
             '<line x1="60" y1="400" x2="785" y2="58" class="sghost"/>'
             + "".join(parts) +
-            '<text x="425" y="450" class="slab">total run 3500 &#183; 14 &#215; 250</text>'
-            '<text x="168" y="392" class="slab">R 181.3</text>'
-            '<text x="330" y="318" class="slab">35.8&#176;</text></svg>')
+            '<text x="425" y="450" class="slab">Layout preview: risers, treads and bottom deduction</text>'
+            ''
+            '</svg>')
 
 
 def joint_fig():
@@ -71,7 +71,7 @@ def joint_fig():
     return ('<svg class="figsvg" viewBox="0 0 840 300" preserveAspectRatio="xMidYMid meet" aria-label="Box joint template">'
             + "".join(p) +
             '<line x1="62" y1="250" x2="778" y2="250" class="sdim"/>'
-            '<text x="420" y="282" class="slab">13 segments &#215; 11.54 = 150.00 exactly</text></svg>')
+            '<text x="420" y="282" class="slab">Layout preview: test the printed scale before cutting</text></svg>')
 
 
 EXTRA_CSS = """
@@ -153,7 +153,7 @@ def build():
     for cat in ["Sheet goods", "Framing", "Finishing", "Joinery"]:
         if cat not in groups:
             continue
-        cards += ('\n<section class="catblock">\n  <div class="cathead">\n'
+        cards += ('\n<section class="catblock" data-category="'+cat+'">\n  <div class="cathead">\n'
                   '    <span class="caticon">' + ICONS.get(cat, "") + '</span>\n'
                   '    <div><h2 class="cattitle">' + cat + '</h2>'
                   '<p class="catblurb">' + BLURB.get(cat, "") + '</p></div>\n'
@@ -173,40 +173,48 @@ def build():
                  'finishing: cut list optimisation, stair stringers, rafters, deck boards, tile layout '
                  'and joinery templates. Scaled diagrams, printable cut lists, no sign-up.">\n')
     parts.append('<link rel="canonical" href="' + DOMAIN + '/">\n')
-    parts.append('<style>' + STYLE + EXTRA_CSS + '</style>\n</head>\n<body>\n<div class="wrap">\n')
+    parts.append('<style>' + STYLE + EXTRA_CSS + '</style>\n<link rel="stylesheet" href="/home-redesign.css">\n</head>\n<body>\n<div class="wrap">\n')
 
     parts.append('<div class="hero"><div class="herowrap"><div>'
                  '<span class="eyebrow">' + str(len(tools)) + ' free tools &middot; no sign-up</span>'
-                 '<h1>Calculators that hand you the <span class="hl">layout</span>, not just a number.</h1>'
-                 '<p class="sub">Every tool solves the arrangement, draws it to scale, and prints as a '
-                 'working document you can take to the bench. Saw kerf is subtracted at every cut, grain '
-                 'direction is respected, and joints land where they can actually be supported.</p>'
+                 '<h1>Your next cut,<br><span class="hl">worked out.</span></h1>'
+                 '<p class="sub">Free calculators for woodwork, framing and material quantities. '
+                 'Get dimensions, layouts and printable plans before you buy or cut.</p>'
+                 '<div class="hero-actions"><a class="hero-primary" href="#tools">Find your calculator &rarr;</a>'
+                 '<a class="hero-secondary" href="/cut-list-optimizer">Try the cut list optimizer</a></div>'
                  '<div class="pills"><span class="pill">Runs in your browser</span>'
                  '<span class="pill">Nothing uploaded</span><span class="pill">mm &amp; inches</span>'
-                 '<span class="pill">Printable</span></div></div><div>'
+                 '<span class="pill">Printable</span></div></div><div class="plan-card">'
+                 '<div class="plan-top"><span>KERFCALC / WORKSHOP NOTES</span><span>PLAN 001</span></div>'
+                 '<div class="plan-title">A place for every piece.</div><div class="plan-sub">Plywood layout &middot; 2440 &times; 1220 mm sheet</div>'
                  + HERO_FIG +
-                 '<p class="figcap">Real output: 22 parts nested on a 2440 &#215; 1220 sheet, kerf included.</p>'
+                 '<div class="plan-bottom"><span>06 PANELS</span><span>03 mm KERF</span><span>mm / in</span></div>'
+                 '<p class="figcap">Illustrative six-panel layout. Enter your own parts in the optimizer.</p>'
                  '</div></div></div>\n')
 
     parts.append('<div class="band">'
                  '<div class="bandit"><b>' + str(len(tools)) + '</b><span>Tools, all free</span></div>'
                  '<div class="bandit"><b>0</b><span>Accounts to create</span></div>'
                  '<div class="bandit"><b>100%</b><span>Runs on your device</span></div>'
-                 '<div class="bandit"><b>91.6%</b><span>Best nesting yield</span></div></div>\n')
+                 '<div class="bandit"><b>mm / in</b><span>Work in your units</span></div></div>\n')
 
-    parts.append('<h2 class="section-title" id="what">What you actually get</h2>'
-                 '<p class="section-lead">Not a number in a box. A dimensioned drawing you can print, '
-                 'fold into your pocket and work from &mdash; plus the cut list that goes with it.</p>'
+    parts.append('<h2 class="section-title" id="what">From measurements to a working plan</h2>'
+                 '<p class="section-lead">Explore three tools that turn your dimensions into a useful layout.</p>'
                  '<div class="showcase">'
-                 '<div class="shot">' + stair_fig() + '<h4>Stair stringer elevation</h4>'
+                 '<div class="shot">' + stair_fig() + '<h4><a href="/stair-stringer-calculator">01 / Stair stringer layout &rarr;</a></h4>'
                  '<p>Every riser dimensioned, the angle, and the dropped-stringer correction applied.</p></div>'
-                 '<div class="shot">' + joint_fig() + '<h4>Box joint template</h4>'
+                 '<div class="shot">' + joint_fig() + '<h4><a href="/box-joint-layout">02 / Box joint template &rarr;</a></h4>'
                  '<p>Pin width adjusted so the spacing divides exactly &mdash; printed at 1:1.</p></div>'
-                 '<div class="shot">' + HERO_FIG + '<h4>Sheet nesting plan</h4>'
+                 '<div class="shot">' + HERO_FIG + '<h4><a href="/cut-list-optimizer">03 / Sheet nesting plan &rarr;</a></h4>'
                  '<p>Parts placed, offcuts shown, kerf subtracted at every cut line.</p></div>'
                  '</div>\n')
 
-    parts.append('<div id="tools"></div>' + cards)
+    parts.append('<section id="tools" class="tool-finder"><h2 class="section-title">What are you working on?</h2>'
+      '<div class="finder-row"><label for="tool-search">Search calculators</label><input id="tool-search" type="search" placeholder="Try stairs, plywood, rebar…" autocomplete="off">'
+      '<span class="tool-count" id="tool-count" aria-live="polite">'+str(len(tools))+' calculators</span></div>'
+      '<div class="category-filters" aria-label="Filter calculator categories">'
+      + ''.join('<button type="button" data-category="'+cat+'" aria-pressed="'+('true' if cat=='All' else 'false')+'">'+cat+'</button>' for cat in ['All','Sheet goods','Framing','Finishing','Joinery'])
+      + '</div><p id="no-tools" hidden>No matching calculators. Try a material or a shorter word.</p></section>'+cards)
 
     parts.append('<h2 class="section-title">Questions</h2><div class="faqgrid">'
                  '<div class="faqitem"><b>Is any of this really free?</b><p>Yes, and there is nothing to '
@@ -238,7 +246,7 @@ def build():
                  + foot_links +
                  '</div><div class="footnote">Everything runs client-side &mdash; no accounts, no '
                  'uploads, no tracking. Planning aids only: check every layout against the real '
-                 'material before you cut.</div></footer>\n</div>\n</body>\n</html>')
+                 'material before you cut.</div></footer>\n</div>\n<script src="/tool-finder.js" defer></script>\n</body>\n</html>')
 
     open(os.path.join(HERE, "index.html"), "w").write("".join(parts))
     return len(tools)
