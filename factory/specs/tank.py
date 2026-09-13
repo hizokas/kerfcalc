@@ -5,10 +5,10 @@ SPEC = {
 "description":"Total capacity and the volume at any fill depth for vertical, horizontal and rectangular tanks, with a dipstick table you can print.",
 "card_desc":"Capacity and litres at any depth, including horizontal cylinders, with a dipstick table.",
 "category":"Finishing",
-"intro":"A vertical tank half full holds half its capacity. A horizontal one does too \u2014 but at a third of the way up it holds barely a fifth, and that is where people get caught. This gives the volume at any depth, plus a dipstick table.",
-"notes":[("Why horizontal tanks are counter-intuitive","The cross-section is a circle, so the area of the wetted part changes with the square of the depth near the bottom and top. Filling the first quarter of the height adds far less than filling the middle quarter."),
+"intro":"A vertical tank half full holds half its capacity. A horizontal one does too \u2014 but at a quarter of the way up it holds about a fifth, and that is where people get caught. This gives the volume at any depth, plus a dipstick table.",
+"notes":[("Why horizontal tanks are counter-intuitive","The cross-section is a circle, so equal increases in depth do not add equal volumes. Filling the first quarter of the height adds far less than filling the middle quarter."),
 ("The formula for a partly full cylinder","The wetted area is the circular segment: r squared times (theta minus sin theta) over two, where theta is twice the arccosine of (r minus depth) over r. Multiply by the length and you have the volume."),
-("Making a dipstick","Print the table, mark the depths on a straight stick, and you have a gauge calibrated to your actual tank. Far more reliable than a float gauge and it never fails."),
+("Making a dipstick","Print the table and mark the depths on a suitable measuring stick. Use internal dimensions and check against known fill quantities. Keep the tank level; avoid inserting tools into hazardous contents."),
 ("What this does not do","It assumes flat ends and a level tank. Dished or hemispherical ends add capacity, and a tank sitting even slightly out of level reads wrong at both extremes.")],
 "js":"""
 var SPEC = {
@@ -25,6 +25,11 @@ var SPEC = {
     {id:'steps', label:'Dipstick rows', value:11, group:'Level', min:2, step:1}
   ],
   compute: function (i) {
+    if (['vertical','horizontal','rect'].indexOf(i.shape)<0) return {ok:false,errors:['Choose a supported tank shape.']};
+    var dims=i.shape==='rect'?['len','rectW','rectH']:['dia','len'];
+    if (dims.some(function(key){return !Number.isFinite(i[key]) || i[key]<=0;})) return {ok:false,errors:['Tank dimensions must be finite numbers greater than zero.']};
+    if (!Number.isFinite(i.level) || i.level<0) return {ok:false,errors:['Fill depth must be zero or greater.']};
+    if (!Number.isFinite(i.steps) || i.steps<2 || i.steps>201) return {ok:false,errors:['Choose between 2 and 201 dipstick rows.']};
     var k = i.unit === 'in' ? 0.0254 : 0.001;
     var d=i.dia*k, Ln=i.len*k, rw=i.rectW*k, rh=i.rectH*k, lvl=i.level*k;
 
@@ -50,12 +55,12 @@ var SPEC = {
     var pctFull = full>0 ? 100*cur/full : 0;
     var pctHeight = height>0 ? 100*Math.min(lvl,height)/height : 0;
 
-    var n=Math.max(2, Math.round(i.steps));
+    var n=Math.round(i.steps);
     var rows=[];
     for (var q=0;q<n;q++){
       var h=height*q/(n-1);
       var v=volAt(h);
-      rows.push([WCfmt(h*1000,0), WCfmt(v*1000,1), WCfmt(full>0?100*v/full:0,1)+'%']);
+      rows.push([WCfmt(h/k,i.unit==='in'?2:1), WCfmt(v*1000,1), WCfmt(full>0?100*v/full:0,1)+'%']);
     }
 
     var warn=[];
@@ -74,13 +79,13 @@ var SPEC = {
         {title:'Now', head:['Item','Value'], rows:[
           ['Shape', {vertical:'Vertical cylinder', horizontal:'Horizontal cylinder', rect:'Rectangular'}[i.shape] || i.shape],
           ['Capacity', WCfmt(full*1000,1)+' litres / '+WCfmt(full,4)+' m3 / '+WCfmt(full*219.969,1)+' imp gal'],
-          ['Fill depth', WCfmt(lvl*1000,0)+' mm of '+WCfmt(height*1000,0)+' mm'],
+          ['Fill depth', WCfmt(lvl/k,1)+' '+i.unit+' of '+WCfmt(height/k,1)+' '+i.unit],
           ['Depth as a percentage', WCfmt(pctHeight,1)+'%'],
           ['Volume as a percentage', WCfmt(pctFull,1)+'%'],
           ['Contents', WCfmt(cur*1000,1)+' litres'],
           ['Ullage (space left)', WCfmt((full-cur)*1000,1)+' litres']
         ]},
-        {title:'Dipstick table', head:['Depth (mm)','Litres','Percent'], rows:rows}
+        {title:'Dipstick table', head:['Depth ('+i.unit+')','Litres','Percent'], rows:rows}
       ],
       note:'Print the dipstick table and mark the depths on a straight stick \u2014 that gives you a gauge calibrated to this exact tank.'
     };

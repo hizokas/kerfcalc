@@ -1,0 +1,12 @@
+const vm=require('node:vm'),cp=require('node:child_process'),a=require('node:assert/strict');
+const c=vm.createContext({WCfmt:(n,d)=>n.toFixed(d)});
+vm.runInContext(cp.execFileSync('python3',['-c',"import runpy;print(runpy.run_path('factory/specs/tank.py')['SPEC']['js'])"],{encoding:'utf8'}),c);
+const defaults={shape:'horizontal',unit:'mm',dia:1200,len:2000,rectW:1000,rectH:1000,level:300,steps:11};
+const calc=x=>c.SPEC.compute({...defaults,...x});
+let r=calc({});a.equal(r.ok,true);a.ok(Math.abs(r.pctFull-19.550110947)<1e-7);
+a.ok(Math.abs(calc({level:600}).pctFull-50)<1e-10);a.equal(calc({level:0}).cur,0);a.equal(calc({level:1200}).pctFull,100);
+a.equal(calc({shape:'rect',len:2000,rectW:1000,rectH:1000,level:250}).cur,0.5);
+for(const bad of [{level:-1},{dia:Infinity},{steps:1000000},{shape:'bad'}])a.equal(calc(bad).ok,false);
+const inches={unit:'in'};for(const key of ['dia','len','rectW','rectH','level'])inches[key]=defaults[key]/25.4;
+a.ok(Math.abs(calc(inches).cur-r.cur)<1e-10);a.equal(calc(inches).tables[1].head[0],'Depth (in)');
+console.log('PASS tank empty, quarter, half, full, rectangular, units and invalid inputs');
