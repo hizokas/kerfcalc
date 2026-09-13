@@ -1,109 +1,148 @@
-SPEC = {
-"slug":"flooring-plank-calculator",
-"h1":"Flooring Plank Layout Calculator",
-"title_tag":"Flooring Calculator — Plank Rows, Last Row Width, Stagger and Waste",
-"description":"Rows of planks, the width of the last row, end-joint stagger, boxes to buy and waste allowance for laminate, engineered and solid flooring.",
-"card_desc":"Rows, last-row width, joint stagger and boxes to buy for any plank flooring.",
-"category":"Finishing",
-"intro":"The last row of flooring is the one that ruins a job \u2014 a 20 mm sliver against the wall that no one can fit and everyone can see. This works out the row widths first, tells you to rip the first row instead, and gives you the stagger and the boxes to buy.",
-"notes":[("Why you rip the first row","If the last row comes out narrower than about a third of a plank, split the difference: take the shortfall, add a full plank width, halve it, and rip the first row to that. Both edge rows then look deliberate instead of one looking like a mistake."),
-("Expansion gap is not optional","Wood and laminate move with humidity. The gap around the perimeter lets them, and the skirting hides it. Skip it and the floor peaks in the middle of summer."),
-("Staggering end joints","End joints in adjacent rows should be well offset \u2014 a common rule of thumb is at least twice the plank width, never less than 150 mm. Rows that line up read as a repeating pattern and weaken the floor."),
-("What this does not do","It lays out a rectangular room. Doorways, hearths, islands and diagonal layouts all change the count, and diagonal laying adds roughly 15 percent waste on its own.")],
-"js":"""
-var SPEC = {
-  fields: [
-    {id:'roomL', label:'Room length', value:5000, unit:'length', group:'Room', min:0,
-     hint:'Along the direction of the planks'},
-    {id:'roomW', label:'Room width', value:4000, unit:'length', group:'Room', min:0},
-    {id:'gap', label:'Expansion gap', value:10, unit:'length', group:'Room', min:0},
-    {id:'plankL', label:'Plank length', value:1200, unit:'length', group:'Plank', min:0},
-    {id:'plankW', label:'Plank width', value:190, unit:'length', group:'Plank', min:0},
-    {id:'stagger', label:'Minimum end-joint stagger', value:300, unit:'length', group:'Plank', min:0},
-    {id:'perBox', label:'Planks per box', value:8, group:'Ordering', min:1, step:1},
-    {id:'waste', label:'Waste allowance (%)', value:10, group:'Ordering', min:0}
-  ],
-  compute: function (i) {
-    var L=i.roomL-2*i.gap, Wd=i.roomW-2*i.gap;
-    if (!(i.roomL>0 && i.roomW>0)) return {ok:false, errors:['Room dimensions must be greater than zero.']};
-    if (!(L>0 && Wd>0)) return {ok:false, errors:['The expansion gap leaves no floor. Check the numbers.']};
-    if (!(i.plankL>0 && i.plankW>0)) return {ok:false, errors:['Plank dimensions must be greater than zero.']};
-
-    var fullRows = Math.floor(Wd/i.plankW);
-    var lastRow = Wd - fullRows*i.plankW;
-    var rows = lastRow > 0.5 ? fullRows+1 : fullRows;
-
-    // Si la derniere rangee est trop etroite, on repartit sur la premiere
-    var ripFirst = null;
-    if (lastRow > 0.5 && lastRow < i.plankW/3) {
-      ripFirst = (lastRow + i.plankW)/2;
-    }
-
-    var perRow = Math.ceil(L/i.plankL);
-    var totalPlanks = rows*perRow;
-    // La surface est annoncee en m2 : il faut convertir la saisie, sinon le
-    // mode pouces divise par 645 (25,4 au carre).
-    var toMm = i.unit === 'in' ? 25.4 : 1;
-    var area = (i.roomL*toMm)*(i.roomW*toMm)/1e6;
-    var withWaste = Math.ceil(totalPlanks*(1+Math.max(0,i.waste)/100));
-    var boxes = Math.ceil(withWaste/Math.max(1,i.perBox));
-
-    // Le decalage de coupe de depart qui garantit l'ecart entre joints
-    var offsetStep = Math.max(i.stagger, i.plankW*2);
-    var startCuts = [];
-    var nPattern = Math.max(2, Math.round(i.plankL/offsetStep));
-    for (var k=0;k<Math.min(rows,nPattern);k++) startCuts.push(WCfmt(i.plankL*(k%nPattern)/nPattern,0));
-
-    var warn=[];
-    if (ripFirst) warn.push('The last row would be only '+WCfmt(lastRow,0)+' wide. Rip the first row to '+WCfmt(ripFirst,0)+' instead, and both edges will match.');
-    if (offsetStep > i.plankL/2) warn.push('Your stagger is more than half a plank \u2014 with this plank length the pattern will repeat every other row.');
-
-    return {ok:true, rows:rows, perRow:perRow, lastRow:lastRow, ripFirst:ripFirst,
-      totalPlanks:totalPlanks, boxes:boxes, L:L, Wd:Wd, area:area,
-      warnings: warn,
-      stats:[
-        {value: String(rows), label:'Rows'},
-        {value: String(withWaste), label:'Planks to buy'},
-        {value: String(boxes), label:'Boxes'},
-        {value: WCfmt(area,2), label:'m2 of floor'}
-      ],
-      tables:[{title:'Layout', head:['Item','Value'], rows:[
-        ['Room', WCfmt(i.roomL,0)+' \u00d7 '+WCfmt(i.roomW,0)],
-        ['Laying area after gaps', WCfmt(L,0)+' \u00d7 '+WCfmt(Wd,0)],
-        ['Full rows', String(fullRows)],
-        ['Last row width', WCfmt(lastRow,1)],
-        ['Rip the first row to', ripFirst ? WCfmt(ripFirst,1) : 'not needed'],
-        ['Planks per row', String(perRow)],
-        ['Planks needed', String(totalPlanks)],
-        ['With '+WCfmt(i.waste,0)+'% waste', String(withWaste)],
-        ['Boxes of '+String(i.perBox), String(boxes)],
-        ['Starting cut lengths', startCuts.join(', ')]
-      ]}],
-      note:'Start each row with a different offcut length so end joints never line up. The starting cuts above give a repeating pattern that respects your stagger.'
-    };
-  },
-  diagram: function (r, i) {
-    var W=640,H=360,m=28,s=SVG.open(W,H);
-    var sc=Math.min((W-2*m)/i.roomL,(H-2*m-24)/i.roomW);
-    var x0=m,y0=m+16,rw=i.roomL*sc,rh=i.roomW*sc;
-    s+=SVG.rect(x0,y0,rw,rh,'ghost');
-    var g=i.gap*sc, pw=i.plankW*sc, pl=i.plankL*sc;
-    var nPattern=Math.max(2,Math.round(i.plankL/Math.max(i.stagger,i.plankW*2)));
-    for (var row=0; row<r.rows; row++){
-      var yy=y0+g+row*pw;
-      if (yy > y0+rh-g) break;
-      var hh=Math.min(pw, y0+rh-g-yy);
-      var off=(i.plankL*(row%nPattern)/nPattern)*sc;
-      var xx=x0+g-off;
-      while (xx < x0+rw-g){
-        var x1=Math.max(xx,x0+g), x2=Math.min(xx+pl,x0+rw-g);
-        if (x2>x1) s+=SVG.rect(x1,yy,x2-x1,Math.max(0,hh-1),'part');
-        xx+=pl;
-      }
-    }
-    s+=SVG.text(W/2,20,r.rows+' rows  \u00b7  '+r.perRow+' planks per row  \u00b7  '+r.boxes+' boxes',13);
-    s+=SVG.text(W/2,H-8, r.ripFirst ? 'rip the first row to '+WCfmt(r.ripFirst,0) : 'last row '+WCfmt(r.lastRow,0)+' wide', 12);
-    return s+SVG.close();
-  }
-};
-"""}
+SPEC = {'slug': 'flooring-plank-calculator',
+ 'h1': 'Flooring Plank Layout Calculator',
+ 'title_tag': 'Flooring Calculator — Plank Rows, Last Row Width, Stagger and Waste',
+ 'description': 'Calculate flooring rows, balanced edge widths, starter and end pieces, joint stagger and a '
+                'conservative box estimate. Supports millimetres and inches.',
+ 'card_desc': 'Rows, last-row width, joint stagger and boxes to buy for any plank flooring.',
+ 'category': 'Finishing',
+ 'intro': 'Plan edge-row widths before cutting flooring. Enter the gap, minimum stagger and minimum piece sizes from '
+          'your product instructions, then compare the layout and a conservative box estimate.',
+ 'notes': [('Balance narrow edge rows',
+            'Divide the laying width by the plank width. If the final row is narrower than your chosen minimum, share '
+            'one full plank width plus that final strip between the first and last rows. The diagram shows the '
+            'adjusted widths. An exact multiple of the plank width ends with a full row, not a zero-width strip.'),
+           ('Worked example: balancing a 10 mm strip',
+            'A 5,000 × 4,020 mm room with 10 mm gaps leaves 4,980 × 4,000 mm. With 1,200 × 190 mm planks, 21 full '
+            'widths leave a 10 mm strip. For a 50 mm minimum edge width, use 22 rows: the first and last are 100 mm '
+            'wide, with 20 full rows between them. A 300 mm minimum stagger gives a four-row sequence of 1,200, 300, '
+            '600 and 900 mm starters.'),
+           ('End pieces can invalidate an otherwise correct stagger',
+            'In the example, the first row ends with 180 mm. If your product requires a 300 mm minimum end piece, the '
+            'calculator flags this: revise the starting pattern before cutting. A valid distance between joints alone '
+            'does not make a complete installation plan. Regular repeating patterns may also be unsuitable for your '
+            'chosen product.'),
+           ('How the ordering estimate works',
+            'Each drawn piece is counted as one new plank; offcuts are not reused between rows or across ripped rows. '
+            'The example has 110 pieces, or 121 planks with 10% extra: 16 boxes of eight, containing 128 planks. This '
+            'deliberately conservative estimate can exceed an area-based allowance. An actual cutting plan may reduce '
+            'it; damaged boards, product restrictions and room details may increase it.'),
+           ('Use the instructions for your exact flooring',
+            'Gap, stagger and minimum widths vary with the flooring system. <a '
+            'href="https://int.quick-step.com/en/laminate/installation">Quick-Step’s laminate installation guide</a>, '
+            'for example, recommends at least 30 cm between adjacent end joints and a last row at least 5 cm wide. '
+            'Confirm the current instructions for your specific product, including substrate, moisture, expansion and '
+            'pattern requirements. The input defaults are examples.'),
+           ('Scope and units',
+            'This tool models straight planks of one size in a rectangular room. It does not plan doorways, islands, '
+            'diagonal laying, locking-edge reuse or saw kerf. All length inputs follow the mm/inch selector; output '
+            'floor areas remain in m². Very dense layouts use a simplified outline to keep the page responsive.')],
+ 'js': 'var SPEC = {\n'
+       '  fields: [\n'
+       "    {id:'roomL', label:'Room length', value:5000, unit:'length', group:'Room', min:0, hint:'Along the "
+       "direction of the planks'},\n"
+       "    {id:'roomW', label:'Room width', value:4000, unit:'length', group:'Room', min:0},\n"
+       "    {id:'gap', label:'Expansion gap on each side', value:10, unit:'length', group:'Room', min:0},\n"
+       "    {id:'plankL', label:'Plank length', value:1200, unit:'length', group:'Plank', min:0},\n"
+       "    {id:'plankW', label:'Plank width', value:190, unit:'length', group:'Plank', min:0},\n"
+       "    {id:'stagger', label:'Minimum end-joint stagger', value:300, unit:'length', group:'Plank', min:0},\n"
+       "    {id:'minEdge', label:'Minimum edge-row width', value:50, unit:'length', group:'Plank', min:0},\n"
+       "    {id:'minEnd', label:'Minimum end-piece length', value:300, unit:'length', group:'Plank', min:0, hint:'Use "
+       "the requirements for your flooring product'},\n"
+       "    {id:'perBox', label:'Planks per box', value:8, group:'Ordering', min:1, step:1},\n"
+       "    {id:'waste', label:'Extra allowance (%)', value:10, group:'Ordering', min:0}\n"
+       '  ],\n'
+       '  compute: function(i) {\n'
+       "    var positive=['roomL','roomW','plankL','plankW','stagger'];\n"
+       "    var nonnegative=['gap','minEdge','minEnd','waste'];\n"
+       "    if (positive.some(function(f){return !Number.isFinite(i[f]) || i[f]<=0;})) return {ok:false,errors:['Enter "
+       "finite, positive room, plank and stagger dimensions.']};\n"
+       '    if (nonnegative.some(function(f){return !Number.isFinite(i[f]) || i[f]<0;})) return '
+       "{ok:false,errors:['Gap, minimum pieces and allowance must be finite and non-negative.']};\n"
+       "    if (!Number.isSafeInteger(i.perBox) || i.perBox<1 || i.waste>100) return {ok:false,errors:['Enter a "
+       "positive whole number of planks per box and an allowance from 0 to 100%.']};\n"
+       '    var L=i.roomL-2*i.gap, Wd=i.roomW-2*i.gap;\n'
+       "    if (!(L>0 && Wd>0)) return {ok:false,errors:['The expansion gaps leave no laying area.']};\n"
+       "    if (i.stagger>i.plankL/2) return {ok:false,errors:['This regular stagger pattern supports a minimum up to "
+       "half the plank length. Review the product requirements and plank length.']};\n"
+       "    if (i.minEdge>i.plankW || i.minEnd>i.plankL) return {ok:false,errors:['Minimum piece dimensions cannot "
+       "exceed a full plank.']};\n"
+       '    var ceil=function(v){return Math.ceil(v-1e-10);};\n'
+       '    var rows=ceil(Wd/i.plankW);\n'
+       "    if (!Number.isSafeInteger(rows) || rows<1 || rows>2000 || L/i.plankL>10000) return {ok:false,errors:['This "
+       "planner supports up to 2,000 rows and 10,000 plank lengths per row. Check the dimensions.']};\n"
+       '    var originalLast=Wd-(rows-1)*i.plankW;\n'
+       '    var firstRow=rows===1 ? Wd : i.plankW, lastRow=originalLast, ripFirst=null;\n'
+       '    if (rows>1 && originalLast<i.minEdge) { firstRow=lastRow=(i.plankW+originalLast)/2; ripFirst=firstRow; }\n'
+       '    var nPattern=Math.max(2,Math.min(12,Math.floor(i.plankL/i.stagger+1e-10)));\n'
+       '    var step=i.plankL/nPattern, rowData=[], totalPlanks=0, minPiece=Infinity;\n'
+       '    for (var row=0;row<rows;row++) {\n'
+       '      var start=Math.min(L,row%nPattern===0 ? i.plankL : (row%nPattern)*step);\n'
+       '      var count=1+Math.max(0,ceil((L-start)/i.plankL));\n'
+       '      var end=count===1 ? start : L-start-(count-2)*i.plankL;\n'
+       '      var width=row===0 ? firstRow : (row===rows-1 ? lastRow : i.plankW);\n'
+       '      rowData.push({start:start,end:end,count:count,width:width});\n'
+       '      totalPlanks+=count; minPiece=Math.min(minPiece,start,end);\n'
+       '    }\n'
+       '    var withWaste=ceil(totalPlanks*(1+i.waste/100)), boxes=ceil(withWaste/i.perBox);\n'
+       "    var toM=i.unit==='in' ? .0254 : .001, area=i.roomL*toM*i.roomW*toM, layingArea=L*toM*Wd*toM;\n"
+       '    if (![area,layingArea,step].every(Number.isFinite) || !Number.isSafeInteger(withWaste) || '
+       "!Number.isSafeInteger(boxes*i.perBox)) return {ok:false,errors:['The result is outside the supported range. "
+       "Check the dimensions.']};\n"
+       "    var u=i.unit==='in' ? ' in' : ' mm', fmt=function(v){return WCfmt(v,2)+u;}, warnings=[];\n"
+       "    if (ripFirst) warnings.push('The unbalanced final row is '+fmt(originalLast)+'. Cut both edge rows to "
+       "'+fmt(firstRow)+'.');\n"
+       "    if (Math.min(firstRow,lastRow)<i.minEdge) warnings.push('The edge row remains below your minimum width. "
+       "Change the layout or plank width.');\n"
+       "    if (minPiece+1e-9<i.minEnd) warnings.push('This pattern produces an end piece of '+fmt(minPiece)+', below "
+       "your '+fmt(i.minEnd)+' minimum. Adjust the starting pattern before installation; this is not a ready-to-cut "
+       "plan.');\n"
+       '    return '
+       '{ok:true,rows:rows,L:L,Wd:Wd,firstRow:firstRow,lastRow:lastRow,originalLast:originalLast,ripFirst:ripFirst,\n'
+       '      '
+       'rowData:rowData,nPattern:nPattern,actualStagger:step,totalPlanks:totalPlanks,withWaste:withWaste,boxes:boxes,area:area,layingArea:layingArea,\n'
+       '      warnings:warnings,\n'
+       "      stats:[{value:String(rows),label:'Rows'},{value:String(withWaste),label:'Planks incl. "
+       "extra'},{value:String(boxes),label:'Boxes'},{value:WCfmt(area,2),label:'m² gross floor'}],\n"
+       "      tables:[{title:'Layout and ordering',head:['Item','Value'],rows:[\n"
+       "        ['Laying dimensions after gaps',fmt(L)+' × '+fmt(Wd)],\n"
+       "        ['Laying area after gaps',WCfmt(layingArea,3)+' m²'],\n"
+       "        ['First row width',fmt(firstRow)],['Last row width',fmt(lastRow)],\n"
+       "        ['Full-width rows',String(rowData.filter(function(r){return "
+       'Math.abs(r.width-i.plankW)<i.plankW*1e-9;}).length)],\n'
+       "        ['Regular pattern repeat',String(nPattern)+' rows'],['Joint spacing in regular pattern',fmt(step)],\n"
+       "        ['Plank pieces before extra',String(totalPlanks)],['Offcut reuse assumed','None — one new plank per "
+       "piece'],\n"
+       "        ['With '+WCfmt(i.waste,1)+'% extra',String(withWaste)],['Boxes of '+i.perBox,String(boxes)+' "
+       "('+(boxes*i.perBox)+' planks)']\n"
+       "      ]},{title:'First rows of the repeating pattern — check end pieces',head:['Row','Width','Starter "
+       "length','Last piece','Pieces'],rows:rowData.slice(0,nPattern).map(function(r,k){return "
+       '[String(k+1),fmt(r.width),fmt(r.start),fmt(r.end),String(r.count)];})}],\n'
+       "      note:'Conservative rectangular-room estimate: each piece uses a fresh plank, with no offcut reuse. "
+       'Starter lengths are remaining pieces, not amounts to cut off. The regular pattern meets the requested joint '
+       'spacing, but check all warnings and your manufacturer’s pattern, end-piece, gap and edge-width requirements. '
+       "The drawing is schematic.'\n"
+       '    };\n'
+       '  },\n'
+       '  diagram:function(r,i) {\n'
+       '    var W=640,H=360,m=28,s=SVG.open(W,H),sc=Math.min((W-2*m)/i.roomL,(H-2*m-24)/i.roomW);\n'
+       '    var x0=m,y0=m+16,rw=i.roomL*sc,rh=i.roomW*sc,g=i.gap*sc;\n'
+       "    s+=SVG.rect(x0,y0,rw,rh,'ghost');\n"
+       '    var dense=r.rows>80 || r.totalPlanks>2000;\n'
+       "    if (dense) s+=SVG.rect(x0+g,y0+g,r.L*sc,r.Wd*sc,'part');\n"
+       '    else {\n'
+       '      var yy=y0+g;\n'
+       '      for(var row=0;row<r.rows;row++) {\n'
+       '        var data=r.rowData[row],xx=x0+g,hh=data.width*sc;\n'
+       '        for(var col=0;col<data.count;col++) {\n'
+       '          var length=col===0 ? data.start : (col===data.count-1 ? data.end : i.plankL);\n'
+       "          s+=SVG.rect(xx,yy,length*sc,hh,'part');xx+=length*sc;\n"
+       '        }\n'
+       '        yy+=hh;\n'
+       '      }\n'
+       '    }\n'
+       "    s+=SVG.text(W/2,20,(dense?'Simplified layout · ':'')+r.rows+' rows · '+r.boxes+' boxes',13);\n"
+       "    s+=SVG.text(W/2,H-8,'Edge rows: '+WCfmt(r.firstRow,2)+' / '+WCfmt(r.lastRow,2)+(i.unit==='in'?' in':' "
+       "mm'),12);\n"
+       '    return s+SVG.close();\n'
+       '  }\n'
+       '};\n'}
