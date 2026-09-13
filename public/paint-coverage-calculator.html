@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Paint Calculator — Litres and Gallons by Room, Coats and Openings</title>
-<meta name="description" content="Paint quantity for walls and ceiling, with doors and windows subtracted, primer included, and the number of tins to buy rather than a raw litre figure.">
+<meta name="description" content="Estimate wall and ceiling paint in litres and US gallons. Enter measured openings, coats, separate primer coverage and tin sizes, with an optional extra allowance.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -291,13 +291,13 @@ footer{margin-top:60px}
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KerfCalc">
 <meta property="og:title" content="Paint Calculator — Litres and Gallons by Room, Coats and Openings">
-<meta property="og:description" content="Paint quantity for walls and ceiling, with doors and windows subtracted, primer included, and the number of tins to buy rather than a raw litre figure.">
+<meta property="og:description" content="Estimate wall and ceiling paint in litres and US gallons. Enter measured openings, coats, separate primer coverage and tin sizes, with an optional extra allowance.">
 <meta property="og:url" content="https://getkerfcalc.com/paint-coverage-calculator">
 <meta property="og:image" content="https://getkerfcalc.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Paint Calculator — Litres and Gallons by Room, Coats and Openings">
 <meta name="twitter:image" content="https://getkerfcalc.com/og.png">
-<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Paint Calculator", "url": "https://getkerfcalc.com/paint-coverage-calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Paint quantity for walls and ceiling, with doors and windows subtracted, primer included, and the number of tins to buy rather than a raw litre figure."}</script>
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Paint Calculator", "url": "https://getkerfcalc.com/paint-coverage-calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Estimate wall and ceiling paint in litres and US gallons. Enter measured openings, coats, separate primer coverage and tin sizes, with an optional extra allowance."}</script>
 <link rel="stylesheet" href="/workshop.css">
 </head>
 <body>
@@ -305,7 +305,7 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
 <h1>Paint Coverage Calculator</h1>
-<p class="sub">Most paint calculators give you a litre figure you cannot buy. This one subtracts your doors and windows, allows for coats and primer, and tells you how many tins to actually put in the trolley.</p>
+<p class="sub">Enter your room and opening sizes to estimate colour paint and primer separately, then round each product up to tins you can buy.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -315,20 +315,11 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Room</h2><div class="row"><div class="f"><label for="len">Room length <span class="u"></span></label><input type="number" id="len" value="5000" step="any" min="0"></div><div class="f"><label for="wid">Room width <span class="u"></span></label><input type="number" id="wid" value="4000" step="any" min="0"></div><div class="f"><label for="hgt">Wall height <span class="u"></span></label><input type="number" id="hgt" value="2400" step="any" min="0"></div><div class="f"><label for="ceiling">Include the ceiling</label><input type="checkbox" id="ceiling"></div></div></div><div class="card noprint"><h2>Openings</h2><div class="row"><div class="f"><label for="doors">Number of doors</label><input type="number" id="doors" value="1" step="1" min="0"><span style="font-size:.74rem;color:var(--muted)">Assumed 2.0 x 0.9 m</span></div><div class="f"><label for="windows">Number of windows</label><input type="number" id="windows" value="2" step="1" min="0"><span style="font-size:.74rem;color:var(--muted)">Assumed 1.2 x 1.2 m</span></div></div></div><div class="card noprint"><h2>Paint</h2><div class="row"><div class="f"><label for="coats">Coats</label><input type="number" id="coats" value="2" step="1" min="1"></div><div class="f"><label for="primer">Add a primer coat</label><input type="checkbox" id="primer"></div><div class="f"><label for="cover">Coverage per litre (m2)</label><input type="number" id="cover" value="11" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">10-12 typical, 6-8 on bare plaster</span></div><div class="f"><label for="tin">Tin size (litres)</label><input type="number" id="tin" value="2.5" step="any" min="0.1"></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Room</h2><div class="row"><div class="f"><label for="len">Room length <span class="u"></span></label><input type="number" id="len" value="5000" step="any" min="0"></div><div class="f"><label for="wid">Room width <span class="u"></span></label><input type="number" id="wid" value="4000" step="any" min="0"></div><div class="f"><label for="hgt">Wall height <span class="u"></span></label><input type="number" id="hgt" value="2400" step="any" min="0"></div><div class="f"><label for="ceiling">Include the ceiling</label><input type="checkbox" id="ceiling"></div></div></div><div class="card noprint"><h2>Openings</h2><div class="row"><div class="f"><label for="doors">Number of doors</label><input type="number" id="doors" value="1" step="1" min="0"><span style="font-size:.74rem;color:var(--muted)">Count openings with the dimensions entered below</span></div><div class="f"><label for="windows">Number of windows</label><input type="number" id="windows" value="2" step="1" min="0"><span style="font-size:.74rem;color:var(--muted)">Use average dimensions if the windows differ</span></div><div class="f"><label for="doorW">Average door width <span class="u"></span></label><input type="number" id="doorW" value="900" step="any" min="0"></div><div class="f"><label for="doorH">Average door height <span class="u"></span></label><input type="number" id="doorH" value="2000" step="any" min="0"></div><div class="f"><label for="windowW">Average window width <span class="u"></span></label><input type="number" id="windowW" value="1200" step="any" min="0"></div><div class="f"><label for="windowH">Average window height <span class="u"></span></label><input type="number" id="windowH" value="1200" step="any" min="0"></div></div></div><div class="card noprint"><h2>Paint</h2><div class="row"><div class="f"><label for="coats">Coats</label><input type="number" id="coats" value="2" step="1" min="1"></div><div class="f"><label for="cover">Coverage per litre (m2)</label><input type="number" id="cover" value="11" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">m2 per litre per coat, from your chosen product label</span></div><div class="f"><label for="tin">Colour tin size (litres)</label><input type="number" id="tin" value="2.5" step="any" min="0.1"></div><div class="f"><label for="allowance">Extra allowance (%)</label><input type="number" id="allowance" value="0" step="any" min="0"><span style="font-size:.74rem;color:var(--muted)">Optional extra for losses or touch-ups; added to both products</span></div></div></div><div class="card noprint"><h2>Primer</h2><div class="row"><div class="f"><label for="primer">Include primer</label><input type="checkbox" id="primer"></div><div class="f"><label for="primerCoats">Primer coats</label><input type="number" id="primerCoats" value="1" step="1" min="1"></div><div class="f"><label for="primerCover">Primer coverage (m2 per litre)</label><input type="number" id="primerCover" value="10" step="any" min="0.1"><span style="font-size:.74rem;color:var(--muted)">Separate product label coverage; used when primer is included</span></div><div class="f"><label for="primerTin">Primer tin size (litres)</label><input type="number" id="primerTin" value="2.5" step="any" min="0.1"></div></div></div></div>
 <div id="out"></div>
 
-<div class="card faq noprint">
-  <h2>Notes</h2>
-  <h3>Why coverage varies so much</h3>
-  <p>A smooth sealed wall takes far less than bare plaster, new render or a porous masonry block. The tin quotes the best case; the first coat on new work can drink half again as much.</p>
-  <h3>Do I subtract openings?</h3>
-  <p>Below about 10% of the wall area it makes little difference and the extra is useful. Above that, on a room with patio doors, ignoring it means buying a tin you do not need.</p>
-  <h3>Two coats is not optional</h3>
-  <p>Any colour change needs two, and one coat over primer will look patchy in raking light however good the paint is.</p>
-  <h3>What this does not do</h3>
-  <p>It does not judge whether you need primer. Bare plaster, new timber, stains and strong colour changes do; sound painted walls in a similar shade usually do not.</p>
-</div>
+<div class="card noprint"><h2>Worked example: a 5 x 4 m room</h2><p>For walls 2.4 m high, one 0.9 x 2 m door and two 1.2 x 1.2 m windows, the wall area is <strong>43.20 - 1.80 - 2.88 = 38.52 m2</strong>. The ceiling is excluded.</p><p>Two colour coats at 11 m2/L need <strong>7.00 L</strong> before allowance: buy <strong>3 tins of 2.5 L</strong>. One primer coat at 10 m2/L needs <strong>3.85 L</strong>: buy <strong>2 tins of 2.5 L</strong>. These are separate products.</p><p>If you choose 10% extra, colour becomes <strong>7.704 L</strong>, which rounds up to <strong>4 tins</strong>. Rounding to whole tins can make a small allowance change the purchase quantity.</p></div>
+<div class="card faq noprint"><h2>How to estimate paint coverage</h2><h3>Which coverage rate should I enter?</h3><p>Use the m2 per litre per coat stated for the paint and surface you have chosen. Coverage depends on both the product and the surface. The starting values here are editable examples, not a product specification.</p><h3>How are doors and windows subtracted?</h3><p>Opening area equals count x average width x average height. Enter measured sizes. If openings differ, choose averages whose width x height equals the mean opening area, or calculate sections separately. Reveal surfaces and trim are not included.</p><h3>How many coats do I need?</h3><p>Follow the selected product instructions for your surface and colour change. The calculator lets you choose colour and primer coats separately. Some paints specify a one-coat system; there is no universal two-coat rule.</p><h3>Why is primer calculated separately?</h3><p>Primer has its own coverage, coat count and tin size. Enabling it applies those values to the same area as the colour paint. Estimate it separately if only part of the room needs primer.</p><h3>What is the extra allowance?</h3><p>It is an optional percentage added before each product is rounded up to whole tins. Leave it at zero for the geometric estimate. Choose any additional allowance based on your own project and product guidance.</p><p>Product guidance: <a href="https://www.dulux.co.uk/en/paint-calculator">Dulux coverage calculator notes</a> and <a href="https://www.dulux.co.uk/en/expert-help/how-much-paint-do-you-need">Dulux coat and quantity guidance</a>. Use the current instructions for the product you buy.</p></div>
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="/tile-layout-planner" style="color:var(--accent)">Tile Layout Planner</a> <span style="color:var(--muted)">— Tile counts, edge cuts, and a start point that balances the cuts on both walls.</span></li><li style="margin:4px 0"><a href="/concrete-volume-calculator" style="color:var(--accent)">Concrete Volume Calculator</a> <span style="color:var(--muted)">— Volume for slabs, footings, columns and post holes, plus how many bags that actually is.</span></li><li style="margin:4px 0"><a href="/gravel-volume-calculator" style="color:var(--accent)">Gravel &amp; Aggregate Calculator</a> <span style="color:var(--muted)">— Volume and tonnage for aggregates, including the compaction allowance most calculators forget.</span></li></ul></aside>
 <details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/paint-coverage-calculator?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
@@ -347,41 +338,54 @@ var SPEC = {
     {id:'wid', label:'Room width', value:4000, unit:'length', group:'Room', min:0},
     {id:'hgt', label:'Wall height', value:2400, unit:'length', group:'Room', min:0},
     {id:'ceiling', label:'Include the ceiling', type:'check', value:false, group:'Room'},
-    {id:'doors', label:'Number of doors', value:1, group:'Openings', min:0, step:1, hint:'Assumed 2.0 x 0.9 m'},
-    {id:'windows', label:'Number of windows', value:2, group:'Openings', min:0, step:1, hint:'Assumed 1.2 x 1.2 m'},
+    {id:'doors', label:'Number of doors', value:1, group:'Openings', min:0, step:1, hint:'Count openings with the dimensions entered below'},
+    {id:'windows', label:'Number of windows', value:2, group:'Openings', min:0, step:1, hint:'Use average dimensions if the windows differ'},
+    {id:'doorW', label:'Average door width', value:900, unit:'length', group:'Openings', min:0},
+    {id:'doorH', label:'Average door height', value:2000, unit:'length', group:'Openings', min:0},
+    {id:'windowW', label:'Average window width', value:1200, unit:'length', group:'Openings', min:0},
+    {id:'windowH', label:'Average window height', value:1200, unit:'length', group:'Openings', min:0},
     {id:'coats', label:'Coats', value:2, group:'Paint', min:1, step:1},
-    {id:'primer', label:'Add a primer coat', type:'check', value:false, group:'Paint'},
-    {id:'cover', label:'Coverage per litre (m2)', value:11, group:'Paint', min:1, hint:'10-12 typical, 6-8 on bare plaster'},
-    {id:'tin', label:'Tin size (litres)', value:2.5, group:'Paint', min:0.1}
+    {id:'cover', label:'Coverage per litre (m2)', value:11, group:'Paint', min:1, hint:'m2 per litre per coat, from your chosen product label'},
+    {id:'tin', label:'Colour tin size (litres)', value:2.5, group:'Paint', min:0.1},
+    {id:'allowance', label:'Extra allowance (%)', value:0, group:'Paint', min:0, hint:'Optional extra for losses or touch-ups; added to both products'},
+    {id:'primer', label:'Include primer', type:'check', value:false, group:'Primer'},
+    {id:'primerCoats', label:'Primer coats', value:1, group:'Primer', min:1, step:1},
+    {id:'primerCover', label:'Primer coverage (m2 per litre)', value:10, group:'Primer', min:0.1, hint:'Separate product label coverage; used when primer is included'},
+    {id:'primerTin', label:'Primer tin size (litres)', value:2.5, group:'Primer', min:0.1}
   ],
   compute: function (i) {
-    var k = i.unit === 'in' ? 0.0254 : 0.001;
-    var L=i.len*k, W=i.wid*k, H=i.hgt*k;
-    if (!(L>0&&W>0&&H>0)) return {ok:false, errors:['Room length, width and height must all be greater than zero.']};
-    if (!(i.cover>0)) return {ok:false, errors:['Coverage per litre must be greater than zero.']};
-
-    var wallGross = 2*(L+W)*H;
-    var ceil = i.ceiling ? L*W : 0;
-    var doorA = Math.max(0,i.doors)*2.0*0.9;
-    var winA  = Math.max(0,i.windows)*1.2*1.2;
-    var openings = doorA+winA;
-    if (openings >= wallGross) return {ok:false, errors:['The doors and windows add up to more than the wall area — check the counts.']};
-
-    var wallNet = wallGross-openings;
-    var paintArea = wallNet+ceil;
-    var coats = Math.max(1, Math.round(i.coats));
-    var totalCoats = coats + (i.primer?1:0);
-    var litres = paintArea*coats/i.cover;
-    var primerL = i.primer ? paintArea/i.cover : 0;
-    var tins = Math.ceil(litres/i.tin);
-    var primerTins = i.primer ? Math.ceil(primerL/i.tin) : 0;
-    var pctOpen = 100*openings/wallGross;
-
+    var positive=['len','wid','hgt','cover','tin'];
+    if (i.doors>0) positive.push('doorW','doorH');
+    if (i.windows>0) positive.push('windowW','windowH');
+    if (i.primer) positive.push('primerCover','primerTin');
+    if (positive.some(function(key){return !Number.isFinite(i[key]) || i[key]<=0;}))
+      return {ok:false,errors:['Use positive finite dimensions, coverage rates and tin sizes for the products and openings included.']};
+    if (['doors','windows'].some(function(key){return !Number.isInteger(i[key]) || i[key]<0;}))
+      return {ok:false,errors:['Door and window counts must be whole numbers, zero or greater.']};
+    if (!Number.isInteger(i.coats)||i.coats<1||i.coats>20 || (i.primer&&(!Number.isInteger(i.primerCoats)||i.primerCoats<1||i.primerCoats>20)))
+      return {ok:false,errors:['Enter a whole number of coats from 1 to 20 for each included product.']};
+    if (!Number.isFinite(i.allowance)||i.allowance<0||i.allowance>100)
+      return {ok:false,errors:['Extra allowance must be between 0 and 100 percent.']};
+    var k=i.unit==='in'?0.0254:0.001;
+    var L=i.len*k,W=i.wid*k,H=i.hgt*k;
+    var wallGross=2*(L+W)*H,ceil=i.ceiling?L*W:0;
+    var doorA=i.doors?i.doors*i.doorW*k*i.doorH*k:0;
+    var winA=i.windows?i.windows*i.windowW*k*i.windowH*k:0;
+    var openings=doorA+winA;
+    if (openings>wallGross) return {ok:false,errors:['The opening area exceeds the gross wall area. Check the counts and average sizes.']};
+    var wallNet=wallGross-openings,paintArea=wallNet+ceil;
+    var coats=i.coats,totalCoats=coats+(i.primer?i.primerCoats:0);
+    var factor=1+i.allowance/100;
+    var baseLitres=paintArea*coats/i.cover,litres=baseLitres*factor;
+    var primerL=i.primer?paintArea*i.primerCoats/i.primerCover*factor:0;
+    var tins=Math.ceil(litres/i.tin),primerTins=i.primer?Math.ceil(primerL/i.primerTin):0;
+    if (![paintArea,litres,primerL,tins,primerTins].every(Number.isFinite) || !Number.isSafeInteger(tins) || !Number.isSafeInteger(primerTins))
+      return {ok:false,errors:['These inputs exceed the calculation range. Check dimensions and product quantities.']};
     var warn=[];
-    if (pctOpen>25) warn.push('Openings are '+WCfmt(pctOpen,0)+'% of the wall area — worth measuring them properly rather than using the standard sizes.');
-    if (i.cover>13) warn.push('Coverage above 13 m2 per litre is optimistic for anything but a sealed, previously painted wall.');
+    if (i.ceiling) warn.push('Ceiling and walls use the same selected colour product. Calculate them separately when the paints differ.');
+    if (i.primer) warn.push('Primer is applied to the same net area here. Calculate separately when only some surfaces need primer.');
 
-    return {ok:true, litres:litres, tins:tins, paintArea:paintArea, warnings:warn,
+    return {ok:true, litres:litres, tins:tins, paintArea:paintArea, primerL:primerL, primerTins:primerTins, warnings:warn,
       stats:[
         {value: WCfmt(paintArea,1), label:'m2 to cover'},
         {value: WCfmt(litres,1), label:'Litres of colour'},
@@ -394,10 +398,12 @@ var SPEC = {
         ['Windows', WCfmt(i.windows,0)+' ('+WCfmt(winA,2)+' m2)'],
         ['Wall area net', WCfmt(wallNet,2)+' m2'],
         ['Ceiling', i.ceiling ? WCfmt(ceil,2)+' m2' : 'not included'],
-        ['Area per coat', WCfmt(paintArea,2)+' m2'],
-        ['Colour needed', WCfmt(litres,2)+' L / '+WCfmt(litres*0.264,2)+' US gal'],
+        ['Area per coat', WCfmt(paintArea,2)+' m2 / '+WCfmt(paintArea/0.09290304,2)+' ft2'],
+        ['Extra allowance', WCfmt(i.allowance,1)+'%'],
+        ['Colour before allowance', WCfmt(baseLitres,2)+' L'],
+        ['Colour needed', WCfmt(litres,2)+' L / '+WCfmt(litres/3.785411784,2)+' US gal'],
         ['Tins of colour', String(tins)+' x '+i.tin+' L'],
-        ['Primer needed', i.primer ? WCfmt(primerL,2)+' L ('+primerTins+' tins)' : 'none']
+        ['Primer needed', i.primer ? WCfmt(primerL,2)+' L / '+WCfmt(primerL/3.785411784,2)+' US gal' + ' ('+primerTins+' x '+i.primerTin+' L tins)' : 'none']
       ]}]
     };
   },
