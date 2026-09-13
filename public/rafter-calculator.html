@@ -474,19 +474,19 @@ footer{margin-top:60px}
 <div class="card noprint">
   <h2>Roof</h2>
   <div class="row">
-    <div class="f"><label>Units</label>
+    <div class="f"><label for="unit">Units</label>
       <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
-    <div class="f"><label>Building span (out to out)</label><input type="number" id="span" value="7200" min="1" step="1"></div>
-    <div class="f"><label>Pitch entered as</label>
+    <div class="f"><label for="span">Building span (out to out)</label><input type="number" id="span" value="7200" min="1" step="1"></div>
+    <div class="f"><label for="pitchMode">Pitch entered as</label>
       <select id="pitchMode">
         <option value="ratio">Ratio (rise : run)</option>
         <option value="deg">Degrees</option>
         <option value="percent">Percent</option>
       </select></div>
-    <div class="f"><label>Pitch value</label><input type="text" id="pitchVal" value="6:12" style="width:104px"></div>
-    <div class="f"><label>Eave overhang (level run)</label><input type="number" id="overhang" value="450" min="0" step="1"></div>
-    <div class="f"><label>Ridge board thickness</label><input type="number" id="ridgeT" value="45" min="0" step="1"></div>
-    <div class="f"><label>Building length (optional)</label><input type="number" id="bldgLen" value="12000" min="0" step="1"></div>
+    <div class="f"><label for="pitchVal">Pitch value</label><input type="text" id="pitchVal" value="6:12" style="width:104px"></div>
+    <div class="f"><label for="overhang">Eave overhang (level run)</label><input type="number" id="overhang" value="450" min="0" step="1"></div>
+    <div class="f"><label for="ridgeT">Ridge board thickness</label><input type="number" id="ridgeT" value="45" min="0" step="1"></div>
+    <div class="f"><label for="bldgLen">Building length (optional)</label><input type="number" id="bldgLen" value="12000" min="0" step="1"></div>
   </div>
   <p class="hint" style="max-width:none;margin:10px 0 0">Span is measured over the wall plates, wall face to wall face. Overhang is the horizontal projection past the wall, not the sloping length.</p>
 </div>
@@ -494,11 +494,11 @@ footer{margin-top:60px}
 <div class="card noprint">
   <h2>Rafter &amp; bearing</h2>
   <div class="row">
-    <div class="f"><label>Rafter depth (width of stock)</label><input type="number" id="depth" value="220" min="1" step="1"></div>
-    <div class="f"><label>Rafter thickness</label><input type="number" id="thick" value="47" min="1" step="1"></div>
-    <div class="f"><label>Wall plate width (bearing)</label><input type="number" id="plate" value="100" min="1" step="1"></div>
-    <div class="f"><label>Height above plate (HAP)</label><input type="number" id="hap" value="196" min="0.1" step="1"></div>
-    <div class="f"><label>Valley: intersecting span</label><input type="number" id="valSpan" value="7200" min="0" step="1"></div>
+    <div class="f"><label for="depth">Rafter depth (width of stock)</label><input type="number" id="depth" value="220" min="1" step="1"></div>
+    <div class="f"><label for="thick">Rafter thickness</label><input type="number" id="thick" value="47" min="1" step="1"></div>
+    <div class="f"><label for="plate">Wall plate width (bearing)</label><input type="number" id="plate" value="100" min="1" step="1"></div>
+    <div class="f"><label for="hap">Height above plate (HAP)</label><input type="number" id="hap" value="196" min="0.1" step="1"></div>
+    <div class="f"><label for="valSpan">Valley: intersecting span</label><input type="number" id="valSpan" value="7200" min="0" step="1"></div>
   </div>
   <p class="hint" style="max-width:none;margin:10px 0 0">HAP is the plumb distance from the seat cut up to the top edge of the rafter. It sets how deep the birdsmouth is: the seat cut length follows from it. Leave the intersecting span equal to the main span for a simple L or T of the same width.</p>
   <div class="actions">

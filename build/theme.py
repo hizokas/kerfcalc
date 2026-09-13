@@ -264,6 +264,8 @@ def masthead(is_index):
 def apply_to(path):
     src = open(path).read()
     is_index = os.path.basename(path) == 'index.html'
+    src = re.sub(r'<label>([^<]+)</label>(\s*)(<(?:input|select)\b[^>]*\bid="([^"]+)"[^>]*>)',
+                 lambda m: '<label for="' + m[4] + '">' + m[1] + '</label>' + m[2] + m[3], src)
 
     # 1. CSS — on remplace la version precedente si elle est deja la
     if MARK in src:
@@ -293,7 +295,7 @@ def apply_to(path):
     #    qui l'encastre nous fait un lien, et ses visiteurs nous decouvrent.
     src = re.sub(r'<script id="embed">.*?</script>\n?', '', src, flags=re.S)
     src = re.sub(r'<details id="embedbox".*?</details>\n?', '', src, flags=re.S)
-    if not is_index:
+    if os.path.basename(path) not in NOT_TOOLS:
         slug = re.sub(r'\.html$', '', os.path.basename(path))
         url = f'https://getkerfcalc.com/{slug}'
         code = (f'&lt;iframe src=&quot;{url}?embed=1&quot; width=&quot;100%&quot; '
@@ -335,6 +337,10 @@ def apply_to(path):
           "operatingSystem": "Any (browser)", "isAccessibleForFree": True,
           "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
           "description": desc}
+    if fname in NOT_TOOLS:
+        ld = {"@context": "https://schema.org", "@type": "WebSite" if is_index else "WebPage",
+              "name": __import__('html').unescape(title), "url": url,
+              "description": __import__('html').unescape(desc)}
     head = ('<link rel="canonical" href="%s">\n'
             '<meta property="og:type" content="website">\n'
             '<meta property="og:site_name" content="KerfCalc">\n'

@@ -468,11 +468,11 @@ browser, nothing is uploaded.</p>
 <div class="card noprint">
   <h2>Room and tile</h2>
   <div class="row">
-    <div class="f"><label>Units</label>
+    <div class="f"><label for="unit">Units</label>
       <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
-    <div class="f"><label>Room length (X)</label><input type="number" id="roomL" value="4230" min="0" step="any"></div>
-    <div class="f"><label>Room width (Y)</label><input type="number" id="roomW" value="3480" min="0" step="any"></div>
-    <div class="f"><label>Tile preset</label>
+    <div class="f"><label for="roomL">Room length (X)</label><input type="number" id="roomL" value="4230" min="0" step="any"></div>
+    <div class="f"><label for="roomW">Room width (Y)</label><input type="number" id="roomW" value="3480" min="0" step="any"></div>
+    <div class="f"><label for="preset">Tile preset</label>
       <select id="preset">
         <option value="">Custom…</option>
         <option value="600,600">600 × 600 mm</option>
@@ -482,29 +482,29 @@ browser, nothing is uploaded.</p>
         <option value="900,150">900 × 150 mm (plank)</option>
         <option value="200,200">200 × 200 mm</option>
       </select></div>
-    <div class="f"><label>Tile length (X)</label><input type="number" id="tileL" value="600" min="0" step="any"></div>
-    <div class="f"><label>Tile width (Y)</label><input type="number" id="tileW" value="600" min="0" step="any"></div>
-    <div class="f"><label>Grout joint</label><input type="number" id="joint" value="3" min="0" step="any"></div>
+    <div class="f"><label for="tileL">Tile length (X)</label><input type="number" id="tileL" value="600" min="0" step="any"></div>
+    <div class="f"><label for="tileW">Tile width (Y)</label><input type="number" id="tileW" value="600" min="0" step="any"></div>
+    <div class="f"><label for="joint">Grout joint</label><input type="number" id="joint" value="3" min="0" step="any"></div>
   </div>
 </div>
 
 <div class="card noprint">
   <h2>Layout</h2>
   <div class="row">
-    <div class="f"><label>Pattern</label>
+    <div class="f"><label for="pattern">Pattern</label>
       <select id="pattern">
         <option value="straight">Straight / stack bond</option>
         <option value="offset50">Offset 50% (brick bond)</option>
         <option value="offset33">Offset 33% (third bond)</option>
       </select></div>
-    <div class="f"><label>Start point</label>
+    <div class="f"><label for="start">Start point</label>
       <select id="start">
         <option value="corner" selected>Full tile in the corner</option>
         <option value="centered">Centred in the room</option>
       </select></div>
-    <div class="f"><label>Minimum acceptable cut</label><input type="number" id="minCut" value="50" min="0" step="any">
+    <div class="f"><label for="minCut">Minimum acceptable cut</label><input type="number" id="minCut" value="50" min="0" step="any">
       <span class="hint">Narrower than this and the cut tends to break</span></div>
-    <div class="f"><label>Breakage / waste %</label><input type="number" id="waste" value="10" min="0" max="200" step="any"></div>
+    <div class="f"><label for="waste">Breakage / waste %</label><input type="number" id="waste" value="10" min="0" max="200" step="any"></div>
   </div>
   <div class="actions">
     <button class="primary" id="go">Calculate layout</button>

@@ -467,31 +467,31 @@ footer{margin-top:60px}
 <div class="card noprint">
   <h2>Deck &amp; boards</h2>
   <div class="row">
-    <div class="f"><label>Units</label>
+    <div class="f"><label for="unit">Units</label>
       <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
-    <div class="f"><label>Deck length</label><input type="number" id="dl" value="6000" min="1" step="1">
+    <div class="f"><label for="dl">Deck length</label><input type="number" id="dl" value="6000" min="1" step="1">
       <span class="hint">longer side, plan view</span></div>
-    <div class="f"><label>Deck width</label><input type="number" id="dw" value="3600" min="1" step="1">
+    <div class="f"><label for="dw">Deck width</label><input type="number" id="dw" value="3600" min="1" step="1">
       <span class="hint">shorter side</span></div>
-    <div class="f"><label>Boards run</label>
+    <div class="f"><label for="dir">Boards run</label>
       <select id="dir">
         <option value="length">Parallel to deck length</option>
         <option value="width">Parallel to deck width</option>
       </select><span class="hint">joists sit at 90° to this</span></div>
-    <div class="f"><label>Board cover width</label><input type="number" id="bw" value="140" min="1" step="0.5">
+    <div class="f"><label for="bw">Board cover width</label><input type="number" id="bw" value="140" min="1" step="0.5">
       <span class="hint">actual face width</span></div>
-    <div class="f"><label>Gap between boards</label><input type="number" id="gap" value="5" min="0" step="0.5"></div>
-    <div class="f"><label>Joist spacing (centres)</label><input type="number" id="js" value="400" min="1" step="1"></div>
+    <div class="f"><label for="gap">Gap between boards</label><input type="number" id="gap" value="5" min="0" step="0.5"></div>
+    <div class="f"><label for="js">Joist spacing (centres)</label><input type="number" id="js" value="400" min="1" step="1"></div>
   </div>
 </div>
 
 <div class="card noprint">
   <h2>Stock, border &amp; jointing</h2>
   <div class="row">
-    <div class="f wide"><label>Board lengths in stock</label>
+    <div class="f wide"><label for="stock">Board lengths in stock</label>
       <input type="text" id="stock" value="3600, 4200, 4800">
       <span class="hint">comma separated, in the unit above</span></div>
-    <div class="f"><label>Common lengths</label>
+    <div class="f"><label for="stockPreset">Common lengths</label>
       <select id="stockPreset">
         <option value="">Pick a set…</option>
         <option value="mm|3000, 3600, 4200, 4800">mm — 3.0 / 3.6 / 4.2 / 4.8 m</option>
@@ -501,18 +501,18 @@ footer{margin-top:60px}
         <option value="in|144, 192, 240">in — 12 / 16 / 20 ft</option>
         <option value="in|192, 240">in — 16 / 20 ft</option>
       </select></div>
-    <div class="f"><label>Picture frame border</label>
+    <div class="f"><label for="frame">Picture frame border</label>
       <select id="frame">
         <option value="0">None</option>
         <option value="1" selected>1 board wide</option>
         <option value="2">2 boards wide</option>
       </select></div>
-    <div class="f"><label>Stagger (joist bays)</label><input type="number" id="stag" value="2" min="1" max="10" step="1">
+    <div class="f"><label for="stag">Stagger (joist bays)</label><input type="number" id="stag" value="2" min="1" max="10" step="1">
       <span class="hint">min offset between rows</span></div>
-    <div class="f"><label>Min piece length</label><input type="number" id="minp" value="800" min="0" step="1">
+    <div class="f"><label for="minp">Min piece length</label><input type="number" id="minp" value="800" min="0" step="1">
       <span class="hint">shortest offcut you will lay</span></div>
-    <div class="f"><label>Screws per bearing</label><input type="number" id="spb" value="2" min="1" max="6" step="1"></div>
-    <div class="f"><label>Saw kerf</label><input type="number" id="kerf" value="3" min="0" step="0.5">
+    <div class="f"><label for="spb">Screws per bearing</label><input type="number" id="spb" value="2" min="1" max="6" step="1"></div>
+    <div class="f"><label for="kerf">Saw kerf</label><input type="number" id="kerf" value="3" min="0" step="0.5">
       <span class="hint">lost per cross cut</span></div>
   </div>
   <div class="actions">

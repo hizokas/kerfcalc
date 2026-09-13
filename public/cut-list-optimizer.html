@@ -433,7 +433,7 @@ footer{margin-top:60px}
 <div class="card noprint">
   <h2>Sheet stock</h2>
   <div class="row">
-    <div class="f"><label>Preset</label>
+    <div class="f"><label for="preset">Preset</label>
       <select id="preset">
         <option value="2440,1220">2440 × 1220 mm (8×4 ft)</option>
         <option value="2500,1250">2500 × 1250 mm</option>
@@ -441,11 +441,11 @@ footer{margin-top:60px}
         <option value="2440,610">2440 × 610 mm</option>
         <option value="">Custom…</option>
       </select></div>
-    <div class="f"><label>Sheet length</label><input type="number" id="sw" value="2440" min="1"></div>
-    <div class="f"><label>Sheet width</label><input type="number" id="sh" value="1220" min="1"></div>
-    <div class="f"><label>Saw kerf</label><input type="number" id="kerf" value="3" min="0" step="0.1"></div>
-    <div class="f"><label>Edge trim</label><input type="number" id="trim" value="0" min="0"></div>
-    <div class="f"><label>Units</label>
+    <div class="f"><label for="sw">Sheet length</label><input type="number" id="sw" value="2440" min="1"></div>
+    <div class="f"><label for="sh">Sheet width</label><input type="number" id="sh" value="1220" min="1"></div>
+    <div class="f"><label for="kerf">Saw kerf</label><input type="number" id="kerf" value="3" min="0" step="0.1"></div>
+    <div class="f"><label for="trim">Edge trim</label><input type="number" id="trim" value="0" min="0"></div>
+    <div class="f"><label for="unit">Units</label>
       <select id="unit"><option value="mm">mm</option><option value="in">inches</option></select></div>
   </div>
   <div class="row" style="margin-top:14px">
@@ -473,12 +473,27 @@ footer{margin-top:60px}
 <div class="card faq noprint">
   <h2>Notes</h2>
   <h3>Why the kerf matters</h3>
-  <p>Every cut destroys a strip of material as wide as your blade — typically 3 mm on a table saw, 1 mm on a track saw with a thin-kerf blade. Ignore it and a layout that looks perfect on screen comes up short on the last piece.</p>
+  <p>Every cut removes a strip of material. Enter the actual cutting width of your blade, rather than the thickness of its steel body. The 3 mm default is an example: measure a test cut for your saw. Ignore the kerf and a layout that looks perfect on screen can come up short on the last piece.</p>
   <h3>How the layouts are produced</h3>
   <p>Only guillotine cuts are used: every cut runs edge to edge across the piece, which is what a table saw or panel saw actually does. Six sorting strategies and three splitting rules are tried, and the best result is kept.</p>
   <h3>What this does not do</h3>
   <p>It does not sequence your cuts for you, and it assumes every sheet is identical and defect-free. Check the diagram against your actual sheet before cutting — knots, damaged corners and factory edges are not accounted for.</p>
 </div>
+
+<section class="card faq" aria-labelledby="cutting-example">
+  <h2 id="cutting-example">Worked example: six plywood panels</h2>
+  <p>Use a 2440 × 1220 mm sheet, 3 mm kerf and zero edge trim. Enter three panels at 720 × 560 mm, two at 800 × 560 mm and one at 596 × 560 mm. These are example part dimensions, not a complete cabinet design.</p>
+  <table><caption style="text-align:left;margin-bottom:12px">Parts to enter in the calculator</caption><thead><tr><th scope="col">Part</th><th scope="col">Length × width</th><th scope="col">Quantity</th></tr></thead><tbody><tr><th scope="row">Panel A</th><td>720 × 560 mm</td><td>3</td></tr><tr><th scope="row">Panel B</th><td>800 × 560 mm</td><td>2</td></tr><tr><th scope="row">Panel C</th><td>596 × 560 mm</td><td>1</td></tr></tbody></table>
+  <p>A feasible one-sheet arrangement uses two 560 mm-wide rows. Three A panels need 3 × 720 + 2 × 3 = <strong>2166 mm</strong> before separating the end offcut. The two B panels and one C need 800 + 800 + 596 + 2 × 3 = <strong>2202 mm</strong>. Across the sheet, the two rows and their separating cut need 560 + 3 + 560 = <strong>1123 mm</strong>.</p>
+  <p>The finished parts occupy 2,439,360 mm² of the 2,976,800 mm² sheet, about <strong>81.9%</strong>. The rest includes both offcuts and sawdust; it is not all reusable material. The optimizer may find a different arrangement.</p>
+  <h3>Why area alone does not tell you the sheet count</h3>
+  <p>Dividing total part area by sheet area gives only a lower bound. Part shape, kerf, edge trim and rotation restrictions can make a set of parts require another sheet even when its combined area seems small enough.</p>
+  <h3>How to handle grain, edge trim and mixed materials</h3>
+  <p>Enter every part in a consistent orientation, enable “Respect grain direction” and lock the parts whose orientation must stay fixed. Edge trim is removed from each of the four sheet edges: a 10 mm trim leaves 2420 × 1200 mm usable on the example sheet. Run a separate optimization for each material and thickness.</p>
+  <h3>Does it guarantee the absolute best layout?</h3>
+  <p>No. The tool compares 18 combinations of sorting and splitting rules and keeps the result using the fewest sheets. It is a practical heuristic, not a proof of the mathematical minimum. Inspect the layout, allow for real defects, and plan a safe cutting sequence before starting.</p>
+  <p>Cutting narrow stock instead of panels? Use the <a href="/linear-cut-optimizer">linear cut optimizer for boards, bars and trim</a>. Buying hardwood by volume? Use the <a href="/board-foot-calculator">board foot calculator</a>.</p>
+</section>
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="/linear-cut-optimizer" style="color:var(--accent)">Linear Cut Optimizer</a> <span style="color:var(--muted)">— Cut lists for bars, boards, pipe and trim. Minimises the number of stock lengths you buy.</span></li><li style="margin:4px 0"><a href="/board-foot-calculator" style="color:var(--accent)">Board Foot Calculator</a> <span style="color:var(--muted)">— Board feet, waste allowance and cost across a whole list of boards, in quarters or millimetres.</span></li><li style="margin:4px 0"><a href="/sheet-metal-bend-calculator" style="color:var(--accent)">Sheet Metal Bend Allowance Calculator</a> <span style="color:var(--muted)">— Flat pattern length, bend allowance and deduction from thickness, radius, angle and K-factor.</span></li></ul></aside>
 <details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/cut-list-optimizer?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
