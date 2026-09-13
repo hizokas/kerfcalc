@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Compound Miter Calculator — Saw Miter and Bevel for Crown and Sloped Work</title>
-<meta name="description" content="Miter and bevel saw settings for crown moulding and any sloped compound joint, from the spring angle and the corner angle, with the trigonometry shown.">
+<title>Compound Miter Calculator — Crown Molding Miter and Bevel Angles</title>
+<meta name="description" content="Calculate saw miter and bevel magnitudes for crown molding laid flat, using spring angle and measured wall angle. Includes non-square corner examples.">
 <style>
 :root{
   --bg:#fbfbfa; --surface:#fff; --ink:#1a1a18; --muted:#6b6b65;
@@ -290,14 +290,14 @@ footer{margin-top:60px}
 <link rel="canonical" href="https://getkerfcalc.com/compound-miter-calculator">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="KerfCalc">
-<meta property="og:title" content="Compound Miter Calculator — Saw Miter and Bevel for Crown and Sloped Work">
-<meta property="og:description" content="Miter and bevel saw settings for crown moulding and any sloped compound joint, from the spring angle and the corner angle, with the trigonometry shown.">
+<meta property="og:title" content="Compound Miter Calculator — Crown Molding Miter and Bevel Angles">
+<meta property="og:description" content="Calculate saw miter and bevel magnitudes for crown molding laid flat, using spring angle and measured wall angle. Includes non-square corner examples.">
 <meta property="og:url" content="https://getkerfcalc.com/compound-miter-calculator">
 <meta property="og:image" content="https://getkerfcalc.com/og.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Compound Miter Calculator — Saw Miter and Bevel for Crown and Sloped Work">
+<meta name="twitter:title" content="Compound Miter Calculator — Crown Molding Miter and Bevel Angles">
 <meta name="twitter:image" content="https://getkerfcalc.com/og.png">
-<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Compound Miter Calculator", "url": "https://getkerfcalc.com/compound-miter-calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Miter and bevel saw settings for crown moulding and any sloped compound joint, from the spring angle and the corner angle, with the trigonometry shown."}</script>
+<script type="application/ld+json" id="ld">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Compound Miter Calculator", "url": "https://getkerfcalc.com/compound-miter-calculator", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any (browser)", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "description": "Calculate saw miter and bevel magnitudes for crown molding laid flat, using spring angle and measured wall angle. Includes non-square corner examples."}</script>
 <link rel="stylesheet" href="/workshop.css">
 </head>
 <body>
@@ -305,7 +305,7 @@ footer{margin-top:60px}
 <header class="masthead noprint"><a class="brand" href="/"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="2.5" y="2.5" width="19" height="19" rx="4" stroke="currentColor" stroke-width="1.7" opacity=".28"/><path d="M7 17V7M7 12l5-5M7 12l5 5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 7v10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-dasharray="1.5 3"/></svg><b>Kerf<span>Calc</span></b></a><nav class="mnav"><a href="/">All tools</a><a class="cta" href="/">Back to KerfCalc &rarr;</a></nav></header>
 
 <h1>Compound Miter Angle Calculator</h1>
-<p class="sub">Two numbers you cannot guess and cannot get right by trial and error on site. Give the spring angle of the moulding and the actual corner angle, and this gives you the miter and bevel to dial into the saw.</p>
+<p class="sub">Find the miter and bevel settings for crown molding cut flat on the saw table. Measure the spring angle from the wall and enter the smaller angle between the wall lines. The results are angle magnitudes; cutting directions depend on the piece and saw setup.</p>
 
 <div class="card noprint">
   <h2>Units</h2>
@@ -315,20 +315,10 @@ footer{margin-top:60px}
   </div>
 </div>
 
-<div id="form"><div class="card noprint"><h2>Moulding</h2><div class="row"><div class="f"><label for="spring">Spring angle (degrees)</label><input type="number" id="spring" value="38" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">38 or 45 are the usual crown profiles</span></div></div></div><div class="card noprint"><h2>Corner</h2><div class="row"><div class="f"><label for="corner">Corner angle (degrees)</label><input type="number" id="corner" value="90" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">Measure it, do not assume 90</span></div><div class="f"><label for="type">Corner type</label><select id="type"><option value="inside" selected>Inside corner</option><option value="outside">Outside corner</option></select></div></div></div></div>
+<div id="form"><div class="card noprint"><h2>Moulding</h2><div class="row"><div class="f"><label for="spring">Spring angle (degrees)</label><input type="number" id="spring" value="38" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">Angle between crown and vertical wall</span></div></div></div><div class="card noprint"><h2>Corner</h2><div class="row"><div class="f"><label for="corner">Corner angle (degrees)</label><input type="number" id="corner" value="90" step="any" min="1"><span style="font-size:.74rem;color:var(--muted)">Smaller wall angle; square inside/outside = 90</span></div><div class="f"><label for="type">Corner type</label><select id="type"><option value="inside" selected>Inside corner</option><option value="outside">Outside corner</option></select></div></div></div></div>
 <div id="out"></div>
 
-<div class="card faq noprint">
-  <h2>Notes</h2>
-  <h3>Why 45 degrees does not work</h3>
-  <p>Crown sits on the wall at a spring angle, so the cut face is not square to the saw table. The miter and bevel both shift, and for standard 38 degree crown on a square corner they land at 31.6 and 33.9, not 45 and 0.</p>
-  <h3>Measure the corner, do not assume</h3>
-  <p>Walls are rarely 90 degrees. A corner that is 2 degrees out leaves a visible gap at the top of the moulding. A digital angle finder pays for itself on the first room.</p>
-  <h3>The formulas</h3>
-  <p>miter = atan(sin(spring) x tan(corner/2)), bevel = asin(cos(spring) x cos(corner/2)). Both are shown in the results so you can check them.</p>
-  <h3>What this does not do</h3>
-  <p>It does not know which way up your moulding goes on the saw. Cut a test piece in scrap first, every time. Nobody gets the orientation right from memory.</p>
-</div>
+<div class="card faq noprint"><h2>Crown molding angles explained</h2><h3>Measure the spring angle from the wall</h3><p>Spring angle here is the angle between the installed crown and the vertical wall. A 38° spring profile is therefore 52° from the ceiling. These settings are for crown laid flat, not nested at its installed angle against the fence.</p><h3>Which corner angle should I enter?</h3><p>Enter the smaller included angle between the wall lines, greater than 0° and less than 180°. For a normal square inside or outside corner, enter 90°. If you measured a reflex angle such as 267°, enter 360 − 267 = 93°. Inside/outside changes the orientation of the cuts, not their magnitudes under this convention.</p><h3>The corrected formulas</h3><p>With spring angle S and included corner angle C: miter = atan(sin(S) / tan(C/2)); bevel = asin(cos(S) × cos(C/2)). Evaluate trigonometric functions in degrees. As the corner approaches a straight 180°, both settings approach zero. Multiplying by tan(C/2) instead of dividing only agrees at a 90° corner.</p><h3>Worked examples for 38° spring crown</h3><p>At a 90° corner, use miter 31.62° and bevel 33.86°. At 93°, they become 30.30° and 32.85°. At 120°, they are 19.57° and 23.20°. These magnitudes agree with the <a href="https://sbebuilders.com/cgi-bin/geometry/crown_table.cgi">SBE Builders crown molding tables</a>. Keep the actual measured spring angle; rounding it to a whole degree changes the result.</p><h3>Setup and test cuts</h3><p>The results do not specify left/right saw directions or which offcut to keep. Those depend on inside/outside, the end being cut, profile orientation and saw capabilities. Follow the setup chart for your saw and make a mirrored test pair in scrap. The <a href="https://www.boschtools.com/us/en/ocsmedia/2610051827_GCM12SD_0918.pdf">Bosch GCM12SD manual</a> includes separate crown setup directions for each corner and end.</p><h3>Scope</h3><p>This model assumes two pieces of the same crown profile and spring angle meeting at a wall corner below a level ceiling. Unequal spring angles, sloping ceilings and arbitrary compound assemblies require a different geometric model. A numerical result does not confirm that your saw can reach or accurately reproduce the settings.</p></div>
 
 <aside id="related" class="card noprint"><h2>Related tools</h2><ul style="margin:0;padding-left:18px;font-size:.9rem"><li style="margin:4px 0"><a href="/box-joint-layout" style="color:var(--accent)">Box Joint &amp; Dovetail Layout</a> <span style="color:var(--muted)">— Even pin and tail spacing that actually divides, plus a 1:1 printable marking template.</span></li><li style="margin:4px 0"><a href="/polygon-miter-calculator" style="color:var(--accent)">Polygon Miter Angle Calculator</a> <span style="color:var(--muted)">— Miter angles and side lengths for hexagons, octagons and any polygon, from any known dimension.</span></li><li style="margin:4px 0"><a href="/arc-layout-calculator" style="color:var(--accent)">Arc &amp; Curve Layout Calculator</a> <span style="color:var(--muted)">— Radius, arc length and a table of offsets to mark any curve full size, no compass needed.</span></li></ul></aside>
 <details id="embedbox" class="noprint"><summary>Embed this calculator on your own site (free)</summary><textarea rows="3" readonly onclick="this.select()">&lt;iframe src=&quot;https://getkerfcalc.com/compound-miter-calculator?embed=1&quot; width=&quot;100%&quot; height=&quot;900&quot; style=&quot;border:1px solid #ddd;border-radius:12px&quot; loading=&quot;lazy&quot;&gt;&lt;/iframe&gt;</textarea><p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Copy, paste, done. Please keep the link back to us.</p></details>
@@ -343,8 +333,8 @@ window.__SPEC__ = (function () {{
 
 var SPEC = {
   fields: [
-    {id:'spring', label:'Spring angle (degrees)', value:38, group:'Moulding', min:1, max:89, hint:'38 or 45 are the usual crown profiles'},
-    {id:'corner', label:'Corner angle (degrees)', value:90, group:'Corner', min:1, max:179, hint:'Measure it, do not assume 90'},
+    {id:'spring', label:'Spring angle (degrees)', value:38, group:'Moulding', min:1, max:89, hint:'Angle between crown and vertical wall'},
+    {id:'corner', label:'Corner angle (degrees)', value:90, group:'Corner', min:1, max:179, hint:'Smaller wall angle; square inside/outside = 90'},
     {id:'type', label:'Corner type', type:'select', value:'inside', group:'Corner', options:[
       {value:'inside', label:'Inside corner'},
       {value:'outside', label:'Outside corner'}]}
@@ -353,11 +343,12 @@ var SPEC = {
     var errs=[];
     if(!(i.spring>0 && i.spring<90)) errs.push('Spring angle must be between 0 and 90 degrees.');
     if(!(i.corner>0 && i.corner<180)) errs.push('Corner angle must be between 0 and 180 degrees.');
+    if(['inside','outside'].indexOf(i.type)===-1) errs.push('Select inside or outside corner.');
     if(errs.length) return {ok:false, errors:errs};
 
     var d2r=Math.PI/180, r2d=180/Math.PI;
     var S=i.spring*d2r, C=i.corner*d2r;
-    var miter=Math.atan(Math.sin(S)*Math.tan(C/2))*r2d;
+    var miter=Math.atan(Math.sin(S)/Math.tan(C/2))*r2d;
     var bevel=Math.asin(Math.cos(S)*Math.cos(C/2))*r2d;
     var saw=90-miter;
 
@@ -369,17 +360,17 @@ var SPEC = {
       stats:[
         {value:WCfmt(miter,2)+String.fromCharCode(176), label:'Miter angle'},
         {value:WCfmt(bevel,2)+String.fromCharCode(176), label:'Bevel angle'},
-        {value:WCfmt(i.spring,0)+String.fromCharCode(176), label:'Spring angle'},
+        {value:WCfmt(i.spring,2)+String.fromCharCode(176), label:'Spring angle'},
         {value:WCfmt(i.corner,1)+String.fromCharCode(176), label:'Corner'}
       ],
       tables:[{title:'Saw settings', head:['Setting','Value','Where it comes from'], rows:[
-        ['Miter', WCfmt(miter,2)+String.fromCharCode(176), 'atan(sin('+WCfmt(i.spring,0)+') x tan('+WCfmt(i.corner/2,1)+'))'],
-        ['Bevel', WCfmt(bevel,2)+String.fromCharCode(176), 'asin(cos('+WCfmt(i.spring,0)+') x cos('+WCfmt(i.corner/2,1)+'))'],
+        ['Miter', WCfmt(miter,2)+String.fromCharCode(176), 'atan(sin('+WCfmt(i.spring,2)+') / tan('+WCfmt(i.corner/2,2)+'))'],
+        ['Bevel', WCfmt(bevel,2)+String.fromCharCode(176), 'asin(cos('+WCfmt(i.spring,2)+') x cos('+WCfmt(i.corner/2,2)+'))'],
         ['Miter, if your saw reads from 90', WCfmt(saw,2)+String.fromCharCode(176), '90 minus the miter'],
-        ['Corner type', i.type==='inside'?'Inside':'Outside', i.type==='inside'?'Long point to the back':'Long point to the front'],
-        ['Pieces per corner', '2', 'Both cut to the same settings, mirrored']
+        ['Corner type', i.type==='inside'?'Inside':'Outside', 'Magnitudes only; use the saw setup chart for cutting direction'],
+        ['Pieces per corner', '2', 'Same profile and spring angle; mirrored test pair']
       ]}],
-      note:'Cut a test pair in scrap and offer them up before touching the real moulding. The numbers are right; the orientation on the saw is what catches people out.'
+      note:'Cut a test pair in scrap and offer them up before touching the real moulding. Check the measured angles, saw setup and fit of both test pieces.'
     };
   },
   diagram: function (r,i){
@@ -394,11 +385,10 @@ var SPEC = {
     s+=SVG.text(cx,cy-42,WCfmt(i.corner,1)+String.fromCharCode(176),13);
     s+=SVG.text(cx,26,'Set the saw to these two numbers',12);
     s+=SVG.text(cx,H-38,'Miter '+WCfmt(r.miter,2)+String.fromCharCode(176)+'    Bevel '+WCfmt(r.bevel,2)+String.fromCharCode(176),15);
-    s+=SVG.text(cx,H-16,'Spring angle '+WCfmt(i.spring,0)+String.fromCharCode(176)+' - '+(i.type==='inside'?'inside':'outside')+' corner',11);
+    s+=SVG.text(cx,H-16,'Spring angle '+WCfmt(i.spring,2)+String.fromCharCode(176)+' - '+(i.type==='inside'?'inside':'outside')+' corner',11);
     return s+SVG.close();
   }
 };
-
 return SPEC;
 }})();
 </script>
